@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MarketplaceHub v1</title>
+    <title>MarketplaceHub v2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-mc-dark text-white min-h-screen flex flex-col">
@@ -39,14 +39,14 @@
 
         <!-- Grid de Produtos -->
         <div id="marketplace-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Inserido dinamicamente pelo script.js -->
+            <!-- Inserido dinamicamente pelo script.js -->[cite: 7, 8]
         </div>
     </main>
 
     <!-- Modal de Detalhes -->
     <div id="details-modal" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 backdrop-blur-sm">
         <div id="modal-content-box" class="bg-mc-card border border-mc-border rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative transform scale-95 transition-transform duration-300">
-            <!-- Preenchido via JavaScript -->
+            <!-- Preenchido via JavaScript -->[cite: 7, 8]
         </div>
     </div>
 
@@ -123,8 +123,8 @@
         <span id="toast-msg" class="text-xs font-bold uppercase">Ação realizada com sucesso!</span>
     </div>
 
-    <!-- Scripts de Configuração e Lógica (Sem Firebase) -->
-    <script src="marketplaceToken.js"></script>
-    <script src="script.js"></script>
+    <!-- Scripts integrados carregando o Token privado e depois a lógica -->
+    <script src="marketplaceToken.js"></script>[cite: 7, 8]
+    <script src="script.js"></script>[cite: 7, 8]
 </body>
 </html>
