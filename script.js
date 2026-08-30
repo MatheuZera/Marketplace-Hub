@@ -1,8 +1,8 @@
 let ITEMS = [];
 
-// Configuração oficial do repositório no GitHub
+// Configuração do seu repositório público
 const GITHUB_REPO = 'MatheuZera/Marketplace-Hub'; 
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = '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'; // Cole seu token classic aqui
 
 const CATEGORIES = [
    { id: 'tudo', label: 'Tudo' },
@@ -18,7 +18,7 @@ const CATEGORIES = [
 let activeCategory = 'tudo';
 let searchQuery = '';
 
-// 1. Carregar itens aprovados diretamente da nuvem do GitHub
+// 1. Carregar itens aprovados da nuvem
 async function fetchItems() {
    try {
       const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
@@ -26,7 +26,6 @@ async function fetchItems() {
       });
       
       if (!response.ok) {
-         console.warn('Arquivo cloud/items.json ainda não encontrado no repositório. Será criado no primeiro envio.');
          ITEMS = [];
          return;
       }
@@ -35,15 +34,14 @@ async function fetchItems() {
       const jsonString = decodeURIComponent(escape(window.atob(fileData.content)));
       const allItems = JSON.parse(jsonString) || [];
       
-      // Exibe apenas os itens que possuem approved: true
+      // Mostra no site apenas os itens com approved: true
       ITEMS = allItems.filter(item => item.approved === true);
    } catch (error) {
-      console.warn('Aviso: Não foi possível carregar os itens do GitHub.', error);
       ITEMS = [];
    }
 }
 
-// 2. Salvar novo item diretamente na pasta cloud/items.json do GitHub
+// 2. Salvar novo item no GitHub com approved: false (Pendente para sua revisão)
 async function saveItemToGitHub(newItem) {
    let fileSha = '';
    let existingItems = [];
@@ -62,19 +60,19 @@ async function saveItemToGitHub(newItem) {
          existingItems = JSON.parse(jsonString) || [];
       }
    } catch (e) {
-      // Se o arquivo não existir, continuará com a lista vazia para criá-lo
+      // Cria a lista vazia se o arquivo ainda não existir
    }
 
-   // O item entra inicialmente como falso para aprovação manual (mude para true se quiser que apareça na hora)
+   // Define como falso para exigir a sua aprovação manual
    newItem.approved = false; 
    const updatedList = [newItem, ...existingItems];
 
    const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(updatedList, null, 2))));
 
    const bodyData = {
-      message: `Adicionar item pendente: ${newItem.title}`,
+      message: `Novo item enviado (Pendente): ${newItem.title}`,
       content: contentEncoded,
-      branch: 'main' // Altere para 'master' se o branch principal do seu repo for master
+      branch: 'main'
    };
    
    if (fileSha) {
@@ -99,7 +97,7 @@ async function saveItemToGitHub(newItem) {
    return await putRes.json();
 }
 
-// Inicialização
+// Inicialização das funções da interface
 document.addEventListener('DOMContentLoaded', async () => {
    await fetchItems();
    renderCategories();
@@ -157,7 +155,7 @@ function renderGrid() {
         <div class="col-span-1 sm:col-span-2 lg:col-span-4 py-20 flex flex-col items-center justify-center text-center border border-dashed border-mc-border rounded-xl bg-mc-card/50">
            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 text-mc-border mb-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
            <h3 class="font-bold text-xl text-white mb-2 uppercase">Nenhum resultado encontrado</h3>
-           <p class="text-mc-muted text-sm font-medium mb-4">O armazenamento nuvem está vazio ou aguardando aprovação.</p>
+           <p class="text-mc-muted text-sm font-medium mb-4">Cadastre um novo item pelo formulário.</p>
            <button onclick="openCreateModal()" class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-4 py-2 rounded text-xs uppercase transition-colors cursor-pointer">Adicionar Novo Item</button>
         </div>
      `;
@@ -322,7 +320,7 @@ function setupCreateForm() {
       e.preventDefault();
       
       const submitBtn = document.getElementById('submit-btn');
-      submitBtn.textContent = 'Enviando para o GitHub...';
+      submitBtn.textContent = 'Enviando...';
       submitBtn.disabled = true;
 
       try {
@@ -344,9 +342,9 @@ function setupCreateForm() {
 
          closeCreateModal();
          form.reset();
-         showToast('Item enviado com sucesso para o GitHub! (Aguardando approved: true)');
+         showToast('Item enviado com sucesso! Aguardando aprovação.');
       } catch (error) {
-         alert('Erro ao enviar para o GitHub: ' + error.message);
+         alert('Erro ao enviar: ' + error.message);
       } finally {
          submitBtn.textContent = 'Enviar para o GitHub';
          submitBtn.disabled = false;
