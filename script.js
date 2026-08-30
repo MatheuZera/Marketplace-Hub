@@ -2,7 +2,7 @@ let ITEMS = [];
 
 // Configuração corrigida do repositório no GitHub (apenas owner/repo para a API)
 const GITHUB_REPO = 'MatheuZera/Marketplace-Hub'; 
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = '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';
 
 const CATEGORIES = [
    { id: 'tudo', label: 'Tudo' },
