@@ -1,8 +1,7 @@
 let ITEMS = [];
 
-const GITHUB_REPO = 'MatheuZera/Marketplace-Hub'; 
-// Puxa o token injetado pelo arquivo marketplaceToken.js
-const GITHUB_TOKEN = window.GITHUB_TOKEN || '';
+const GITHUB_REPO = 'MatheuZera/Marketplace-Hub';[cite: 8]
+// GITHUB_TOKEN é injetado globalmente pelo script "marketplaceToken.js" carregado anteriormente.
 
 const CATEGORIES = [
    { id: 'tudo', label: 'Tudo' },
@@ -18,7 +17,7 @@ const CATEGORIES = [
 let activeCategory = 'tudo';
 let searchQuery = '';
 
-// 1. Carregar itens aprovados diretamente da nuvem do GitHub
+// 1. Carregar itens aprovados diretamente da nuvem do GitHub[cite: 8]
 async function fetchItems() {
    try {
       const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
@@ -35,7 +34,6 @@ async function fetchItems() {
       const jsonString = decodeURIComponent(escape(window.atob(fileData.content)));
       const allItems = JSON.parse(jsonString) || [];
       
-      // Exibe apenas os itens que possuem approved: true
       ITEMS = allItems.filter(item => item.approved === true);
    } catch (error) {
       console.warn('Aviso: Não foi possível carregar os itens do GitHub.', error);
@@ -43,7 +41,7 @@ async function fetchItems() {
    }
 }
 
-// 2. Salvar novo item diretamente na pasta cloud/items.json do GitHub
+// 2. Salvar novo item diretamente na pasta cloud/items.json do GitHub[cite: 8]
 async function saveItemToGitHub(newItem) {
    let fileSha = '';
    let existingItems = [];
@@ -62,10 +60,9 @@ async function saveItemToGitHub(newItem) {
          existingItems = JSON.parse(jsonString) || [];
       }
    } catch (e) {
-      // Se o arquivo não existir, continuará com a lista vazia para criá-lo
+      // Se o arquivo não existir, mantém a lista vazia para criá-lo
    }
 
-   // O item entra inicialmente como falso para aprovação manual
    newItem.approved = false; 
    const updatedList = [newItem, ...existingItems];
 
@@ -99,7 +96,7 @@ async function saveItemToGitHub(newItem) {
    return await putRes.json();
 }
 
-// Inicialização
+// Inicialização[cite: 8]
 document.addEventListener('DOMContentLoaded', async () => {
    await fetchItems();
    renderCategories();
