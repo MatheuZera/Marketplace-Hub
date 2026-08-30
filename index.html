@@ -1,233 +1,130 @@
-<!doctype html>
-<html lang="pt-BR" class="h-full">
-
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minecraft Community Hub v2</title>
-  <meta name="description" content="O Marketplace da Comunidade para Mundos, Addons, Mods, Skins e Servidores" />
-  <link rel="stylesheet" href="./style.css" />
+    <meta charset="UTF-8">
+    <title>MarketplaceHub v1</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+<body class="bg-mc-dark text-white min-h-screen flex flex-col">
 
-<body class="bg-mc-dark text-white font-sans flex flex-col min-h-full overflow-x-hidden">
-
-  <!-- NAVBAR -->
-  <nav class="bg-mc-dark border-b border-mc-border sticky top-0 z-40">
-    <div class="max-w-[1400px] mx-auto px-4 md:px-6 h-[80px] flex items-center justify-between">
-      <div class="flex items-center gap-6">
-        <a href="#" class="flex items-center gap-3 text-white">
-          <div
-            class="w-10 h-10 bg-mc-green rounded-sm shadow-[4px_4px_0px_0px_var(--color-mc-green-hover)] flex items-center justify-center font-bold text-xl">
-            C
-          </div>
-          <h1 class="text-2xl font-black tracking-tighter uppercase hidden sm:block">Craft Hub <span
-              class="text-mc-green">Market</span></h1>
-        </a>
-
-        <div class="hidden md:flex items-center gap-6 ml-4">
-          <a href="#" class="font-bold text-sm text-mc-green uppercase tracking-wide">Marketplace</a>
-          <a href="#"
-            class="font-bold text-sm text-mc-muted hover:text-white transition-colors uppercase tracking-wide">Comunidade</a>
-          <a href="#"
-            class="font-bold text-sm text-mc-muted hover:text-white transition-colors uppercase tracking-wide">Servidores</a>
+    <!-- Header -->
+    <header class="border-b border-mc-border bg-mc-card sticky top-0 z-40">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-6 h-[80px] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-mc-green rounded-lg flex items-center justify-center font-black text-xl shadow-lg">M</div>
+                <h1 class="text-xl font-black uppercase tracking-wider">Marketplace<span class="text-mc-green">Hub</span></h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="openCreateModal()" class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-4 py-2.5 rounded-lg text-xs uppercase transition-colors cursor-pointer flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Adicionar Item
+                </button>
+            </div>
         </div>
-      </div>
+    </header>
 
-      <div class="flex items-center gap-6">
-        <div class="hidden lg:flex relative w-[300px]">
-          <input id="search-input" type="text" placeholder="Buscar mundos, skins, addons..."
-            class="w-full bg-mc-card border-2 border-mc-border text-white text-sm rounded-md py-2 px-4 focus:outline-none focus:border-mc-green transition-colors" />
-          <div class="absolute right-3 top-2 text-gray-500 font-bold">/</div>
+    <!-- Main Content -->
+    <main class="max-w-[1400px] mx-auto px-4 md:px-6 py-8 flex-1 w-full">
+        
+        <!-- Barra de Pesquisa e Filtros -->
+        <div class="flex flex-col md:flex-row gap-4 mb-8 justify-between items-center">
+            <div id="category-filters" class="flex items-center gap-2 overflow-x-auto w-full pb-2 scrollbar-hide">
+                <!-- Inserido dinamicamente pelo script.js -->
+            </div>
+            <div class="w-full md:w-[300px] relative">
+                <input type="text" id="search-input" placeholder="Pesquisar itens ou criadores..." class="w-full bg-mc-card border border-mc-border rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+            </div>
         </div>
 
-        <button onclick="openCreateModal()"
-          class="bg-mc-green hover:bg-mc-green-hover text-white px-4 py-2 rounded-md text-xs font-bold uppercase transition-colors cursor-pointer flex items-center gap-2 shadow-[0_2px_0_#1B540D]">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Novo Item
-        </button>
-      </div>
-    </div>
-  </nav>
+        <!-- Grid de Produtos -->
+        <div id="marketplace-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Inserido dinamicamente pelo script.js -->
+        </div>
+    </main>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 max-w-[1400px] w-full mx-auto px-4 md:px-6 py-8 flex flex-col gap-8">
-
-    <!-- Header & Filters -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6">
-      <div>
-        <h2 class="font-black text-2xl uppercase text-white tracking-tighter">Explorar Conteúdo</h2>
-        <p class="text-mc-muted text-sm font-medium">Descubra as melhores criações da nossa comunidade.</p>
-      </div>
-
-      <div id="category-filters" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-        <!-- JS Injects Categories -->
-      </div>
+    <!-- Modal de Detalhes -->
+    <div id="details-modal" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div id="modal-content-box" class="bg-mc-card border border-mc-border rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative transform scale-95 transition-transform duration-300">
+            <!-- Preenchido via JavaScript -->
+        </div>
     </div>
 
-    <!-- Grid -->
-    <div id="marketplace-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- JS Injects Items -->
+    <!-- Modal de Criação / Envio -->
+    <div id="create-modal" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div class="bg-mc-card border border-mc-border rounded-xl max-w-lg w-full p-6 relative">
+            <h2 class="text-xl font-bold uppercase mb-4 text-white">Cadastrar Novo Item</h2>
+            <form id="create-form" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Título do Item</label>
+                    <input type="text" id="item-title" required class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Autor / Criador</label>
+                        <input type="text" id="item-author" required class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Categoria</label>
+                        <select id="item-category" class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                            <option value="mundos">Mundos</option>
+                            <option value="addons">Addons</option>
+                            <option value="mods">Mods</option>
+                            <option value="estruturas">Estruturas</option>
+                            <option value="skins">Skins</option>
+                            <option value="skin-packs">Skin-Packs</option>
+                            <option value="servidores">Servidores</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Tipo (Ex: Mapa, Pack)</label>
+                        <input type="text" id="item-type" required class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Preço (Ex: Grátis / 830)</label>
+                        <input type="text" id="item-price" required class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Avaliação (1 a 5)</label>
+                        <input type="number" step="0.1" id="item-rating" value="5.0" class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                    </div>
+                    <div class="flex items-center pt-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="item-is-coins" class="w-4 h-4 accent-mc-green">
+                            <span class="text-xs font-bold uppercase text-mc-muted">Usa Moedas (Minecoins)?</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Link da Imagem (URL Pública)</label>
+                    <input type="url" id="item-image" required placeholder="https://..." class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-mc-muted mb-1">Descrição</label>
+                    <textarea id="item-desc" rows="3" required class="w-full bg-[#111] border border-mc-border rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-mc-green resize-none"></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-3 mt-2">
+                    <button type="button" onclick="closeCreateModal()" class="bg-[#222] hover:bg-[#333] text-white font-bold px-4 py-2 rounded-lg text-xs uppercase transition-colors cursor-pointer">Cancelar</button>
+                    <button type="submit" id="submit-btn" class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-6 py-2 rounded-lg text-xs uppercase transition-colors cursor-pointer">Enviar para o GitHub</button>
+                </div>
+            </form>
+            <button onclick="closeCreateModal()" class="absolute top-4 right-4 text-mc-muted hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
     </div>
 
-  </main>
-
-  <!-- BECOME A CREATOR CTA -->
-  <section class="max-w-[1400px] w-full mx-auto px-4 md:px-6 mb-12 mt-6">
-    <div
-      class="bg-gradient-to-br from-[#38AD1B] to-[#1B540D] rounded-xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between relative overflow-hidden">
-      <div class="z-10 flex flex-col justify-center items-start">
-        <h3 class="text-3xl md:text-4xl font-black uppercase italic leading-none text-white mb-2">Você é um Criador?
-        </h3>
-        <p class="text-white/80 text-sm md:text-base mt-2 max-w-lg font-medium">
-          Publique seus mapas, mods e addons diretamente na nuvem e compartilhe com milhares de jogadores
-          instantaneamente.
-        </p>
-        <button onclick="openCreateModal()"
-          class="mt-6 bg-black hover:bg-gray-900 text-white px-6 py-3 rounded-lg text-xs font-bold uppercase w-fit transition-colors cursor-pointer shadow-lg">
-          Começar a Criar
-        </button>
-      </div>
-      <div
-        class="text-white/20 font-black text-[6rem] md:text-[10rem] absolute -right-4 -bottom-8 md:-bottom-16 select-none pointer-events-none leading-none tracking-tighter">
-        CRIAR</div>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-mc-card border border-mc-border text-white px-6 py-3 rounded-lg shadow-2xl z-[100] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3">
+        <div class="w-2 h-2 rounded-full bg-mc-green"></div>
+        <span id="toast-msg" class="text-xs font-bold uppercase">Ação realizada com sucesso!</span>
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer
-    class="max-w-[1400px] mx-auto w-full border-t border-[#333] pt-6 pb-12 px-4 md:px-6 flex flex-col md:flex-row items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest gap-4">
-    <div class="text-center md:text-left">&copy; 2026 Craft Hub Community - Authorized Marketplace Affiliate</div>
-    <div class="flex flex-wrap justify-center gap-8">
-      <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
-      <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
-      <a href="#" class="hover:text-white transition-colors">Creator Guidelines</a>
-    </div>
-  </footer>
-
-  <!-- DETAILS MODAL -->
-  <div id="details-modal"
-    class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-    <div
-      class="bg-mc-card border border-mc-border rounded-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row transform scale-95 transition-transform duration-300 relative shadow-2xl"
-      id="modal-content-box">
-      <!-- JS Injects Details -->
-    </div>
-  </div>
-
-  <!-- CREATE ITEM MODAL -->
-  <div id="create-modal"
-    class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-    <div
-      class="bg-mc-card border border-mc-border rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8 transform scale-95 transition-transform duration-300 relative shadow-2xl">
-      <div class="flex justify-between items-center mb-6 border-b border-mc-border pb-4">
-        <div>
-          <h3 class="text-xl font-black uppercase tracking-tight text-white">Publicar Novo Item</h3>
-          <p class="text-xs text-mc-muted mt-1 font-medium">O item será enviado automaticamente para o repositório do
-            projeto.</p>
-        </div>
-        <button onclick="closeCreateModal()" class="text-white hover:text-red-500 p-2 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
-
-      <form id="create-form" class="flex flex-col gap-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Título do Item</label>
-            <input type="text" id="item-title" placeholder="Ex: Cyber World" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Nome do Autor / Estúdio</label>
-            <input type="text" id="item-author" placeholder="Ex: DragonStudio" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Categoria</label>
-            <select id="item-category"
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none">
-              <option value="mundos">Mundos</option>
-              <option value="addons">Addons</option>
-              <option value="mods">Mods</option>
-              <option value="estruturas">Estruturas</option>
-              <option value="skins">Skins</option>
-              <option value="skin-packs">Skin-Packs</option>
-              <option value="servidores">Servidores</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Tag / Tipo (Ex: MUNDO)</label>
-            <input type="text" id="item-type" placeholder="MUNDO" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Preço</label>
-            <input type="text" id="item-price" placeholder="GRÁTIS ou 500" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">URL da Imagem de Capa</label>
-            <input type="text" id="item-image" placeholder="https://..." required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Avaliação (Rating 0-5)</label>
-            <input type="number" step="0.1" max="5" min="0" id="item-rating" value="4.8" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Descrição Completa</label>
-          <textarea id="item-desc" rows="3" placeholder="Detalhes sobre o arquivo..." required
-            class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none resize-none"></textarea>
-        </div>
-
-        <div class="flex items-center gap-3 pt-2">
-          <input type="checkbox" id="item-is-coins" class="w-4 h-4 accent-mc-green cursor-pointer" />
-          <label for="item-is-coins" class="text-xs font-bold text-gray-300 uppercase cursor-pointer">Preço cobrado em
-            Moedas (Coins)</label>
-        </div>
-
-        <div class="flex justify-end gap-3 mt-4 border-t border-mc-border pt-4">
-          <button type="button" onclick="closeCreateModal()"
-            class="bg-transparent hover:bg-white/5 text-gray-300 font-bold px-5 py-2.5 rounded text-xs uppercase transition-colors cursor-pointer">Cancelar</button>
-          <button type="submit" id="submit-btn"
-            class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-6 py-2.5 rounded text-xs uppercase transition-colors cursor-pointer shadow-[0_3px_0_#1B540D]">Enviar
-            para o GitHub</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast"
-    class="fixed bottom-4 right-4 bg-mc-green text-white px-6 py-4 rounded-md shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] font-bold flex items-center gap-3">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <path d="m9 11 3 3L22 4" />
-    </svg>
-    <span id="toast-msg" class="uppercase tracking-wide">Ação realizada com sucesso!</span>
-  </div>
-  
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="./script.js"></script>
+    <!-- Scripts de Configuração e Lógica (Sem Firebase) -->
+    <script src="marketplaceToken.js"></script>
+    <script src="script.js"></script>
 </body>
-
 </html>
