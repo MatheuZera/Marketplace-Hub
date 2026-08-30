@@ -1,19 +1,8 @@
-// Configuração do Firebase do seu projeto
-const firebaseConfig = {
-   apiKey: "AIzaSyC7X-imGSq2JgWGQFWKOY18gAPEUAdxP64",
-   authDomain: "marketplacehub-7770a.firebaseapp.com",
-   projectId: "marketplacehub-7770a",
-   storageBucket: "marketplacehub-7770a.firebasestorage.app",
-   messagingSenderId: "299964639548",
-   appId: "1:299964639548:web:8f1bb7fd54c26569d0d639",
-   measurementId: "G-Q7X5NJ4ZST"
-};
-
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 let ITEMS = [];
+
+const GITHUB_REPO = 'MatheuZera/Marketplace-Hub'; 
+// Puxa o token injetado pelo arquivo marketplaceToken.js
+const GITHUB_TOKEN = window.GITHUB_TOKEN || '';
 
 const CATEGORIES = [
    { id: 'tudo', label: 'Tudo' },
@@ -29,21 +18,85 @@ const CATEGORIES = [
 let activeCategory = 'tudo';
 let searchQuery = '';
 
-// 1. Carregar itens direto do Firestore
+// 1. Carregar itens aprovados diretamente da nuvem do GitHub
 async function fetchItems() {
    try {
-      const snapshot = await db.collection('items').get();
-      ITEMS = snapshot.docs.map(doc => ({ firebaseId: doc.id, ...doc.data() }));
+      const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
+         headers: { 'Accept': 'application/vnd.github.v3+json' }
+      });
+      
+      if (!response.ok) {
+         console.warn('Arquivo cloud/items.json ainda não encontrado no repositório. Será criado no primeiro envio.');
+         ITEMS = [];
+         return;
+      }
+      
+      const fileData = await response.json();
+      const jsonString = decodeURIComponent(escape(window.atob(fileData.content)));
+      const allItems = JSON.parse(jsonString) || [];
+      
+      // Exibe apenas os itens que possuem approved: true
+      ITEMS = allItems.filter(item => item.approved === true);
    } catch (error) {
-      console.warn('Erro ao carregar do Firestore:', error);
+      console.warn('Aviso: Não foi possível carregar os itens do GitHub.', error);
       ITEMS = [];
    }
 }
 
-// 2. Salvar novo item direto no Firestore
-async function saveItemToFirebase(newItem) {
-   newItem.approved = true; 
-   await db.collection('items').add(newItem);
+// 2. Salvar novo item diretamente na pasta cloud/items.json do GitHub
+async function saveItemToGitHub(newItem) {
+   let fileSha = '';
+   let existingItems = [];
+   
+   try {
+      const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
+         headers: { 
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': `token ${GITHUB_TOKEN}`
+         }
+      });
+      if (getRes.ok) {
+         const fileData = await getRes.json();
+         fileSha = fileData.sha;
+         const jsonString = decodeURIComponent(escape(window.atob(fileData.content)));
+         existingItems = JSON.parse(jsonString) || [];
+      }
+   } catch (e) {
+      // Se o arquivo não existir, continuará com a lista vazia para criá-lo
+   }
+
+   // O item entra inicialmente como falso para aprovação manual
+   newItem.approved = false; 
+   const updatedList = [newItem, ...existingItems];
+
+   const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(updatedList, null, 2))));
+
+   const bodyData = {
+      message: `Adicionar item pendente: ${newItem.title}`,
+      content: contentEncoded,
+      branch: 'main'
+   };
+   
+   if (fileSha) {
+      bodyData.sha = fileSha;
+   }
+
+   const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
+      method: 'PUT',
+      headers: {
+         'Authorization': `token ${GITHUB_TOKEN}`,
+         'Content-Type': 'application/json',
+         'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify(bodyData)
+   });
+
+   if (!putRes.ok) {
+      const errData = await putRes.json();
+      throw new Error(errData.message || 'Erro ao salvar no GitHub.');
+   }
+
+   return await putRes.json();
 }
 
 // Inicialização
@@ -104,7 +157,7 @@ function renderGrid() {
         <div class="col-span-1 sm:col-span-2 lg:col-span-4 py-20 flex flex-col items-center justify-center text-center border border-dashed border-mc-border rounded-xl bg-mc-card/50">
            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 text-mc-border mb-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
            <h3 class="font-bold text-xl text-white mb-2 uppercase">Nenhum resultado encontrado</h3>
-           <p class="text-mc-muted text-sm font-medium mb-4">O banco de dados está vazio ou aguardando o primeiro item.</p>
+           <p class="text-mc-muted text-sm font-medium mb-4">O armazenamento nuvem está vazio ou aguardando aprovação.</p>
            <button onclick="openCreateModal()" class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-4 py-2 rounded text-xs uppercase transition-colors cursor-pointer">Adicionar Novo Item</button>
         </div>
      `;
@@ -269,7 +322,7 @@ function setupCreateForm() {
       e.preventDefault();
       
       const submitBtn = document.getElementById('submit-btn');
-      submitBtn.textContent = 'Salvando no Firebase...';
+      submitBtn.textContent = 'Enviando para o GitHub...';
       submitBtn.disabled = true;
 
       try {
@@ -287,17 +340,15 @@ function setupCreateForm() {
             desc: document.getElementById('item-desc').value
          };
 
-         await saveItemToFirebase(newItem);
-         await fetchItems(); 
-         renderGrid();
+         await saveItemToGitHub(newItem);
 
          closeCreateModal();
          form.reset();
-         showToast('Item publicado com sucesso no Firebase!');
+         showToast('Item enviado com sucesso para o GitHub! (Aguardando approved: true)');
       } catch (error) {
-         alert('Erro ao salvar no Firebase: ' + error.message);
+         alert('Erro ao enviar para o GitHub: ' + error.message);
       } finally {
-         submitBtn.textContent = 'Enviar';
+         submitBtn.textContent = 'Enviar para o GitHub';
          submitBtn.disabled = false;
       }
    });
