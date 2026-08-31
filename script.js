@@ -1,7 +1,14 @@
-// Configurações do Repositório GitHub
-const REPO_OWNER = 'MatheuZera';
-const REPO_NAME = 'Marketplace-Hub';
-const FILE_PATH = 'cloud/items.json';
+// script.js - Lógica Principal Integrada com cloud/config.js e cloud/items.json
+
+// Verifica se as configurações globais foram carregadas
+if (typeof CLOUD_CONFIG === 'undefined') {
+    console.error("Erro crítico: cloud/config.js não foi carregado antes do script.js!");
+}
+
+const REPO_OWNER = CLOUD_CONFIG.REPO_OWNER;
+const REPO_NAME = CLOUD_CONFIG.REPO_NAME;
+const FILE_PATH = CLOUD_CONFIG.FILE_PATH;
+const CATEGORIES = CLOUD_CONFIG.CATEGORIES;
 
 // ATENÇÃO: Certifique-se de que a variável GITHUB_TOKEN esteja carregada via script privado no HTML antes deste arquivo.
 
@@ -9,17 +16,6 @@ let ITEMS = [];
 let fileSha = ''; // Armazena o hash do arquivo para permitir atualizações
 let activeCategory = 'tudo';
 let searchQuery = '';
-
-const CATEGORIES = [
-   { id: 'tudo', label: 'Tudo' },
-   { id: 'mundos', label: 'Mundos' },
-   { id: 'addons', label: 'Addons' },
-   { id: 'mods', label: 'Mods' },
-   { id: 'estruturas', label: 'Estruturas' },
-   { id: 'skins', label: 'Skins' },
-   { id: 'skin-packs', label: 'Skin-Packs' },
-   { id: 'servidores', label: 'Servidores' }
-];
 
 // --- 1. COMUNICAÇÃO COM A NUVEM (GITHUB API) ---
 
@@ -71,7 +67,7 @@ async function saveItemToGitHub(newItem) {
     const updatedContent = encodeB64(JSON.stringify(updatedList, null, 2));
 
     const payload = {
-        message: `Adicionando item: ${newItem.title}`,
+        message: `Adicionando item via modal: ${newItem.title}`,
         content: updatedContent,
         branch: 'main'
     };
