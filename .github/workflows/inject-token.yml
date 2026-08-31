@@ -1,0 +1,24 @@
+name: Inject GitHub Token
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create token file from Repository Secret
+        run: |
+          mkdir -p cloud
+          echo "const GH_TOKEN = '${{ secrets.GH_TOKEN }}';" > cloud/token.js
+
+      - name: Commit and push token file
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add cloud/token.js
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-inject GH_TOKEN [skip ci]" && git push)
