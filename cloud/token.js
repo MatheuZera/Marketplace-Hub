@@ -1,1 +1,1 @@
-const GH_TOKEN = 'github_pat_seu_token_aqui';
+const GH_TOKEN = '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';
