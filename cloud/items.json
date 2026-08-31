@@ -1,1 +1,16 @@
-.
+[
+  {
+    "id": "1",
+    "title": "Exemplo de Mundo Minecraft",
+    "author": "MatheuZera",
+    "category": "mundos",
+    "type": "MAPA",
+    "price": "Grátis",
+    "isCoins": false,
+    "rating": 5.0,
+    "plays": "1.2k",
+    "image": "https://images.unsplash.com/photo-1627398424546-7705572f9dfa?q=80&w=1000&auto=format&fit=crop",
+    "desc": "Um mundo incrível gerado para testar o painel do marketplace sincronizado via nuvem.",
+    "approved": true
+  }
+]
