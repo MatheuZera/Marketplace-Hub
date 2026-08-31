@@ -1,7 +1,14 @@
-let ITEMS = [];
+// Configurações do Repositório GitHub
+const REPO_OWNER = 'MatheuZera';
+const REPO_NAME = 'Marketplace-Hub';
+const FILE_PATH = 'cloud/items.json';
 
-const GITHUB_REPO = 'MatheuZera/Marketplace-Hub';[cite: 8]
-// GITHUB_TOKEN é injetado globalmente pelo script "marketplaceToken.js" carregado anteriormente.
+// ATENÇÃO: Certifique-se de que a variável GITHUB_TOKEN esteja carregada via script privado no HTML antes deste arquivo.
+
+let ITEMS = [];
+let fileSha = ''; // Armazena o hash do arquivo para permitir atualizações
+let activeCategory = 'tudo';
+let searchQuery = '';
 
 const CATEGORIES = [
    { id: 'tudo', label: 'Tudo' },
@@ -14,91 +21,87 @@ const CATEGORIES = [
    { id: 'servidores', label: 'Servidores' }
 ];
 
-let activeCategory = 'tudo';
-let searchQuery = '';
+// --- 1. COMUNICAÇÃO COM A NUVEM (GITHUB API) ---
 
-// 1. Carregar itens aprovados diretamente da nuvem do GitHub[cite: 8]
-async function fetchItems() {
-   try {
-      const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
-         headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-      
-      if (!response.ok) {
-         console.warn('Arquivo cloud/items.json ainda não encontrado no repositório. Será criado no primeiro envio.');
-         ITEMS = [];
-         return;
-      }
-      
-      const fileData = await response.json();
-      const jsonString = decodeURIComponent(escape(window.atob(fileData.content)));
-      const allItems = JSON.parse(jsonString) || [];
-      
-      ITEMS = allItems.filter(item => item.approved === true);
-   } catch (error) {
-      console.warn('Aviso: Não foi possível carregar os itens do GitHub.', error);
-      ITEMS = [];
-   }
+// Utilitários para converter Base64 sem quebrar acentos e emojis
+const decodeB64 = (str) => decodeURIComponent(escape(atob(str)));
+const encodeB64 = (str) => btoa(unescape(encodeURIComponent(str)));
+
+async function fetchItemsFromGitHub() {
+    if (typeof GITHUB_TOKEN === 'undefined') {
+        console.error("Erro: GITHUB_TOKEN não definido. Verifique a importação do token privado.");
+        return;
+    }
+
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+    
+    try {
+        const response = await fetch(apiUrl, {
+            headers: { 
+                'Authorization': `Bearer ${GITHUB_TOKEN}`, 
+                'Accept': 'application/vnd.github.v3+json' 
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            fileSha = data.sha; // Salva o identificador para futuros commits
+            const content = decodeB64(data.content);
+            const allItems = JSON.parse(content);
+            ITEMS = allItems.filter(item => item.approved === true);
+        } else if (response.status === 404) {
+            console.warn("Arquivo items.json ainda não existe na nuvem. Será criado no primeiro envio.");
+            ITEMS = [];
+        } else {
+            throw new Error(`Falha ao buscar dados: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Erro ao carregar itens da nuvem:", error);
+        ITEMS = []; // Fallback para array vazio em caso de erro crítico
+    }
 }
 
-// 2. Salvar novo item diretamente na pasta cloud/items.json do GitHub[cite: 8]
 async function saveItemToGitHub(newItem) {
-   let fileSha = '';
-   let existingItems = [];
-   
-   try {
-      const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
-         headers: { 
+    if (typeof GITHUB_TOKEN === 'undefined') throw new Error("Token ausente");
+
+    newItem.approved = true; // Aprovação automática configurada
+    const updatedList = [newItem, ...ITEMS]; // Novo card aparece primeiro
+    
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+    const updatedContent = encodeB64(JSON.stringify(updatedList, null, 2));
+
+    const payload = {
+        message: `Adicionando item: ${newItem.title}`,
+        content: updatedContent,
+        branch: 'main'
+    };
+    if (fileSha) payload.sha = fileSha; // Exigência do GitHub para sobrescrever arquivo
+
+    const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${GITHUB_TOKEN}`,
             'Accept': 'application/vnd.github.v3+json',
-            'Authorization': `token ${GITHUB_TOKEN}`
-         }
-      });
-      if (getRes.ok) {
-         const fileData = await getRes.json();
-         fileSha = fileData.sha;
-         const jsonString = decodeURIComponent(escape(window.atob(fileData.content)));
-         existingItems = JSON.parse(jsonString) || [];
-      }
-   } catch (e) {
-      // Se o arquivo não existir, mantém a lista vazia para criá-lo
-   }
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
 
-   newItem.approved = false; 
-   const updatedList = [newItem, ...existingItems];
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+    }
 
-   const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(updatedList, null, 2))));
-
-   const bodyData = {
-      message: `Adicionar item pendente: ${newItem.title}`,
-      content: contentEncoded,
-      branch: 'main'
-   };
-   
-   if (fileSha) {
-      bodyData.sha = fileSha;
-   }
-
-   const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/cloud/items.json`, {
-      method: 'PUT',
-      headers: {
-         'Authorization': `token ${GITHUB_TOKEN}`,
-         'Content-Type': 'application/json',
-         'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify(bodyData)
-   });
-
-   if (!putRes.ok) {
-      const errData = await putRes.json();
-      throw new Error(errData.message || 'Erro ao salvar no GitHub.');
-   }
-
-   return await putRes.json();
+    const responseData = await response.json();
+    fileSha = responseData.content.sha; // Atualiza o hash local sem precisar recarregar a página
+    ITEMS = updatedList; // Atualiza a memória local
+    renderGrid(); // Redesenha a tela
 }
 
-// Inicialização[cite: 8]
+// --- 2. INICIALIZAÇÃO E UI ---
+
 document.addEventListener('DOMContentLoaded', async () => {
-   await fetchItems();
+   await fetchItemsFromGitHub();
    renderCategories();
    renderGrid();
    setupSearch();
@@ -154,7 +157,7 @@ function renderGrid() {
         <div class="col-span-1 sm:col-span-2 lg:col-span-4 py-20 flex flex-col items-center justify-center text-center border border-dashed border-mc-border rounded-xl bg-mc-card/50">
            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 text-mc-border mb-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
            <h3 class="font-bold text-xl text-white mb-2 uppercase">Nenhum resultado encontrado</h3>
-           <p class="text-mc-muted text-sm font-medium mb-4">O armazenamento nuvem está vazio ou aguardando aprovação.</p>
+           <p class="text-mc-muted text-sm font-medium mb-4">Nenhum item cadastrado nesta categoria.</p>
            <button onclick="openCreateModal()" class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-4 py-2 rounded text-xs uppercase transition-colors cursor-pointer">Adicionar Novo Item</button>
         </div>
      `;
@@ -245,6 +248,8 @@ function renderGrid() {
   }).join('');
 }
 
+// --- 3. MODAIS E FORMULÁRIO ---
+
 window.openModal = (id) => {
    const item = ITEMS.find(i => i.id === id);
    if (!item) return;
@@ -319,7 +324,8 @@ function setupCreateForm() {
       e.preventDefault();
       
       const submitBtn = document.getElementById('submit-btn');
-      submitBtn.textContent = 'Enviando para o GitHub...';
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Enviando para Nuvem...';
       submitBtn.disabled = true;
 
       try {
@@ -341,11 +347,12 @@ function setupCreateForm() {
 
          closeCreateModal();
          form.reset();
-         showToast('Item enviado com sucesso para o GitHub! (Aguardando approved: true)');
+         showToast('Item sincronizado com sucesso no GitHub!');
       } catch (error) {
-         alert('Erro ao enviar para o GitHub: ' + error.message);
+         console.error(error);
+         alert('Erro ao salvar no GitHub: ' + error.message);
       } finally {
-         submitBtn.textContent = 'Enviar para o GitHub';
+         submitBtn.textContent = originalText;
          submitBtn.disabled = false;
       }
    });
@@ -353,7 +360,7 @@ function setupCreateForm() {
 
 window.downloadItem = (id) => {
    window.closeModal();
-   showToast('Ação realizada com sucesso!');
+   showToast('Download iniciado com sucesso!');
 };
 
 function showToast(message) {
