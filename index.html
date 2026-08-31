@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minecraft Community Hub v1</title>
+  <title>Minecraft Community Hub v2</title>
   <meta name="description" content="O Marketplace da Comunidade para Mundos, Addons, Mods, Skins e Servidores" />
   <link rel="stylesheet" href="./style.css" />
 </head>
@@ -225,9 +225,11 @@
     <span id="toast-msg" class="uppercase tracking-wide">Ação realizada com sucesso!</span>
   </div>
 
-  <script src="cloud/config.js"></script>
-  <script src="cloud/token.js"></script>
-  <script src="script.js"></script>
+<!-- Carrega o token gerado pela Action primeiro -->
+  <script src="./cloud/token.js"></script>
+  
+  <!-- Carrega o script principal do site depois -->
+  <script src="./script.js"></script>
 </body>
 
 </html>
