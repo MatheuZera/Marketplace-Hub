@@ -1,31 +1,34 @@
-// script.js - Lógica Principal Integrada com cloud/config.js e cloud/items.json
+// Configurações do Repositório GitHub
+const REPO_OWNER = 'MatheuZera';
+const REPO_NAME = 'Marketplace-Hub';
+const FILE_PATH = 'cloud/items.json';
 
-// Verifica se as configurações globais foram carregadas
-if (typeof CLOUD_CONFIG === 'undefined') {
-    console.error("Erro crítico: cloud/config.js não foi carregado antes do script.js!");
-}
-
-const REPO_OWNER = CLOUD_CONFIG.REPO_OWNER;
-const REPO_NAME = CLOUD_CONFIG.REPO_NAME;
-const FILE_PATH = CLOUD_CONFIG.FILE_PATH;
-const CATEGORIES = CLOUD_CONFIG.CATEGORIES;
-
-// ATENÇÃO: Certifique-se de que a variável GITHUB_TOKEN esteja carregada via script privado no HTML antes deste arquivo.
+// Utilizando GH_TOKEN conforme o secret configurado no repositório
 
 let ITEMS = [];
 let fileSha = ''; // Armazena o hash do arquivo para permitir atualizações
 let activeCategory = 'tudo';
 let searchQuery = '';
 
+const CATEGORIES = [
+   { id: 'tudo', label: 'Tudo' },
+   { id: 'mundos', label: 'Mundos' },
+   { id: 'addons', label: 'Addons' },
+   { id: 'mods', label: 'Mods' },
+   { id: 'estruturas', label: 'Estruturas' },
+   { id: 'skins', label: 'Skins' },
+   { id: 'skin-packs', label: 'Skin-Packs' },
+   { id: 'servidores', label: 'Servidores' }
+];
+
 // --- 1. COMUNICAÇÃO COM A NUVEM (GITHUB API) ---
 
-// Utilitários para converter Base64 sem quebrar acentos e emojis
 const decodeB64 = (str) => decodeURIComponent(escape(atob(str)));
 const encodeB64 = (str) => btoa(unescape(encodeURIComponent(str)));
 
 async function fetchItemsFromGitHub() {
-    if (typeof GITHUB_TOKEN === 'undefined') {
-        console.error("Erro: GITHUB_TOKEN não definido. Verifique a importação do token privado.");
+    if (typeof GH_TOKEN === 'undefined') {
+        console.error("Erro: GH_TOKEN não definido. Verifique a importação do token gerado pela Action.");
         return;
     }
 
@@ -34,14 +37,14 @@ async function fetchItemsFromGitHub() {
     try {
         const response = await fetch(apiUrl, {
             headers: { 
-                'Authorization': `Bearer ${GITHUB_TOKEN}`, 
+                'Authorization': `Bearer ${GH_TOKEN}`, 
                 'Accept': 'application/vnd.github.v3+json' 
             }
         });
 
         if (response.ok) {
             const data = await response.json();
-            fileSha = data.sha; // Salva o identificador para futuros commits
+            fileSha = data.sha;
             const content = decodeB64(data.content);
             const allItems = JSON.parse(content);
             ITEMS = allItems.filter(item => item.approved === true);
@@ -53,30 +56,30 @@ async function fetchItemsFromGitHub() {
         }
     } catch (error) {
         console.error("Erro ao carregar itens da nuvem:", error);
-        ITEMS = []; // Fallback para array vazio em caso de erro crítico
+        ITEMS = [];
     }
 }
 
 async function saveItemToGitHub(newItem) {
-    if (typeof GITHUB_TOKEN === 'undefined') throw new Error("Token ausente");
+    if (typeof GH_TOKEN === 'undefined') throw new Error("Token ausente");
 
-    newItem.approved = true; // Aprovação automática configurada
-    const updatedList = [newItem, ...ITEMS]; // Novo card aparece primeiro
+    newItem.approved = true; 
+    const updatedList = [newItem, ...ITEMS]; 
     
     const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
     const updatedContent = encodeB64(JSON.stringify(updatedList, null, 2));
 
     const payload = {
-        message: `Adicionando item via modal: ${newItem.title}`,
+        message: `Adicionando item: ${newItem.title}`,
         content: updatedContent,
         branch: 'main'
     };
-    if (fileSha) payload.sha = fileSha; // Exigência do GitHub para sobrescrever arquivo
+    if (fileSha) payload.sha = fileSha;
 
     const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
-            'Authorization': `Bearer ${GITHUB_TOKEN}`,
+            'Authorization': `Bearer ${GH_TOKEN}`,
             'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json'
         },
@@ -89,9 +92,9 @@ async function saveItemToGitHub(newItem) {
     }
 
     const responseData = await response.json();
-    fileSha = responseData.content.sha; // Atualiza o hash local sem precisar recarregar a página
-    ITEMS = updatedList; // Atualiza a memória local
-    renderGrid(); // Redesenha a tela
+    fileSha = responseData.content.sha;
+    ITEMS = updatedList;
+    renderGrid();
 }
 
 // --- 2. INICIALIZAÇÃO E UI ---
