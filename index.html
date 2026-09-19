@@ -1,235 +1,2685 @@
-<!doctype html>
-<html lang="pt-BR" class="h-full">
+<!DOCTYPE html>
+<html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minecraft Community Hub v1</title>
-  <meta name="description" content="O Marketplace da Comunidade para Mundos, Addons, Mods, Skins e Servidores" />
-  <link rel="stylesheet" href="./style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock - Marketplace Completo</title>
+    <style>
+        :root {
+            --bg-main: #3c3d3f;
+            --bg-darker: #2b2c2e;
+            --bg-sidebar: #313234;
+            --bg-topbar: #232325;
+            --bg-card: #444547;
+            --bg-card-hover: #4f5052;
+            --border-dark: #1b1b1b;
+            --border-light: #6a6a6a;
+            --text-light: #ffffff;
+            --text-gray: #b0b0b0;
+            --gold-coin: #fbc02d;
+            --green-btn: #2e7d32;
+            --green-btn-hover: #388e3c;
+            --purple-realms: #512da8;
+            --purple-realms-light: #7c4dff;
+            --pass-yellow: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+                url('https://images.alphacoders.com/132/1328396.png') no-repeat center center fixed;
+            background-size: cover;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-light);
+        }
+
+        .window {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            background-color: var(--bg-topbar);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            border-bottom: 2px solid var(--border-dark);
+            flex-shrink: 0;
+            z-index: 30;
+        }
+
+        .top-left-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn,
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .hamburger-btn:hover,
+        .back-btn:hover {
+            background: #444;
+        }
+
+        .top-bar h1 {
+            color: white;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .top-right-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .library-btn {
+            background-color: #444547;
+            color: white;
+            border: 2px solid var(--border-dark);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .library-btn:hover {
+            background-color: #555658;
+        }
+
+        .coins-display {
+            background-color: #1a1a1a;
+            border: 2px solid var(--border-dark);
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .coin-icon {
+            color: var(--gold-coin);
+            font-weight: bold;
+        }
+
+        .coin-add {
+            background: #444;
+            border: 1px solid #666;
+            color: white;
+            padding: 0 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .search-box {
+            background-color: #1a1a1a;
+            border: 2px solid var(--border-dark);
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 220px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 11px;
+            width: 100%;
+            outline: none;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .marketplace-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* BARRA LATERAL DA ESQUERDA */
+        .side-nav {
+            width: 68px;
+            background-color: var(--bg-sidebar);
+            border-right: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            padding: 12px 0;
+            gap: 6px;
+            flex-shrink: 0;
+            justify-content: space-between;
+            z-index: 20;
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+        }
+
+        .side-nav.expanded {
+            width: 220px;
+        }
+
+        .side-nav-top {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .nav-icon-btn {
+            height: 48px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 18px;
+            gap: 16px;
+            cursor: pointer;
+            color: var(--text-gray);
+            flex-shrink: 0;
+            border-left: 4px solid transparent;
+            white-space: nowrap;
+        }
+
+        .nav-icon-btn svg {
+            flex-shrink: 0;
+        }
+
+        .nav-icon-btn .nav-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .side-nav.expanded .nav-label {
+            opacity: 1;
+        }
+
+        .nav-icon-btn:hover {
+            background-color: var(--bg-card-hover);
+            color: white;
+        }
+
+        .nav-icon-btn.active {
+            background-color: var(--bg-main);
+            border-left-color: #ffcc00;
+            color: white;
+        }
+
+        .vestiario-container {
+            width: 100%;
+            padding: 0 8px;
+        }
+
+        .vestiario-btn {
+            width: 100%;
+            background: #444;
+            border: 2px solid #1b1b1b;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 10px 4px;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vestiario-btn:hover {
+            background: #555;
+        }
+
+        /* ÁREA DE CONTEÚDO */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+            background-color: var(--bg-main);
+        }
+
+        .market-view {
+            display: none;
+            flex-direction: column;
+            padding: 20px 25px;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .market-view.active {
+            display: flex;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* GRID DE CARDS PADRÃO */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .item-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            overflow: hidden;
+            text-align: left;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            position: relative;
+        }
+
+        .item-card:hover {
+            background-color: var(--bg-card-hover);
+            border-color: #888;
+            transform: translateY(-2px);
+        }
+
+        .item-thumb {
+            width: 100%;
+            height: 125px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border-bottom: 2px solid var(--border-dark);
+            display: flex;
+            align-items: flex-end;
+            padding: 6px;
+        }
+
+        .item-badge-addon {
+            background: #ffcc00;
+            color: #000;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 3px 8px;
+            border: 2px solid var(--border-dark);
+            text-transform: uppercase;
+            font-family: monospace;
+        }
+
+        .item-card-info {
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .item-card-info h5 {
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-card-info span {
+            font-size: 10px;
+            color: var(--text-gray);
+        }
+
+        .item-rating {
+            font-size: 11px;
+            color: #ffca28;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* ESTILOS DA ABA CULTURA POP */
+        .cultura-hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 12px;
+        }
+
+        .cultura-main-banner {
+            background: linear-gradient(135deg, #1e3a8a, #854d0e);
+            border: 2px solid var(--border-dark);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 270px;
+        }
+
+        .cultura-main-banner:hover {
+            border-color: #888;
+        }
+
+        .cultura-main-banner .big-addon-badge {
+            position: absolute;
+            left: 12px;
+            bottom: 60px;
+            background-color: transparent;
+            color: #ffcc00;
+            border: 3px solid #ffcc00;
+            font-size: 22px;
+            font-weight: 900;
+            padding: 4px 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .cultura-banner-footer {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 10px 14px;
+            border-top: 2px solid var(--border-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .cultura-side-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* CARROSSEL */
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .carousel-btn {
+            background: #232325;
+            border: 2px solid var(--border-dark);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            width: 28px;
+            height: 100%;
+            min-height: 120px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-btn:hover {
+            background: #444;
+        }
+
+        .horizontal-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px;
+            scroll-behavior: smooth;
+            width: 100%;
+        }
+
+        .horizontal-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .horizontal-row .item-card {
+            min-width: 190px;
+            flex-shrink: 0;
+        }
+
+        /* BANNER MARKETPLACE PASS NO HOME */
+        .pass-banner {
+            background-color: #ffe169;
+            color: #2c2400;
+            padding: 14px 18px;
+            border: 2px solid var(--border-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .pass-banner-text h4 {
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .pass-banner-text p {
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        /* SUPER CARDS E CATEGORIAS (HOME) */
+        .home-super-card {
+            background: linear-gradient(135deg, #78350f, #451a03);
+            border: 2px solid var(--border-dark);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 240px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .home-super-card:hover {
+            border-color: #fff;
+        }
+
+        .home-super-tag {
+            background-color: #ffcc00;
+            color: #000;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            width: fit-content;
+            border: 2px solid var(--border-dark);
+            margin-bottom: 10px;
+        }
+
+        .category-shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .category-shortcut-btn {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-shortcut-btn:hover {
+            background-color: var(--bg-card-hover);
+            border-color: #aaa;
+        }
+
+        /* ESTILOS ESPECÍFICOS DO MARKETPLACE PASS PAGE */
+        .pass-page-layout {
+            display: flex;
+            height: 100%;
+            margin: -20px -25px;
+            background-color: #2b2c2e;
+        }
+
+        .pass-sub-sidebar {
+            width: 220px;
+            background-color: #232325;
+            border-right: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            padding: 16px 12px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .pass-menu-item {
+            background-color: #444547;
+            border: 2px solid var(--border-dark);
+            color: white;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.1s ease;
+        }
+
+        .pass-menu-item:hover {
+            background-color: #555658;
+        }
+
+        .pass-menu-item.active {
+            background-color: #f59e0b;
+            color: #000000;
+            border-color: var(--border-dark);
+        }
+
+        .pass-content-panel {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: #1e1f21;
+        }
+
+        .pass-sub-view {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .pass-sub-view.active {
+            display: flex;
+        }
+
+        .pass-header-strip {
+            background-color: #f59e0b;
+            color: #000;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border: 2px solid var(--border-dark);
+        }
+
+        .pass-hero-banner {
+            background: linear-gradient(135deg, #111827, #1f2937);
+            border: 2px solid var(--border-dark);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 16px;
+        }
+
+        .pass-hero-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #f59e0b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .pass-trial-btn {
+            background-color: #e5e7eb;
+            color: #000;
+            border: 2px solid var(--border-dark);
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pass-trial-btn:hover {
+            background-color: #ffffff;
+        }
+
+        .pass-info-badge {
+            background-color: #f59e0b;
+            color: #000;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid var(--border-dark);
+            width: 100%;
+        }
+
+        .pass-details-box {
+            display: flex;
+            gap: 20px;
+            background-color: #2b2c2e;
+            border: 2px solid var(--border-dark);
+            padding: 20px;
+            align-items: flex-start;
+        }
+
+        .pass-collage-img {
+            width: 220px;
+            height: 160px;
+            background: #444;
+            border: 2px solid var(--border-dark);
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 2px;
+        }
+
+        .pass-collage-thumb {
+            background-size: cover;
+            background-position: center;
+        }
+
+        .pass-bullet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 11px;
+            color: #d1d5db;
+        }
+
+        .pass-bullet-list li {
+            list-style: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .pass-bullet-list li::before {
+            content: "•";
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .pass-faq-card {
+            background-color: #2b2c2e;
+            border: 2px solid var(--border-dark);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pass-faq-card h4 {
+            font-size: 13px;
+            font-weight: 900;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .pass-faq-card p {
+            font-size: 11px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        .pass-help-btn {
+            background-color: #e5e7eb;
+            color: #000;
+            border: 2px solid var(--border-dark);
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .pass-help-btn:hover {
+            background-color: #ffffff;
+        }
+
+        /* REALMS / REALMS PLUS */
+        .realms-container-full {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0 10px 20px 10px;
+        }
+
+        .realms-top-header-tabs {
+            background-color: #232325;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border: 2px solid var(--border-dark);
+            width: 100%;
+        }
+
+        .realms-nav-tabs {
+            display: flex;
+            gap: 12px;
+            margin: 0 auto;
+        }
+
+        .realms-tab-btn {
+            background: #333436;
+            color: #b0b0b0;
+            border: 2px solid var(--border-dark);
+            padding: 8px 24px;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .realms-tab-btn.active {
+            background: var(--purple-realms-light);
+            color: white;
+            border-color: #000;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .realms-sub-content {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .realms-sub-content.active {
+            display: flex;
+        }
+
+        .realms-hero {
+            background: linear-gradient(135deg, #1b023a 0%, #0d001e 100%);
+            border: 2px solid var(--border-dark);
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            padding: 36px 40px;
+            gap: 30px;
+            align-items: center;
+            width: 100%;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .realms-hero-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .realms-hero-info h2 {
+            font-size: 26px;
+            font-weight: 900;
+            color: #ff3366;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .realms-hero-info p {
+            font-size: 13px;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .btn-teste-gratis {
+            background-color: var(--purple-realms-light);
+            color: white;
+            border: 2px solid var(--border-dark);
+            padding: 14px 32px;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: fit-content;
+            margin-top: 8px;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .btn-teste-gratis:hover {
+            background-color: #9266ff;
+        }
+
+        .realms-hero-media {
+            width: 100%;
+            height: 220px;
+            background: #15002b url('https://images.alphacoders.com/132/1328396.png') center/cover;
+            border: 2px solid var(--border-dark);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
+        }
+
+        .realms-section-badge {
+            background-color: var(--purple-realms-light);
+            color: white;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            width: 100%;
+            border: 2px solid var(--border-dark);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .realms-feature-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            padding: 22px 26px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .realms-feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #2b2c2e;
+            border: 2px solid var(--border-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 26px;
+        }
+
+        .realms-feature-text h4 {
+            font-size: 15px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .realms-feature-text p {
+            font-size: 12px;
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .realms-social-banner {
+            background: linear-gradient(135deg, #2b2c2e 50%, #15002b 100%);
+            border: 2px solid var(--border-dark);
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            padding: 30px 40px;
+            gap: 30px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .realms-social-info h3 {
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .realms-social-info p {
+            font-size: 12px;
+            color: #d0d0d0;
+            line-height: 1.6;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .faq-item {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            background-color: var(--bg-card);
+            color: white;
+            padding: 16px 20px;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-card-hover);
+        }
+
+        .faq-answer {
+            background-color: #2b2c2e;
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease, padding 0.25s ease;
+            font-size: 12px;
+            color: #b8b8b8;
+            line-height: 1.6;
+        }
+
+        .faq-item.open .faq-answer {
+            padding: 16px 20px;
+            max-height: 250px;
+            border-top: 2px solid var(--border-dark);
+        }
+
+        /* LAYOUT DA BIBLIOTECA */
+        .library-layout {
+            display: flex;
+            height: 100%;
+            margin: -20px -25px;
+            background-color: #2b2c2e;
+        }
+
+        .library-sidebar {
+            width: 240px;
+            background-color: #232325;
+            border-right: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            padding: 16px 12px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .library-accordion-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .library-accordion-header {
+            background-color: #38393b;
+            color: white;
+            border: 2px solid var(--border-dark);
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .library-accordion-header:hover {
+            background-color: #444;
+        }
+
+        .library-sub-items {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 10px;
+            margin-top: 4px;
+        }
+
+        .library-sub-btn {
+            background-color: #2b2c2e;
+            color: var(--text-gray);
+            border: 1px solid var(--border-dark);
+            padding: 8px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .library-sub-btn:hover,
+        .library-sub-btn.active {
+            background-color: #444;
+            color: white;
+            border-color: #888;
+        }
+
+        .library-content-area {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            background-color: #1e1f21;
+        }
+
+        .library-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background-color: #2b2c2e;
+            border: 2px solid var(--border-dark);
+            padding: 10px 14px;
+        }
+
+        .library-categories-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .lib-chip {
+            background: #38393b;
+            color: white;
+            border: 1px solid var(--border-dark);
+            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .lib-chip:hover,
+        .lib-chip.active {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .library-search-input {
+            background: #1a1a1a;
+            border: 2px solid var(--border-dark);
+            color: white;
+            padding: 6px 12px;
+            font-size: 11px;
+            width: 220px;
+            outline: none;
+        }
+
+        .subscription-notice {
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 12px;
+            font-size: 13px;
+            text-align: center;
+            border: 2px solid var(--border-dark);
+            border-bottom: 2px solid #555;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .marketplace-pass-card-lib {
+            display: flex;
+            background-color: #111;
+            border: 3px solid #333;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .pass-banner-lib {
+            background: linear-gradient(135deg, #2a2200 0%, #000000 100%);
+            width: 40%;
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 3px solid #333;
+            position: relative;
+        }
+
+        .pass-logo-text-lib {
+            color: #ffaa00;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            font-family: monospace;
+            text-shadow: 2px 2px #000;
+        }
+
+        .pass-info-lib {
+            background-color: #000;
+            padding: 20px;
+            width: 60%;
+            color: #fff;
+        }
+
+        .pass-info-lib h3 {
+            margin-top: 0;
+            font-size: 15px;
+            font-family: monospace;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .pass-info-lib ul {
+            padding-left: 15px;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .pass-info-lib li {
+            margin-bottom: 6px;
+        }
+
+        .add-pass-btn-lib {
+            background-color: #dcdcdc;
+            color: #000;
+            border: 2px solid #fff;
+            padding: 10px;
+            width: 100%;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .add-pass-btn-lib:hover {
+            background-color: #fff;
+        }
+
+        /* MODAL GLOBAL */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box-full {
+            width: 900px;
+            max-width: 96%;
+            max-height: 92vh;
+            background-color: var(--bg-darker);
+            border: 2px solid var(--border-dark);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-top-bar {
+            background-color: var(--bg-topbar);
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 2px solid var(--border-dark);
+        }
+
+        .modal-main-content {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .details-hero-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 18px;
+            background-color: var(--bg-main);
+            border: 2px solid var(--border-dark);
+            padding: 16px;
+        }
+
+        .details-media-box {
+            width: 100%;
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--border-dark);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .details-info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .details-info-panel h2 {
+            font-size: 18px;
+            font-weight: 900;
+            color: white;
+        }
+
+        .details-info-panel .creator {
+            font-size: 11px;
+            color: var(--text-gray);
+            text-decoration: underline;
+        }
+
+        .details-meta-icons {
+            display: flex;
+            gap: 14px;
+            font-size: 11px;
+            color: #d0d0d0;
+            margin-top: 4px;
+        }
+
+        .details-rating-row {
+            font-size: 12px;
+            color: #ffca28;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .details-tag-badge {
+            background-color: #2e7d32;
+            color: white;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 800;
+            width: fit-content;
+            text-transform: uppercase;
+            border: 1px solid var(--border-dark);
+            margin-top: 6px;
+        }
+
+        .details-desc-box {
+            background-color: #232325;
+            border: 2px solid var(--border-dark);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .details-desc-text {
+            font-size: 11px;
+            color: #d0d0d0;
+            line-height: 1.4;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details-desc-text.expanded {
+            white-space: normal;
+        }
+
+        .btn-green {
+            background-color: var(--green-btn);
+            color: white;
+            border: 2px solid var(--border-dark);
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-green:hover {
+            background-color: var(--green-btn-hover);
+        }
+
+        .btn-show-more {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            color: white;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ==========================================================
+           @MEDIA GLOBAL E RESPONSIVO APRIMORADO
+           ========================================================== */
+        @media (max-width: 1024px) {
+            .category-shortcuts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cultura-hero-grid,
+            .realms-hero,
+            .realms-social-banner {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 820px) {
+            body {
+                overflow: auto;
+            }
+
+            .window {
+                width: 100vw;
+                height: 100vh;
+            }
+
+            .cultura-hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cultura-side-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .pass-page-layout,
+            .library-layout {
+                flex-direction: column;
+            }
+
+            .pass-sub-sidebar,
+            .library-sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .realms-hero,
+            .realms-social-banner {
+                grid-template-columns: 1fr;
+            }
+
+            .details-hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                width: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-bar {
+                padding: 0 10px;
+                gap: 6px;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .category-shortcuts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .coins-display {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            .library-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #222;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+        }
+    </style>
 </head>
 
-<body class="bg-mc-dark text-white font-sans flex flex-col min-h-full overflow-x-hidden">
+<body>
 
-  <!-- NAVBAR -->
-  <nav class="bg-mc-dark border-b border-mc-border sticky top-0 z-40">
-    <div class="max-w-[1400px] mx-auto px-4 md:px-6 h-[80px] flex items-center justify-between">
-      <div class="flex items-center gap-6">
-        <a href="#" class="flex items-center gap-3 text-white">
-          <div
-            class="w-10 h-10 bg-mc-green rounded-sm shadow-[4px_4px_0px_0px_var(--color-mc-green-hover)] flex items-center justify-center font-bold text-xl">
-            C
-          </div>
-          <h1 class="text-2xl font-black tracking-tighter uppercase hidden sm:block">Craft Hub <span
-              class="text-mc-green">Market</span></h1>
-        </a>
+    <!-- MODAL GLOBAL -->
+    <div id="card-modal" class="modal-overlay">
+        <div class="modal-box-full">
+            <div class="modal-top-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="back-btn" onclick="closeCardModal()">‹</button>
+                    <h1 id="modal-item-title-top" style="font-size: 13px; text-transform: uppercase;">Item</h1>
+                </div>
+                <div class="top-right-group">
+                    <button class="library-btn"
+                        onclick="switchMainTab('biblioteca', document.getElementById('nav-lib')); closeCardModal();">Minha
+                        Biblioteca</button>
+                    <div class="coins-display"><span class="coin-icon">🪙</span> 0</div>
+                </div>
+            </div>
 
-        <div class="hidden md:flex items-center gap-6 ml-4">
-          <a href="#" class="font-bold text-sm text-mc-green uppercase tracking-wide">Marketplace</a>
-          <a href="#"
-            class="font-bold text-sm text-mc-muted hover:text-white transition-colors uppercase tracking-wide">Comunidade</a>
-          <a href="#"
-            class="font-bold text-sm text-mc-muted hover:text-white transition-colors uppercase tracking-wide">Servidores</a>
+            <div class="modal-main-content">
+                <div class="details-hero-grid">
+                    <div class="details-media-box" id="modal-item-banner"
+                        style="background: linear-gradient(135deg, #0088cc, #003366);">
+                        <div
+                            style="width: 50px; height: 50px; background: rgba(0,0,0,0.7); border: 2px solid #fff; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer;">
+                            ▶</div>
+                    </div>
+                    <div class="details-info-panel">
+                        <h2 id="modal-item-title">Título</h2>
+                        <span class="creator" id="modal-item-creator">Criador</span>
+                        <div class="details-meta-icons">
+                            <span id="modal-item-skins">👤 0 Aparências</span>
+                            <span id="modal-item-worlds">🌐 1 Mundo</span>
+                        </div>
+                        <div class="details-rating-row" id="modal-item-rating">★ 4.5</div>
+                        <div class="details-tag-badge" id="modal-item-tag">TAG</div>
+
+                        <div style="display: flex; gap: 8px; margin-top: auto;">
+                            <button class="btn-green" id="modal-item-buy-btn" style="flex: 1; padding: 12px;"
+                                onclick="alert('Item Adquirido!')">🪙 1510</button>
+                            <button class="btn-show-more" style="padding: 12px 16px; font-size: 16px;"
+                                onclick="toggleWishlistModal()" title="Adicionar à Lista de Desejos">🤍</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-desc-box">
+                    <div class="details-desc-text" id="modal-item-desc">Descrição...</div>
+                    <button class="btn-show-more" onclick="toggleDescExpand(this)">Mostrar Mais</button>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div class="flex items-center gap-6">
-        <div class="hidden lg:flex relative w-[300px]">
-          <input id="search-input" type="text" placeholder="Buscar mundos, skins, addons..."
-            class="w-full bg-mc-card border-2 border-mc-border text-white text-sm rounded-md py-2 px-4 focus:outline-none focus:border-mc-green transition-colors" />
-          <div class="absolute right-3 top-2 text-gray-500 font-bold">/</div>
-        </div>
-
-        <button onclick="openCreateModal()"
-          class="bg-mc-green hover:bg-mc-green-hover text-white px-4 py-2 rounded-md text-xs font-bold uppercase transition-colors cursor-pointer flex items-center gap-2 shadow-[0_2px_0_#1B540D]">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Novo Item
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 max-w-[1400px] w-full mx-auto px-4 md:px-6 py-8 flex flex-col gap-8">
-
-    <!-- Header & Filters -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6">
-      <div>
-        <h2 class="font-black text-2xl uppercase text-white tracking-tighter">Explorar Conteúdo</h2>
-        <p class="text-mc-muted text-sm font-medium">Descubra as melhores criações da nossa comunidade.</p>
-      </div>
-
-      <div id="category-filters" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-        <!-- JS Injects Categories -->
-      </div>
     </div>
 
-    <!-- Grid -->
-    <div id="marketplace-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- JS Injects Items -->
+    <!-- ESTRUTURA PRINCIPAL -->
+    <div class="window">
+        <header class="top-bar">
+            <div class="top-left-group">
+                <button class="back-btn" onclick="switchMainTab('home', document.getElementById('nav-home'))"
+                    title="Voltar">‹</button>
+                <button class="hamburger-btn" onclick="toggleSidebarMenu()" title="Expandir/Recolher Menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 id="top-bar-title">Marketplace</h1>
+            </div>
+            <div class="top-right-group">
+                <button class="library-btn"
+                    onclick="switchMainTab('biblioteca', document.getElementById('nav-lib'))">Minha Biblioteca</button>
+                <div class="coins-display">
+                    <span class="coin-icon">🪙</span> 0
+                    <button class="coin-add" onclick="alert('Comprar Minecoins...')">+</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" placeholder="Buscar...">
+                </div>
+            </div>
+        </header>
+
+        <div class="marketplace-layout">
+            <!-- BARRA LATERAL DA ESQUERDA -->
+            <aside class="side-nav" id="sideNav">
+                <div class="side-nav-top">
+                    <div id="nav-home" class="nav-icon-btn active" title="Marketplace"
+                        onclick="switchMainTab('home', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <span class="nav-label">Início</span>
+                    </div>
+                    <div id="nav-cultura" class="nav-icon-btn" title="Cultura Pop"
+                        onclick="switchMainTab('cultura', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                            <polyline points="17 2 12 7 7 2"></polyline>
+                        </svg>
+                        <span class="nav-label">Cultura Pop</span>
+                    </div>
+                    <div id="nav-pass" class="nav-icon-btn" title="Marketplace Pass"
+                        onclick="switchMainTab('pass', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
+                        </svg>
+                        <span class="nav-label">Marketplace Pass</span>
+                    </div>
+                    <div id="nav-realms" class="nav-icon-btn" title="Minecraft Realms"
+                        onclick="switchMainTab('realms', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z"></path>
+                        </svg>
+                        <span class="nav-label">Realms Plus</span>
+                    </div>
+                    <div id="nav-principais" class="nav-icon-btn" title="Principais Vendedores"
+                        onclick="switchMainTab('principais', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg>
+                        <span class="nav-label">Principais Vendedores</span>
+                    </div>
+                    <div id="nav-popular" class="nav-icon-btn" title="Popular" onclick="switchMainTab('popular', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.229 1-3.036 1.05 1.503 1.5 2.5 1.5 3.036z">
+                            </path>
+                        </svg>
+                        <span class="nav-label">Popular</span>
+                    </div>
+                    <div id="nav-favoritos" class="nav-icon-btn" title="Minha Lista de Desejos"
+                        onclick="switchMainTab('favoritos', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                            </path>
+                        </svg>
+                        <span class="nav-label">Lista de Desejos</span>
+                    </div>
+                    <div id="nav-lib" class="nav-icon-btn" title="Minha Biblioteca"
+                        onclick="switchMainTab('biblioteca', this)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span class="nav-label">Minha Biblioteca</span>
+                    </div>
+                </div>
+                <div class="vestiario-container">
+                    <button class="vestiario-btn" onclick="alert('Indo para o Vestiário...')">Vestiário</button>
+                </div>
+            </aside>
+
+            <!-- CONTEÚDO DAS ABAS -->
+            <main class="content-area">
+
+                <!-- 1. HOME / INÍCIO -->
+                <div id="view-home" class="market-view active">
+                    <div class="pass-banner">
+                        <div class="pass-banner-text">
+                            <h4>Marketplace Pass</h4>
+                            <p>Avaliação Grátis de 30 dias, depois R$ 14,95/mês</p>
+                        </div>
+                        <span style="color: #0044cc; font-weight: bold; cursor: pointer; font-size: 11px;"
+                            onclick="switchMainTab('pass', document.getElementById('nav-pass'))">Saiba Mais</span>
+                    </div>
+
+                    <div class="home-super-card" onclick="openCardModal('villagernews')">
+                        <div class="home-super-tag">Add-On em Destaque</div>
+                        <h2
+                            style="font-size: 26px; font-weight: 900; color: white; text-shadow: 2px 2px 0 #000; margin-bottom: 4px;">
+                            Notícias do Village 1.0</h2>
+                        <p style="font-size: 12px; color: #ddd; margin-bottom: 12px;">Por Oreville Studios • Descubra
+                            novidades hilárias e mecânicas imersivas.</p>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-green" style="padding: 8px 16px; font-size: 11px;">🪙 1170</button>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Navegar por Categorias</div>
+                    <div class="category-shortcuts-grid">
+                        <div class="category-shortcut-btn"
+                            onclick="switchMainTab('cultura', document.getElementById('nav-cultura'))">
+                            <span style="font-size: 20px;">🌍</span> Mundos
+                        </div>
+                        <div class="category-shortcut-btn"
+                            onclick="switchMainTab('cultura', document.getElementById('nav-cultura'))">
+                            <span style="font-size: 20px;">👤</span> Pacotes de Capas
+                        </div>
+                        <div class="category-shortcut-btn"
+                            onclick="switchMainTab('cultura', document.getElementById('nav-cultura'))">
+                            <span style="font-size: 20px;">🧩</span> Complementos
+                        </div>
+                        <div class="category-shortcut-btn"
+                            onclick="switchMainTab('home', document.getElementById('nav-home'))">
+                            <span style="font-size: 20px;">⭐</span> Itens Novos
+                        </div>
+                    </div>
+
+                    <div class="section-title">Lançamentos em Destaque</div>
+                    <div class="items-grid">
+                        <div class="item-card" onclick="openCardModal('bob')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #0088cc, #003366);"><span
+                                    class="item-badge-addon">Mundo</span></div>
+                            <div class="item-card-info">
+                                <h5>Biomas de Bob Esponja</h5><span>Por Starfish Studios</span>
+                                <div class="item-rating">★ 4.5 <span>🪙 1510</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('villagernews')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #a8421e, #4a1908);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Notícias do Village 1.0</h5><span>Por Oreville Studios</span>
+                                <div class="item-rating">★ 4.9 <span>🪙 1170</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('physics')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Física Pro 1.0 Add-On</h5><span>Por Team Workbench</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 990</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('rlcraft')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #7f1d1d, #450a0a);"><span
+                                    class="item-badge-addon">Pack</span></div>
+                            <div class="item-card-info">
+                                <h5>RLCraft Bedrock Edição 1.3</h5><span>Por Spark Universe</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 1690</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CULTURA POP -->
+                <div id="view-cultura" class="market-view">
+                    <div class="cultura-hero-grid">
+                        <div class="cultura-main-banner" onclick="openCardModal('transformers')">
+                            <div class="big-addon-badge">Add-On</div>
+                            <div class="cultura-banner-footer">
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: bold; color: white;">Transformers Add-On
+                                    </h4>
+                                    <span style="font-size: 11px; color: var(--text-gray);">Por Syclone Studios</span>
+                                </div>
+                                <div
+                                    style="font-size: 12px; color: #ffca28; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                                    ★ 4.6 <span style="color: white; font-size: 11px;">🪙 1340</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cultura-side-grid">
+                            <div class="item-card" onclick="openCardModal('hellokitty')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #be185d, #831843);">
+                                    <span class="item-badge-addon">Add-On</span>
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Hello Kitty and Friends...</h5>
+                                    <div class="item-rating">★ 4.8 <span>🪙 1510</span></div>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('bluey')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Casa de Bluey</h5>
+                                    <div class="item-rating">★ 4.6 <span>🪙 1510</span></div>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('strangerthings')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #450a0a, #18181b);">
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Coisas Mais Estranhas</h5>
+                                    <div class="item-rating">★ 4.3 <span>🪙 1510</span></div>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('bob')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #0088cc, #003366);">
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Biomas de Bob Esponja</h5>
+                                    <div class="item-rating">★ 4.5 <span>🪙 1510</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title" style="margin-top: 10px;">Lançamentos Recentes</div>
+                    <div class="carousel-wrapper">
+                        <button class="carousel-btn" onclick="scrollCarousel(-250)">‹</button>
+                        <div class="horizontal-row" id="cultura-carousel">
+                            <div class="item-card" onclick="openCardModal('transformers')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #1e3a8a, #854d0e);">
+                                    <span class="item-badge-addon">Add-On</span>
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Transformers Add-On</h5>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('hellokitty')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #be185d, #831843);">
+                                    <span class="item-badge-addon">Add-On</span>
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Hello Kitty and Friends...</h5>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('bluey')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Casa de Bluey</h5>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('strangerthings')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #450a0a, #18181b);">
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Coisas Mais Estranhas</h5>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('minions')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #d97706, #78350f);">
+                                    <span class="item-badge-addon">UPDATE!</span>
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Minions</h5>
+                                </div>
+                            </div>
+                            <div class="item-card" onclick="openCardModal('sonic')">
+                                <div class="item-thumb" style="background: linear-gradient(135deg, #1d4ed8, #1e40af);">
+                                    <span class="item-badge-addon">Mundo</span>
+                                </div>
+                                <div class="item-card-info">
+                                    <h5>Sonic the Hedgehog</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-btn" onclick="scrollCarousel(250)">›</button>
+                    </div>
+                </div>
+
+                <!-- 3. MARKETPLACE PASS -->
+                <div id="view-pass" class="market-view">
+                    <div class="pass-page-layout">
+                        <div class="pass-sub-sidebar">
+                            <button id="pass-subnav-main" class="pass-menu-item"
+                                onclick="switchPassSubTab('main', this)">Marketplace Pass</button>
+                            <button id="pass-subnav-conteudo" class="pass-menu-item"
+                                onclick="switchPassSubTab('conteudo', this)">Conteúdo</button>
+                            <button id="pass-subnav-faq" class="pass-menu-item"
+                                onclick="switchPassSubTab('faq', this)">FAQ</button>
+                            <button id="pass-subnav-inscreva" class="pass-menu-item active" style="margin-top: auto;"
+                                onclick="switchPassSubTab('inscreva', this)">Inscreva-se</button>
+                        </div>
+
+                        <div class="pass-content-panel">
+                            <div id="pass-subview-inscreva" class="pass-sub-view active">
+                                <div class="pass-hero-banner">
+                                    <h2 class="pass-hero-title">Marketplace Pass</h2>
+                                    <button class="pass-trial-btn"
+                                        onclick="alert('Iniciando Avaliação Gratuita do Marketplace Pass!')">
+                                        <span
+                                            style="background: #f59e0b; padding: 2px 6px; border-radius: 2px; font-size: 10px;">🎁</span>
+                                        INICIE A AVALIAÇÃO GRATUITA
+                                    </button>
+                                </div>
+                                <div class="pass-info-badge">Avaliação Grátis de 30 dias, depois R$ 14,95/mês</div>
+                                <div class="pass-details-box">
+                                    <div class="pass-collage-img">
+                                        <div class="pass-collage-thumb" style="background-color: #3b82f6;"></div>
+                                        <div class="pass-collage-thumb" style="background-color: #ef4444;"></div>
+                                        <div class="pass-collage-thumb" style="background-color: #10b981;"></div>
+                                        <div class="pass-collage-thumb" style="background-color: #f59e0b;"></div>
+                                        <div class="pass-collage-thumb" style="background-color: #8b5cf6;"></div>
+                                        <div class="pass-collage-thumb" style="background-color: #ec4899;"></div>
+                                    </div>
+                                    <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+                                        <h4 style="font-size: 13px; font-weight: 800; color: white;">Assinatura mensal
+                                            por apenas R$ 14,95 inclui:</h4>
+                                        <ul class="pass-bullet-list">
+                                            <li>Conteúdo premium com curadoria</li>
+                                            <li>Novo conteúdo cuidadosamente selecionado adicionado todo mês</li>
+                                            <li>Complementos, mundos e muito mais</li>
+                                            <li>Ofertas exclusivas</li>
+                                            <li>A assinatura é renovada automaticamente a cada mês até ser cancelada
+                                            </li>
+                                            <li>Cancele na página de assinaturas das configurações do Minecraft</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="pass-subview-conteudo" class="pass-sub-view">
+                                <div class="pass-header-strip">Incluído no Marketplace Pass</div>
+                                <button class="pass-menu-item"
+                                    style="width: 100%; text-align: center; background: #38393b; color: white;">TODO O
+                                    CONTEÚDO INCLUÍDO</button>
+                                <button class="pass-menu-item"
+                                    style="width: 100%; text-align: center; background: #38393b; color: white;">CRIADOR
+                                    DE PERSONAGEM DEFINIDO</button>
+                                <div class="items-grid" style="margin-top: 10px;">
+                                    <div class="item-card" onclick="openCardModal('villagecities')">
+                                        <div class="item-thumb"
+                                            style="background: linear-gradient(135deg, #2563eb, #1e40af);"><span
+                                                class="item-badge-addon">Add-On</span></div>
+                                        <div class="item-card-info">
+                                            <h5>Village Cities</h5><span>Por MineSparks</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-card" onclick="openCardModal('bloop')">
+                                        <div class="item-thumb"
+                                            style="background: linear-gradient(135deg, #0d9488, #115e59);"><span
+                                                class="item-badge-addon">Add-On</span></div>
+                                        <div class="item-card-info">
+                                            <h5>The Bloop</h5><span>Por Tetrascape</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-card" onclick="openCardModal('actions')">
+                                        <div class="item-thumb"
+                                            style="background: linear-gradient(135deg, #0284c7, #0369a1);"></div>
+                                        <div class="item-card-info">
+                                            <h5>Actions & Stuff</h5><span>Por Crafters</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-card" onclick="openCardModal('rlcraft')">
+                                        <div class="item-thumb"
+                                            style="background: linear-gradient(135deg, #991b1b, #450a0a);"></div>
+                                        <div class="item-card-info">
+                                            <h5>RLCraft Bedrock Edition</h5><span>Por Spark Universe</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="pass-subview-faq" class="pass-sub-view">
+                                <div class="pass-faq-card">
+                                    <h4>Posso assinar o Marketplace Pass e o Realms Plus?</h4>
+                                    <p>A assinatura do Realms Plus inclui o Marketplace Pass. Se você assinou o
+                                        Marketplace Pass e quer explorar o Realms Plus, sugerimos que cancele a
+                                        assinatura do Marketplace Pass primeiro. Assinantes ativos do Realms Plus não
+                                        podem assinar o Marketplace Pass.</p>
+                                </div>
+                                <div class="pass-faq-card">
+                                    <h4>Posso usar o conteúdo do Marketplace Pass em qualquer dispositivo?</h4>
+                                    <p>Se você comprar o Marketplace Pass, terá acesso a todos os pacotes de qualquer
+                                        dispositivo que tenha uma versão compatível do Minecraft: Bedrock Edition com o
+                                        Marketplace do Minecraft (vendido separadamente) ao acessar sua conta do
+                                        Minecraft. Não é compatível com o Amazon Kindle Fire e o Minecraft Java Edition.
+                                    </p>
+                                </div>
+                                <div class="pass-faq-card">
+                                    <h4>Posso jogar o Conteúdo do Marketplace Pass se eu tiver entrado no Beta do
+                                        Minecraft no Windows ou no XBOX?</h4>
+                                    <p>Você poderá ver conteúdo em sua assinatura se já tiver assinado, mas não poderá
+                                        assinar o Marketplace Pass na versão de Visualização/BETA.</p>
+                                </div>
+                                <div class="pass-faq-card">
+                                    <h4>Posso comprar o conteúdo oferecido no catálogo do Marketplace Pass para consumo
+                                        próprio?</h4>
+                                    <p>Sim, os assinantes podem economizar com conteúdo no catálogo do Marketplace Pass,
+                                        compre seus favoritos em com desconto antes que eles saiam do catálogo para
+                                        tê-los para sempre.</p>
+                                </div>
+                                <button class="pass-help-btn"
+                                    onclick="alert('Redirecionando para o Site de Ajuda...')">VISITE NOSSO SITE DE
+                                    AJUDA</button>
+                            </div>
+
+                            <div id="pass-subview-main" class="pass-sub-view">
+                                <div class="pass-faq-card">
+                                    <h4>O que é o Marketplace Pass?</h4>
+                                    <p>O Marketplace Pass é um serviço de assinatura mensal que oferece acesso a mais de
+                                        150 mundos, pacotes de capas, pacotes de texturas e muito mais no Minecraft
+                                        Bedrock Edition.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. MINECRAFT REALMS & REALMS PLUS -->
+                <div id="view-realms" class="market-view">
+                    <div class="realms-container-full">
+                        <div class="realms-top-header-tabs">
+                            <button
+                                style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; font-weight: bold;"
+                                onclick="switchMainTab('home', document.getElementById('nav-home'))">‹</button>
+                            <div class="realms-nav-tabs">
+                                <button class="realms-tab-btn active" onclick="switchRealmsSubTab('realms')">Minecraft
+                                    Realms</button>
+                                <button class="realms-tab-btn" onclick="switchRealmsSubTab('plus')">Realms Plus</button>
+                            </div>
+                            <div style="width: 18px;"></div>
+                        </div>
+
+                        <div id="realms-sub-realms" class="realms-sub-content active">
+                            <div class="realms-hero">
+                                <div class="realms-hero-info">
+                                    <h2>SEU PRÓPRIO SERVIDOR, SEMPRE ONLINE</h2>
+                                    <p>Tenha seu próprio servidor Minecraft! Defina as regras: quem entra e como jogar.
+                                        Membros jogam de graça, mesmo estando offline. Fácil de configurar, gerenciar e
+                                        acessar de qualquer dispositivo.</p>
+                                    <button class="btn-teste-gratis"
+                                        onclick="alert('Iniciando Teste Grátis do Realms!')">Teste grátis</button>
+                                </div>
+                                <div class="realms-hero-media"></div>
+                            </div>
+
+                            <div class="realms-section-badge">O que são Realms?</div>
+
+                            <div class="realms-feature-card">
+                                <div class="realms-feature-icon">🌐</div>
+                                <div class="realms-feature-text">
+                                    <h4>Mundos multijogador persistentes</h4>
+                                    <p>Os mundos enviados para o seu Realm estão sempre disponíveis para você e seus
+                                        membros convidados do Realm a qualquer momento, em qualquer dispositivo. Os
+                                        membros podem jogar mesmo quando você estiver ausente.</p>
+                                </div>
+                            </div>
+
+                            <div class="realms-feature-card">
+                                <div class="realms-feature-icon">👥</div>
+                                <div class="realms-feature-text">
+                                    <h4>Membros jogam de graça</h4>
+                                    <p>As pessoas que você convida tornam-se membros do Realm. Elas não precisam pagar
+                                        para entrar e jogar no Realm; elas só precisam de uma cópia do Minecraft:
+                                        Bedrock Edition.</p>
+                                </div>
+                            </div>
+
+                            <div class="realms-feature-card">
+                                <div class="realms-feature-icon">🛡️</div>
+                                <div class="realms-feature-text">
+                                    <h4>Fácil e seguro</h4>
+                                    <p>Não há necessidade de conhecimento técnico. Backups gratuitos e sem complicações.
+                                        Não é permitido compartilhar informações pessoais.</p>
+                                </div>
+                            </div>
+
+                            <div class="realms-section-badge">Vantagens adicionais incluídas no Realms</div>
+
+                            <div class="realms-social-banner">
+                                <div class="realms-social-info">
+                                    <h3>SOCIALIZE COM HISTÓRIAS DO REALMS</h3>
+                                    <p>Compartilhe suas aventuras no Feed de Histórias, veja seu Realm crescer com a aba
+                                        Membros, saiba quando as pessoas estão jogando no Realm com a Linha do Tempo.
+                                    </p>
+                                </div>
+                                <div class="realms-hero-media" style="height: 160px; background-color: #3b0066;"></div>
+                            </div>
+
+                            <div class="realms-section-badge">Perguntas frequentes</div>
+
+                            <div class="faq-list">
+                                <div class="faq-item open">
+                                    <div class="faq-question" onclick="toggleFaq(this)">
+                                        <span>O que são Realms?</span>
+                                        <span class="faq-arrow">▲</span>
+                                    </div>
+                                    <div class="faq-answer">
+                                        Os Realms são pequenos servidores pessoais para hospedar seu mundo Minecraft. Ao
+                                        contrário de uma sessão multijogador normal, Realms está sempre online, então
+                                        você não precisa estar presente para que seus amigos joguem. Ao contrário de um
+                                        grande servidor público do Minecraft, os Realms são apenas por convite, então
+                                        você controla quem entra.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="realms-sub-plus" class="realms-sub-content">
+                            <div class="realms-hero"
+                                style="background: linear-gradient(135deg, #4a0080 0%, #1a0033 100%);">
+                                <div class="realms-hero-info">
+                                    <h2 style="color: #00e676;">REALMS PLUS: SERVIDOR + CATÁLOGO COMPLETO</h2>
+                                    <p>Obtenha seu próprio servidor para até 10 jogadores simultâneos e acesso
+                                        instantâneo a um catálogo rotativo com mais de 150 mundos, skins e pacotes do
+                                        Marketplace!</p>
+                                    <button class="btn-teste-gratis" style="background-color: #00e676; color: #000;"
+                                        onclick="alert('Assinando Realms Plus!')">Assinar Realms Plus</button>
+                                </div>
+                                <div class="realms-hero-media"
+                                    style="background-image: url('https://images.alphacoders.com/132/1328396.png'); border-color: #00e676;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. PRINCIPAIS VENDEDORES -->
+                <div id="view-principais" class="market-view">
+                    <div class="section-title">Principais Vendedores - Complementos</div>
+                    <div class="items-grid">
+                        <div class="item-card" onclick="openCardModal('villagernews')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #a8421e, #4a1908);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Notícias do Village 1.0</h5><span>Por Oreville Studios</span>
+                                <div class="item-rating">★ 4.9 <span>🪙 1170</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('transformers')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #1e3a8a, #854d0e);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Transformers Add-On</h5><span>Por Syclone Studios</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 1340</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('physics')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Física Pro 1.0</h5><span>Por Team Workbench</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 990</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title" style="margin-top: 10px;">Principais Vendedores - Mundos & Capas</div>
+                    <div class="items-grid">
+                        <div class="item-card" onclick="openCardModal('rlcraft')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #7f1d1d, #450a0a);"><span
+                                    class="item-badge-addon">Pack</span></div>
+                            <div class="item-card-info">
+                                <h5>RLCraft Bedrock Edition</h5><span>Por Spark Universe</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 1690</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('strangerthings')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #450a0a, #18181b);">
+                            </div>
+                            <div class="item-card-info">
+                                <h5>Coisas Mais Estranhas</h5><span>Por Spark Universe</span>
+                                <div class="item-rating">★ 4.3 <span>🪙 1510</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. POPULAR -->
+                <div id="view-popular" class="market-view">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="section-title">Destaques da Comunidade (Física Avançada & Modificações)</div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="carousel-btn" style="min-height: 32px; width: 32px;"
+                                onclick="document.getElementById('pop-grid').scrollBy({left:-250, behavior:'smooth'})">‹</button>
+                            <button class="carousel-btn" style="min-height: 32px; width: 32px;"
+                                onclick="document.getElementById('pop-grid').scrollBy({left:250, behavior:'smooth'})">›</button>
+                        </div>
+                    </div>
+                    <div class="items-grid" id="pop-grid">
+                        <div class="item-card" onclick="openCardModal('physics')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Física Pro 1.0 Add-On</h5><span>Por Team Workbench</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 990</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('actions')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
+                            </div>
+                            <div class="item-card-info">
+                                <h5>Actions & Stuff</h5><span>Por Crafters</span>
+                                <div class="item-rating">★ 4.9 <span>🪙 1510</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('rlcraft')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #991b1b, #450a0a);">
+                            </div>
+                            <div class="item-card-info">
+                                <h5>RLCraft Bedrock Edition</h5><span>Por Spark Universe</span>
+                                <div class="item-rating">★ 4.6 <span>🪙 1690</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. LISTA DE DESEJOS -->
+                <div id="view-favoritos" class="market-view">
+                    <div
+                        style="background-color: #2b2c2e; border: 2px solid var(--border-dark); padding: 18px; display: flex; align-items: center; gap: 14px;">
+                        <span style="font-size: 28px;">🤍</span>
+                        <div>
+                            <h4
+                                style="font-size: 13px; font-weight: 900; color: white; text-transform: uppercase; margin-bottom: 4px;">
+                                Sua Lista de Desejos está vazia</h4>
+                            <p style="font-size: 11px; color: var(--text-gray);">Interaja com o ícone de coração 🤍 nas
+                                páginas de detalhes dos itens para expandir e salvar seus pacotes favoritos aqui.</p>
+                        </div>
+                    </div>
+
+                    <div class="section-title" style="margin-top: 10px;">Complementos Recomendados</div>
+                    <div class="items-grid">
+                        <div class="item-card" onclick="openCardModal('hellokitty')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #be185d, #831843);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>Hello Kitty Furniture</h5><span>Por Pods</span>
+                                <div class="item-rating">★ 4.8 <span>🪙 1510</span></div>
+                            </div>
+                        </div>
+                        <div class="item-card" onclick="openCardModal('bloop')">
+                            <div class="item-thumb" style="background: linear-gradient(135deg, #0d9488, #115e59);"><span
+                                    class="item-badge-addon">Add-On</span></div>
+                            <div class="item-card-info">
+                                <h5>The Bloop</h5><span>Por Tetrascape</span>
+                                <div class="item-rating">★ 4.5 <span>🪙 1510</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. MINHA BIBLIOTECA -->
+                <div id="view-biblioteca" class="market-view">
+                    <div class="library-layout">
+                        <aside class="library-sidebar">
+                            <div class="library-accordion-group">
+                                <div class="library-accordion-header" onclick="toggleLibAccordion(this)">
+                                    <span>Adquiridos</span><span>▼</span>
+                                </div>
+                                <div class="library-sub-items">
+                                    <button class="library-sub-btn active"
+                                        onclick="filterLibraryFilter('todos', this)">Todos os Itens</button>
+                                    <button class="library-sub-btn"
+                                        onclick="filterLibraryFilter('baixados', this)">Baixados & Instalados</button>
+                                    <button class="library-sub-btn"
+                                        onclick="filterLibraryFilter('mundos', this)">Mundos</button>
+                                </div>
+                            </div>
+
+                            <div class="library-accordion-group" style="margin-top: 8px;">
+                                <div class="library-accordion-header" onclick="toggleLibAccordion(this)">
+                                    <span>Novos Add-ons (Cards)</span><span>▼</span>
+                                </div>
+                                <div class="library-sub-items">
+                                    <button class="library-sub-btn" onclick="filterLibraryFilter('addon-novos', this)">⚡
+                                        Ver Lançamentos</button>
+                                    <button class="library-sub-btn"
+                                        onclick="filterLibraryFilter('addon-physics', this)">Física Pro 1.0</button>
+                                    <button class="library-sub-btn"
+                                        onclick="filterLibraryFilter('addon-transformers', this)">Transformers
+                                        Add-On</button>
+                                    <button class="library-sub-btn"
+                                        onclick="filterLibraryFilter('addon-actions', this)">Actions & Stuff</button>
+                                </div>
+                            </div>
+
+                            <div class="library-accordion-group" style="margin-top: 8px;">
+                                <div class="library-accordion-header" onclick="toggleLibAccordion(this)">
+                                    <span>Assinaturas</span><span>▼</span>
+                                </div>
+                                <div class="library-sub-items">
+                                    <button class="library-sub-btn"
+                                        onclick="showLibraryPanel('assinaturas', this)">Painel de Assinaturas</button>
+                                    <button class="library-sub-btn"
+                                        onclick="switchMainTab('pass', document.getElementById('nav-pass'))">Marketplace
+                                        Pass (Ativo)</button>
+                                    <button class="library-sub-btn"
+                                        onclick="switchMainTab('realms', document.getElementById('nav-realms'))">Realms
+                                        Plus (Gerenciar)</button>
+                                    <button class="library-sub-btn"
+                                        onclick="filterLibraryFilter('assinaturas-conteudo', this)">Itens da
+                                        Assinatura</button>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <div class="library-content-area">
+                            <div id="lib-panel-assinaturas"
+                                style="display: none; flex-direction: column; gap: 16px; width: 100%;">
+                                <div class="subscription-notice">
+                                    Você não tem uma assinatura ativa do Marketplace Pass. As assinaturas de Realms
+                                    podem ser encontradas na central do Realm.
+                                </div>
+                                <div class="marketplace-pass-card-lib">
+                                    <div class="pass-banner-lib">
+                                        <div class="pass-logo-text-lib">MARKETPLACE PASS</div>
+                                    </div>
+                                    <div class="pass-info-lib">
+                                        <h3>MARKETPLACE PASS</h3>
+                                        <ul>
+                                            <li>Conteúdo premium com curadoria</li>
+                                            <li>Atualizado todos os meses</li>
+                                            <li>Ofertas exclusivas</li>
+                                        </ul>
+                                        <button class="add-pass-btn-lib"
+                                            onclick="switchMainTab('pass', document.getElementById('nav-pass'))">ADICIONAR
+                                            UM MARKETPLACE PASS</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="library-toolbar" id="libraryToolbar">
+                                <div class="library-categories-chips">
+                                    <div class="lib-chip active" onclick="filterLibCategory('todos', this)">Todos</div>
+                                    <div class="lib-chip" onclick="filterLibCategory('add-on', this)">Complementos</div>
+                                    <div class="lib-chip" onclick="filterLibCategory('skins', this)">Aparências</div>
+                                    <div class="lib-chip" onclick="filterLibCategory('worlds', this)">Mundos</div>
+                                    <div class="lib-chip" onclick="filterLibCategory('assinatura', this)">Assinaturas
+                                    </div>
+                                </div>
+                                <input type="text" class="library-search-input" id="librarySearchInput"
+                                    placeholder="Insira a Busca Aqui..." oninput="searchLibraryCards(this.value)">
+                            </div>
+
+                            <div class="items-grid" id="libraryItemsGrid">
+                                <div class="item-card" data-category="worlds" data-type="baixados"
+                                    onclick="openCardModal('bob')">
+                                    <div class="item-thumb"
+                                        style="background: linear-gradient(135deg, #0088cc, #003366);"><span
+                                            class="item-badge-addon">Mundo</span></div>
+                                    <div class="item-card-info">
+                                        <h5>Biomas de Bob Esponja</h5>
+                                        <span>Por Starfish Studios • Pronto para jogar</span>
+                                        <div
+                                            style="margin-top: 6px; font-size: 10px; color: #2e7d32; font-weight: bold;">
+                                            ✔ ADQUIRIDO</div>
+                                    </div>
+                                </div>
+                                <div class="item-card" data-category="add-on"
+                                    data-type="baixados addon-novos addon-physics" onclick="openCardModal('physics')">
+                                    <div class="item-thumb"
+                                        style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"><span
+                                            class="item-badge-addon" style="background: #f59e0b;">NOVO ADD-ON</span>
+                                    </div>
+                                    <div class="item-card-info">
+                                        <h5>Física Pro 1.0 Add-On</h5>
+                                        <span>Por Team Workbench • Atualizado</span>
+                                        <div
+                                            style="margin-top: 6px; font-size: 10px; color: #f59e0b; font-weight: bold;">
+                                            ⚡ DISPONÍVEL</div>
+                                    </div>
+                                </div>
+                                <div class="item-card" data-category="add-on"
+                                    data-type="baixados addon-novos addon-transformers"
+                                    onclick="openCardModal('transformers')">
+                                    <div class="item-thumb"
+                                        style="background: linear-gradient(135deg, #1e3a8a, #854d0e);"><span
+                                            class="item-badge-addon" style="background: #ffcc00;">DESTAQUE</span></div>
+                                    <div class="item-card-info">
+                                        <h5>Transformers Add-On</h5>
+                                        <span>Por Syclone Studios • Adicionado</span>
+                                        <div
+                                            style="margin-top: 6px; font-size: 10px; color: #2e7d32; font-weight: bold;">
+                                            ✔ INSTALADO</div>
+                                    </div>
+                                </div>
+                                <div class="item-card" data-category="add-on" data-type="baixados assinaturas-conteudo"
+                                    onclick="openCardModal('villagecities')">
+                                    <div class="item-thumb"
+                                        style="background: linear-gradient(135deg, #2563eb, #1e40af);"><span
+                                            class="item-badge-addon"
+                                            style="background: #a855f7; color: white;">PASS</span></div>
+                                    <div class="item-card-info">
+                                        <h5>Village Cities</h5>
+                                        <span>Por MineSparks • Marketplace Pass</span>
+                                        <div
+                                            style="margin-top: 6px; font-size: 10px; color: #a855f7; font-weight: bold;">
+                                            👑 ASSINATURA</div>
+                                    </div>
+                                </div>
+                                <div class="item-card" data-category="add-on"
+                                    data-type="baixados addon-novos addon-actions" onclick="openCardModal('actions')">
+                                    <div class="item-thumb"
+                                        style="background: linear-gradient(135deg, #0284c7, #0369a1);"><span
+                                            class="item-badge-addon">Add-On</span></div>
+                                    <div class="item-card-info">
+                                        <h5>Actions & Stuff</h5>
+                                        <span>Por Crafters • Animações</span>
+                                        <div
+                                            style="margin-top: 6px; font-size: 10px; color: #2e7d32; font-weight: bold;">
+                                            ✔ INSTALADO</div>
+                                    </div>
+                                </div>
+                                <div class="item-card" data-category="add-on" data-type="baixados"
+                                    onclick="openCardModal('villagernews')">
+                                    <div class="item-thumb"
+                                        style="background: linear-gradient(135deg, #a8421e, #4a1908);"><span
+                                            class="item-badge-addon">Add-On</span></div>
+                                    <div class="item-card-info">
+                                        <h5>Notícias do Village 1.0</h5>
+                                        <span>Por Oreville Studios • Baixado</span>
+                                        <div
+                                            style="margin-top: 6px; font-size: 10px; color: #2e7d32; font-weight: bold;">
+                                            ✔ INSTALADO</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
     </div>
 
-  </main>
+    <!-- SCRIPT JS -->
+    <script>
+        const cardsData = {
+            transformers: {
+                title: "Transformers Add-On",
+                creator: "Por Syclone Studios",
+                skins: "👤 0 Aparências",
+                worlds: "🌐 1 Add-On",
+                rating: "★★★★☆ 4.6 (1840)",
+                tag: "Ação e Robôs",
+                price: "🪙 1340",
+                desc: "Transforme seu mundo Minecraft com robôs Cybertronianos! Escolha entre Autobots e Decepticons com habilidades de transformação únicas.",
+                bg: "linear-gradient(135deg, #1e3a8a, #854d0e)"
+            },
+            hellokitty: {
+                title: "Hello Kitty and Friends Furniture",
+                creator: "Por Pods",
+                skins: "👤 0 Aparências",
+                worlds: "🌐 1 Add-On",
+                rating: "★★★★★ 4.8 (2150)",
+                tag: "Móveis e Decoração",
+                price: "🪙 1510",
+                desc: "Adicione móveis fofos e temáticos da Hello Kitty e seus amigos ao seu mundo no Minecraft!",
+                bg: "linear-gradient(135deg, #be185d, #831843)"
+            },
+            strangerthings: {
+                title: "Coisas Mais Estranhas",
+                creator: "Por Spark Universe",
+                skins: "👤 12 Aparências",
+                worlds: "🌐 1 Mundo",
+                rating: "★★★★☆ 4.3 (1290)",
+                tag: "Mistério e Aventura",
+                price: "🪙 1510",
+                desc: "Explore Hawkins e enfrente os perigos do Mundo Invertido nesta aventura oficial inspirada em Stranger Things!",
+                bg: "linear-gradient(135deg, #450a0a, #18181b)"
+            },
+            bob: {
+                title: "Biomas de Bob Esponja",
+                creator: "Por Starfish Studios",
+                skins: "👤 6 Aparências",
+                worlds: "🌐 1 Mundo",
+                rating: "★★★★★ 4.5 (2696)",
+                tag: "Visuais Vibrantes",
+                price: "🪙 1510",
+                desc: "O mundo subaquático de Bob Esponja é um Minecraft Dynamic World com locais e personagens da Fenda do Biquíni!",
+                bg: "linear-gradient(135deg, #0088cc, #003366)"
+            },
+            bluey: {
+                title: "Casa de Bluey",
+                creator: "Por Jigarbov Productions",
+                skins: "👤 8 Aparências",
+                worlds: "🌐 1 Mundo",
+                rating: "★★★★☆ 4.6 (1980)",
+                tag: "Exploração Infantil",
+                price: "🪙 1510",
+                desc: "Explore a icônica casa da família Heeler e brinque com minijogos exclusivos com os personagens de Bluey.",
+                bg: "linear-gradient(135deg, #0284c7, #0369a1)"
+            },
+            villagecities: {
+                title: "Village Cities",
+                creator: "Por MineSparks",
+                skins: "👤 4 Aparências",
+                worlds: "🌐 1 Add-On",
+                rating: "★★★★★ 4.7 (1120)",
+                tag: "Add-On",
+                price: "🪙 1510",
+                desc: "Expanda suas vilas com edifícios detalhados e novas mecânicas de cidade.",
+                bg: "linear-gradient(135deg, #2563eb, #1e40af)"
+            },
+            bloop: {
+                title: "The Bloop",
+                creator: "Por Tetrascape",
+                skins: "👤 5 Aparências",
+                worlds: "🌐 1 Add-On",
+                rating: "★★★★☆ 4.5 (950)",
+                tag: "Add-On",
+                price: "🪙 1510",
+                desc: "Mergulhe nas profundezas do oceano e descubra criaturas misteriosas.",
+                bg: "linear-gradient(135deg, #0d9488, #115e59)"
+            },
+            actions: {
+                title: "Actions & Stuff",
+                creator: "Por Crafters",
+                skins: "👤 2 Aparências",
+                worlds: "🌐 1 Pack",
+                rating: "★★★★★ 4.9 (3400)",
+                tag: "Animações",
+                price: "🪙 1510",
+                desc: "Adiciona novas animações de movimento realistas ao seu personagem.",
+                bg: "linear-gradient(135deg, #0284c7, #0369a1)"
+            },
+            rlcraft: {
+                title: "RLCraft Bedrock Edition",
+                creator: "Por Spark Universe",
+                skins: "👤 10 Aparências",
+                worlds: "🌐 1 Pack",
+                rating: "★★★★☆ 4.6 (1690)",
+                tag: "Hardcore",
+                price: "🪙 1690",
+                desc: "A experiência de sobrevivência mais desafiante do Minecraft agora na Edição Bedrock.",
+                bg: "linear-gradient(135deg, #991b1b, #450a0a)"
+            },
+            villagernews: {
+                title: "Notícias do Village 1.0",
+                creator: "Por Oreville Studios",
+                skins: "👤 2 Aparências",
+                worlds: "🌐 1 Add-On",
+                rating: "★★★★★ 4.9 (4120)",
+                tag: "Add-On",
+                price: "🪙 1170",
+                desc: "Traga reportagens e interações hilárias de jornais para as vilas do seu mundo Bedrock.",
+                bg: "linear-gradient(135deg, #a8421e, #4a1908)"
+            },
+            physics: {
+                title: "Física Pro 1.0 Add-On",
+                creator: "Por Team Workbench",
+                skins: "👤 0 Aparências",
+                worlds: "🌐 1 Add-On",
+                rating: "★★★★☆ 4.6 (1530)",
+                tag: "Física Avançada",
+                price: "🪙 990",
+                desc: "Adiciona física realista de blocos e quedas dinâmicas.",
+                bg: "linear-gradient(135deg, #1e3a8a, #0f172a)"
+            }
+        };
 
-  <!-- BECOME A CREATOR CTA -->
-  <section class="max-w-[1400px] w-full mx-auto px-4 md:px-6 mb-12 mt-6">
-    <div
-      class="bg-gradient-to-br from-[#38AD1B] to-[#1B540D] rounded-xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between relative overflow-hidden">
-      <div class="z-10 flex flex-col justify-center items-start">
-        <h3 class="text-3xl md:text-4xl font-black uppercase italic leading-none text-white mb-2">Você é um Criador?
-        </h3>
-        <p class="text-white/80 text-sm md:text-base mt-2 max-w-lg font-medium">
-          Publique seus mapas, mods e addons diretamente na nuvem e compartilhe com milhares de jogadores
-          instantaneamente.
-        </p>
-        <button onclick="openCreateModal()"
-          class="mt-6 bg-black hover:bg-gray-900 text-white px-6 py-3 rounded-lg text-xs font-bold uppercase w-fit transition-colors cursor-pointer shadow-lg">
-          Começar a Criar
-        </button>
-      </div>
-      <div
-        class="text-white/20 font-black text-[6rem] md:text-[10rem] absolute -right-4 -bottom-8 md:-bottom-16 select-none pointer-events-none leading-none tracking-tighter">
-        CRIAR</div>
-    </div>
-  </section>
+        function toggleSidebarMenu() {
+            document.getElementById('sideNav').classList.toggle('expanded');
+        }
 
-  <!-- FOOTER -->
-  <footer
-    class="max-w-[1400px] mx-auto w-full border-t border-[#333] pt-6 pb-12 px-4 md:px-6 flex flex-col md:flex-row items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest gap-4">
-    <div class="text-center md:text-left">&copy; 2026 Craft Hub Community - Authorized Marketplace Affiliate</div>
-    <div class="flex flex-wrap justify-center gap-8">
-      <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
-      <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
-      <a href="#" class="hover:text-white transition-colors">Creator Guidelines</a>
-    </div>
-  </footer>
+        function switchMainTab(tabName, buttonElement) {
+            document.querySelectorAll('.market-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.side-nav .nav-icon-btn').forEach(btn => btn.classList.remove('active'));
 
-  <!-- DETAILS MODAL -->
-  <div id="details-modal"
-    class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-    <div
-      class="bg-mc-card border border-mc-border rounded-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row transform scale-95 transition-transform duration-300 relative shadow-2xl"
-      id="modal-content-box">
-      <!-- JS Injects Details -->
-    </div>
-  </div>
+            if (buttonElement) buttonElement.classList.add('active');
 
-  <!-- CREATE ITEM MODAL -->
-  <div id="create-modal"
-    class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-    <div
-      class="bg-mc-card border border-mc-border rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8 transform scale-95 transition-transform duration-300 relative shadow-2xl">
-      <div class="flex justify-between items-center mb-6 border-b border-mc-border pb-4">
-        <div>
-          <h3 class="text-xl font-black uppercase tracking-tight text-white">Publicar Novo Item</h3>
-          <p class="text-xs text-mc-muted mt-1 font-medium">O item será enviado automaticamente para o repositório do
-            projeto.</p>
-        </div>
-        <button onclick="closeCreateModal()" class="text-white hover:text-red-500 p-2 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
+            const targetView = document.getElementById('view-' + tabName);
+            if (targetView) targetView.classList.add('active');
 
-      <form id="create-form" class="flex flex-col gap-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Título do Item</label>
-            <input type="text" id="item-title" placeholder="Ex: Cyber World" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Nome do Autor / Estúdio</label>
-            <input type="text" id="item-author" placeholder="Ex: DragonStudio" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-        </div>
+            const titles = {
+                'home': 'Marketplace',
+                'cultura': 'Cultura Pop',
+                'pass': 'Marketplace Pass',
+                'realms': 'Minecraft Realms',
+                'principais': 'Principais Vendedores',
+                'popular': 'Popular',
+                'favoritos': 'Minha Lista de Desejos',
+                'biblioteca': 'Minha Biblioteca'
+            };
+            document.getElementById('top-bar-title').innerText = titles[tabName] || 'Marketplace';
+        }
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Categoria</label>
-            <select id="item-category"
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none">
-              <option value="mundos">Mundos</option>
-              <option value="addons">Addons</option>
-              <option value="mods">Mods</option>
-              <option value="estruturas">Estruturas</option>
-              <option value="skins">Skins</option>
-              <option value="skin-packs">Skin-Packs</option>
-              <option value="servidores">Servidores</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Tag / Tipo (Ex: MUNDO)</label>
-            <input type="text" id="item-type" placeholder="MUNDO" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Preço</label>
-            <input type="text" id="item-price" placeholder="GRÁTIS ou 500" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-        </div>
+        function switchPassSubTab(subTabName, buttonElement) {
+            document.querySelectorAll('.pass-sub-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.pass-menu-item').forEach(btn => btn.classList.remove('active'));
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">URL da Imagem de Capa</label>
-            <input type="text" id="item-image" placeholder="https://..." required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Avaliação (Rating 0-5)</label>
-            <input type="number" step="0.1" max="5" min="0" id="item-rating" value="4.8" required
-              class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none" />
-          </div>
-        </div>
+            if (buttonElement) buttonElement.classList.add('active');
 
-        <div>
-          <label class="block text-xs uppercase font-bold text-gray-300 mb-1">Descrição Completa</label>
-          <textarea id="item-desc" rows="3" placeholder="Detalhes sobre o arquivo..." required
-            class="w-full bg-mc-dark border border-mc-border rounded-md px-4 py-2.5 text-sm text-white focus:border-mc-green focus:outline-none resize-none"></textarea>
-        </div>
+            const targetSubView = document.getElementById('pass-subview-' + subTabName);
+            if (targetSubView) targetSubView.classList.add('active');
+        }
 
-        <div class="flex items-center gap-3 pt-2">
-          <input type="checkbox" id="item-is-coins" class="w-4 h-4 accent-mc-green cursor-pointer" />
-          <label for="item-is-coins" class="text-xs font-bold text-gray-300 uppercase cursor-pointer">Preço cobrado em
-            Moedas (Coins)</label>
-        </div>
+        function switchRealmsSubTab(subName) {
+            document.querySelectorAll('.realms-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.realms-sub-content').forEach(content => content.classList.remove('active'));
 
-        <div class="flex justify-end gap-3 mt-4 border-t border-mc-border pt-4">
-          <button type="button" onclick="closeCreateModal()"
-            class="bg-transparent hover:bg-white/5 text-gray-300 font-bold px-5 py-2.5 rounded text-xs uppercase transition-colors cursor-pointer">Cancelar</button>
-          <button type="submit" id="submit-btn"
-            class="bg-mc-green hover:bg-mc-green-hover text-white font-bold px-6 py-2.5 rounded text-xs uppercase transition-colors cursor-pointer shadow-[0_3px_0_#1B540D]">Enviar
-            para o GitHub</button>
-        </div>
-      </form>
-    </div>
-  </div>
+            if (subName === 'realms') {
+                document.querySelectorAll('.realms-tab-btn')[0].classList.add('active');
+                document.getElementById('realms-sub-realms').classList.add('active');
+            } else {
+                document.querySelectorAll('.realms-tab-btn')[1].classList.add('active');
+                document.getElementById('realms-sub-plus').classList.add('active');
+            }
+        }
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast"
-    class="fixed bottom-4 right-4 bg-mc-green text-white px-6 py-4 rounded-md shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] font-bold flex items-center gap-3">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <path d="m9 11 3 3L22 4" />
-    </svg>
-    <span id="toast-msg" class="uppercase tracking-wide">Ação realizada com sucesso!</span>
-  </div>
+        function scrollCarousel(amount) {
+            document.getElementById('cultura-carousel').scrollBy({ left: amount, behavior: 'smooth' });
+        }
 
-<!-- Carrega o token gerado pela Action primeiro -->
-  <script src="./cloud/token.js"></script>
-  
-  <!-- Carrega o script principal do site depois -->
-  <script src="./script.js"></script>
+        function toggleDescExpand(btn) {
+            const descText = document.getElementById('modal-item-desc');
+            descText.classList.toggle('expanded');
+            btn.innerText = descText.classList.contains('expanded') ? 'Mostrar Menos' : 'Mostrar Mais';
+        }
+
+        function openCardModal(cardKey) {
+            const data = cardsData[cardKey] || cardsData['bob'];
+
+            document.getElementById('modal-item-title-top').innerText = data.title;
+            document.getElementById('modal-item-title').innerText = data.title;
+            document.getElementById('modal-item-creator').innerText = data.creator;
+            document.getElementById('modal-item-skins').innerText = data.skins;
+            document.getElementById('modal-item-worlds').innerText = data.worlds;
+            document.getElementById('modal-item-rating').innerText = data.rating;
+            document.getElementById('modal-item-tag').innerText = data.tag;
+            document.getElementById('modal-item-desc').innerText = data.desc;
+            document.getElementById('modal-item-buy-btn').innerText = data.price;
+            document.getElementById('modal-item-banner').style.background = data.bg;
+
+            document.getElementById('card-modal').classList.add('active');
+        }
+
+        function closeCardModal() {
+            document.getElementById('card-modal').classList.remove('active');
+        }
+
+        function toggleWishlistModal() {
+            alert('Item adicionado à Lista de Desejos com sucesso!');
+        }
+
+        function toggleFaq(element) {
+            const parent = element.parentElement;
+            parent.classList.toggle('open');
+            const span = element.querySelector('.faq-arrow') || element.querySelector('span:last-child');
+            if (span) span.innerText = parent.classList.contains('open') ? '▲' : '▼';
+        }
+
+        function toggleLibAccordion(headerEl) {
+            const subItems = headerEl.nextElementSibling;
+            subItems.style.display = (subItems.style.display === 'none') ? 'flex' : 'none';
+        }
+
+        function showLibraryPanel(panelName, btnEl) {
+            document.querySelectorAll('.library-sidebar .library-sub-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+
+            const grid = document.getElementById('libraryItemsGrid');
+            const toolbar = document.getElementById('libraryToolbar');
+            const panel = document.getElementById('lib-panel-assinaturas');
+
+            if (panelName === 'assinaturas') {
+                if (grid) grid.style.display = 'none';
+                if (toolbar) toolbar.style.display = 'none';
+                if (panel) panel.style.display = 'flex';
+            }
+        }
+
+        function filterLibraryFilter(filterType, btnEl) {
+            document.querySelectorAll('.library-sidebar .library-sub-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+
+            const panel = document.getElementById('lib-panel-assinaturas');
+            const grid = document.getElementById('libraryItemsGrid');
+            const toolbar = document.getElementById('libraryToolbar');
+            if (panel) panel.style.display = 'none';
+            if (grid) grid.style.display = 'grid';
+            if (toolbar) toolbar.style.display = 'flex';
+
+            const cards = document.querySelectorAll('#libraryItemsGrid .item-card');
+            cards.forEach(card => {
+                const types = card.getAttribute('data-type') || '';
+                if (filterType === 'todos' || types.includes(filterType)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function searchLibraryCards(query) {
+            const q = query.toLowerCase();
+            const cards = document.querySelectorAll('#libraryItemsGrid .item-card');
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(q)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterLibCategory(category, chipEl) {
+            document.querySelectorAll('.lib-chip').forEach(c => c.classList.remove('chip-active')); // safe check
+            chipEl.classList.add('active');
+
+            const cards = document.querySelectorAll('#libraryItemsGrid .item-card');
+            cards.forEach(card => {
+                const cat = card.getAttribute('data-category') || '';
+                if (category === 'todos' || cat === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

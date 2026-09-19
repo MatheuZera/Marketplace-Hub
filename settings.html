@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft - Guia e Enciclopédia</title>
+    <style>
+        :root {
+            --bg-main: #4d4e50;
+            --bg-sidebar: #3c3d3f;
+            --bg-topbar: #e5e5e6;
+            --bg-input: #313233;
+            --bg-row-hover: #555658;
+            --border-dark: #1e1e1e;
+            --border-light: #6a6a6a;
+            --text-light: #f5f5f5;
+            --text-dark: #111111;
+            --text-gray: #b0b0b0;
+            --btn-green: #3c8527;
+            --btn-green-hover: #459a2d;
+            --btn-light: #d4d5d7;
+            --btn-light-hover: #e6e7e8;
+            --menu-hover: #505153;
+            --scroll-green: #3c8527;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            /* Adicionado URL de fundo (substitua o link abaixo pela imagem que desejar) */
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1627885747614-6bb8d57d7768?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-light);
+            overflow: hidden;
+        }
+
+        .window {
+            width: 1024px;
+            height: 580px;
+            background-color: var(--bg-main);
+            border: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
+            /* Escala global de 90% mantendo o posicionamento centralizado */
+            transform: scale(1.3);
+            transform-origin: center;
+        }
+
+        /* Barra Superior */
+        .top-bar {
+            background-color: var(--bg-topbar);
+            height: 45px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            position: relative;
+            border-bottom: 2px solid var(--border-dark);
+            z-index: 20;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-right: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar h1 {
+            color: var(--text-dark);
+            font-size: 15px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 12px;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+        }
+
+        /* Layout Principal */
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar Esquerda */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 5px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #8c8d8f;
+            padding: 10px 15px 5px 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .side-menu {
+            list-style: none;
+        }
+
+        .side-menu li {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .side-menu li:hover { background-color: var(--menu-hover); }
+
+        .side-menu li.active {
+            background-color: var(--bg-main);
+            border: 2px solid var(--border-dark);
+            border-right-color: var(--bg-main);
+            margin-right: -2px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            color: var(--text-light);
+        }
+        .icon svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+
+        /* Scrollbars Customizadas */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #2a2b2d; border-left: 2px solid var(--border-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--scroll-green); border: 2px solid var(--border-dark); }
+
+        /* Painel Direito */
+        .main-panel {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            position: relative;
+            background-color: var(--bg-main);
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Componentes Explicativos */
+        .guide-header {
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.6);
+        }
+
+        .guide-desc {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .info-card {
+            background-color: #3b3c3e;
+            border: 2px solid var(--border-dark);
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+            box-shadow: inset 1px 1px 0px rgba(255,255,255,0.05);
+        }
+
+        .info-card h3 {
+            font-size: 13px;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card p {
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        .tag-badge {
+            background-color: var(--btn-green);
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border: 1px solid var(--border-dark);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .window { width: 100%; height: 100vh; border: none; transform: none; }
+            .hamburger-btn { display: flex; }
+            .sidebar {
+                position: absolute;
+                left: 0; top: 45px;
+                height: calc(100vh - 45px);
+                z-index: 100;
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            .sidebar.mobile-open { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <!-- Barra Superior -->
+        <header class="top-bar">
+            <button class="hamburger-btn" id="hamburger-toggle" title="Menu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <button class="back-btn" title="Voltar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <h1 id="top-bar-title">Guia: Introdução</h1>
+        </header>
+
+        <div class="content">
+            <!-- Menu Lateral com Submenus Explicativos -->
+            <aside class="sidebar" id="app-sidebar">
+                <div class="sidebar-section-title">Visão Geral</div>
+                <ul class="side-menu">
+                    <li class="active" data-target="tab-intro" data-title="Guia: Introdução">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span> O que é o Minecraft?
+                    </li>
+                    <li data-target="tab-modos" data-title="Guia: Modos de Jogo">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/></svg></span> Modos de Jogo
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Mundo & Sobrevivência</div>
+                <ul class="side-menu">
+                    <li data-target="tab-primeirodia" data-title="Guia: Primeiro Dia">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></span> O Primeiro Dia
+                    </li>
+                    <li data-target="tab-dimensoes" data-title="Guia: Dimensões">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span> Dimensões
+                    </li>
+                    <li data-target="tab-redstone" data-title="Guia: Redstone">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Mecânicas de Redstone
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">Entidades & Itens</div>
+                <ul class="side-menu">
+                    <li data-target="tab-mobs" data-title="Guia: Mobs">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></span> Mobs (Criaturas)
+                    </li>
+                    <li data-target="tab-crafting" data-title="Guia: Crafting e Minérios">
+                        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span> Minérios e Crafting
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Painel de Conteúdo Explicativo -->
+            <main class="main-panel">
+                
+                <!-- 1. INTRODUÇÃO -->
+                <div id="tab-intro" class="tab-content active">
+                    <div class="guide-header">O que é o Minecraft?</div>
+                    <div class="guide-desc">Um universo infinito de blocos, criatividade e sobrevivência.</div>
+                    
+                    <div class="info-card">
+                        <h3>Visão Geral <span class="tag-badge">Conceito</span></h3>
+                        <p>Minecraft é um jogo eletrônico tipo sandbox de mundo aberto criado por Markus "Notch" Persson e desenvolvido pela Mojang Studios. No jogo, os jogadores exploram um mundo tridimensional voxelizado intencionalmente pixelado, descobrindo e extraindo matérias-primas, ferramentas artesanais, construindo estruturas e máquinas.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Liberdade Absoluta <span class="tag-badge">Jogabilidade</span></h3>
+                        <p>Sem objetivos lineares obrigatórios, o jogo permite total liberdade de escolha. Você pode escolher focar na exploração profunda de cavernas, combate contra chefes épicos, criação de complexas engrenagens eletrônicas ou construções arquitetônicas colossais.</p>
+                    </div>
+                </div>
+
+                <!-- 2. MODOS DE JOGO -->
+                <div id="tab-modos" class="tab-content">
+                    <div class="guide-header">Modos de Jogo</div>
+                    <div class="guide-desc">Como você deseja vivenciar a sua jornada no mundo cúbico?</div>
+
+                    <div class="info-card">
+                        <h3>Sobrevivência (Survival) <span class="tag-badge">Padrão</span></h3>
+                        <p>Os jogadores devem coletar recursos naturais como madeira e pedra encontrados no ambiente para criar certos blocos e itens. Dependendo da dificuldade, os monstros hostis desovam (spawnam) no escuro, exigindo que o jogador construa um abrigo e gerencie sua barra de fome e saúde.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Criativo (Creative) <span class="tag-badge">Construção</span></h3>
+                        <p>Os jogadores têm acesso a todos os recursos e itens do jogo através do inventário, podendo colocá-los e removê-los instantaneamente. Os avatares podem voar livremente pelo mapa, não sofrem danos de queda, não morrem por ataques e não possuem barras de fome.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Hardcore <span class="tag-badge">Desafio</span></h3>
+                        <p>Idêntico ao modo Sobrevivência, com a diferença de que o nível de dificuldade está travado no nível mais difícil ("Difícil") e o jogador possui apenas **uma vida**. Caso venha a morrer, o mundo é bloqueado permanentemente, transformando-se em modo espectador.</p>
+                    </div>
+                </div>
+
+                <!-- 3. O PRIMEIRO DIA -->
+                <div id="tab-primeirodia" class="tab-content">
+                    <div class="guide-header">Guia do Primeiro Dia</div>
+                    <div class="guide-desc">Passo a passo essencial para sobreviver às primeiras horas no jogo.</div>
+
+                    <div class="info-card">
+                        <h3>Passo 1: Colete Madeira <span class="tag-badge">Essencial</span></h3>
+                        <p>Assim que nascer (spawnar) em um mundo, aproxime-se de árvores e socue os troncos até coletar pelo menos 4 a 6 blocos de madeira bruta. A madeira é a fundação de toda a sua progressão tecnológica inicial.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Passo 2: Crie Ferramentas Básicas <span class="tag-badge">Crafting</span></h3>
+                        <p>Abra seu inventário e transforme a madeira em tábuas. Coloque 4 tábuas em um quadrado 2x2 para criar uma **Mesa de Trabalho (Crafting Table)**. Com ela posicionada no chão, fabrique uma picareta de madeira.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Passo 3: Minere Pedra e Garanta Abrigo <span class="tag-badge">Segurança</span></h3>
+                        <p>Use a picareta de madeira para quebrar blocos de pedra e conseguir paralelepípedos (cobblestone). Com eles, faça ferramentas de pedra (muito mais duráveis). Antes do sol se pôr, construa um pequeno abrigo e faça uma porta para se proteger de zumbis, esqueletos e aranhas.</p>
+                    </div>
+                </div>
+
+                <!-- 4. DIMENSÕES -->
+                <div id="tab-dimensoes" class="tab-content">
+                    <div class="guide-header">As Três Dimensões</div>
+                    <div class="guide-desc">Conheça os mundos paralelos acessíveis através de portais especiais.</div>
+
+                    <div class="info-card">
+                        <h3>O Overworld (Mundo Principal) <span class="tag-badge">Dimensão 1</span></h3>
+                        <p>O mundo onde você nasce por padrão. É composto por diversos biomas (florestas, desertos, oceanos, montanhas), vilas habitadas por aldeões, estruturas subterrâneas misteriosas e o ciclo natural de dia e noite.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>O Nether (Submundo) <span class="tag-badge">Dimensão 2</span></h3>
+                        <p>Uma dimensão infernal acessível por um portal feito de blocos de Obsidiana ativado com fogo. Repleto de lava, fortalezas habitadas por Blazes, porcos-guerreiros (Piglins) e ruínas ancestrais onde é possível obter Netherite.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>O Fim (The End) <span class="tag-badge">Dimensão Final</span></h3>
+                        <p>Uma ilha flutuante escura feita de pedra do fim, habitada por Endermen. É o lar do chefão final do jogo: o **Ender Dragon**. Derrotá-lo desbloqueia os créditos finais e acesso às Ilhas Externas do End.</p>
+                    </div>
+                </div>
+
+                <!-- 5. REDSTONE -->
+                <div id="tab-redstone" class="tab-content">
+                    <div class="guide-header">Mecânicas de Redstone</div>
+                    <div class="guide-desc">A energia elétrica do Minecraft: crie circuitos, automações e computadores.</div>
+
+                    <div class="info-card">
+                        <h3>O que é o Pó de Redstone? <span class="tag-badge">Eletricidade</span></h3>
+                        <p>Encontrado nas profundezas das cavernas, o pó de redstone funciona como um fio condutor de energia. Ele transmite sinais elétricos entre geradores de energia (como alavancas, botões e tochas de redstone) até componentes ativos (como portas, pistões e lâmpadas).</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Componentes Lógicos Principais <span class="tag-badge">Engenharia</span></h3>
+                        <p><strong>Repetidores:</strong> Retardam ou amplificam o sinal elétrico.<br><strong>Comparadores:</strong> Medem inventários ou níveis de sinal.<br><strong>Pistões:</strong> Movimentam blocos fisicamente pelo cenário para criar portas automáticas e fazendas automáticas.</p>
+                    </div>
+                </div>
+
+                <!-- 6. MOBS -->
+                <div id="tab-mobs" class="tab-content">
+                    <div class="guide-header">Mobs (Criaturas do Jogo)</div>
+                    <div class="guide-desc">Entenda o comportamento das diferentes espécies que habitam os mundos.</div>
+
+                    <div class="info-card">
+                        <h3>Mobs Passivos <span class="tag-badge" style="background-color: #2b7a3d;">Amigáveis</span></h3>
+                        <p>Criaturas que nunca atacam o jogador, mesmo se agredidas (ex: vacas, ovelhas, porcos, galinhas). Fornecem recursos vitais como comida, couro e lã.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Mobs Neutros <span class="tag-badge" style="background-color: #b8860b;">Cautela</span></h3>
+                        <p>Criaturas pacíficas por padrão, mas que se tornam hostis caso o jogador os ataque primeiro ou cometa certas ações (ex: Endermen se olhados diretamente nos olhos, lobos selvagens e abelhas).</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Mobs Hostis <span class="tag-badge" style="background-color: #aa3333;">Perigo</span></h3>
+                        <p>Criaturas agressivas que atacam o jogador à vista assim que há pouca iluminação ou à noite (ex: zumbis, esqueletos, creepers, aranhas e bruxas).</p>
+                    </div>
+                </div>
+
+                <!-- 7. CRAFTING E MINÉRIOS -->
+                <div id="tab-crafting" class="tab-content">
+                    <div class="guide-header">Minérios e Progressão</div>
+                    <div class="guide-desc">Descubra onde encontrar e para que servem os principais materiais.</div>
+
+                    <div class="info-card">
+                        <h3>Ferro (Iron) <span class="tag-badge">Fundamental</span></h3>
+                        <p>Encontrado em abundância nas cavernas do Overworld. Derretido na fornalha, gera lingotes de ferro usados para criar as armaduras, ferramentas e escudos mais úteis do jogo intermediário.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Diamante (Diamond) <span class="tag-badge">Valioso</span></h3>
+                        <p>O material clássico de alta resistência. Encontrado nas camadas mais profundas abaixo de y=0. É essencial para minerar obsidiana e preparar equipamentos para enfrentar o Nether e o The End.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Netherite <span class="tag-badge">O Mais Forte</span></h3>
+                        <p>Objeto de melhoria supremo criado combinando lingotes de Netherite (encontrados nos baús dos Bastiões do Nether ou restos antigos) com equipamentos de diamante em uma mesa de ferraria.</p>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const menuItems = document.querySelectorAll('.side-menu li');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const topBarTitle = document.getElementById('top-bar-title');
+        const sidebar = document.getElementById('app-sidebar');
+        const hamburgerToggle = document.getElementById('hamburger-toggle');
+
+        // Alternar menu lateral no mobile
+        hamburgerToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+        });
+
+        // Navegação entre abas explicativas
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                menuItems.forEach(li => li.classList.remove('active'));
+                item.classList.add('active');
+
+                const targetId = item.getAttribute('data-target');
+                const titleText = item.getAttribute('data-title');
+
+                tabContents.forEach(tab => tab.classList.remove('active'));
+                const targetTab = document.getElementById(targetId);
+                if(targetTab) targetTab.classList.add('active');
+                topBarTitle.textContent = titleText;
+
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

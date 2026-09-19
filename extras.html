@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Minecraft - Criar de...</title>
+    <style>
+        /* Variáveis de Cores Estilo Minecraft Bedrock */
+        :root {
+            --topbar-bg: #E3E3E3;
+            --topbar-text: #111111;
+            --sidebar-bg: rgba(25, 25, 25, 0.95);
+            --sidebar-active: #4F4F4F;
+            --btn-green: #3D8825;
+            --btn-green-hover: #4a9c33;
+            --panel-bg: #373737;
+            --card-bg: #3B3B3B;
+            --border-color: #111111;
+            --text-light: #FFFFFF;
+            --text-gray: #AAAAAA;
+            --gold-pass: #FCCA34;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        /* Fundo com Imagem via URL + Sobreposição Escura */
+        body {
+            background: linear-gradient(rgba(20, 10, 5, 0.7), rgba(20, 10, 5, 0.85)),
+                url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1920&auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* BARRA SUPERIOR */
+        .top-bar {
+            height: 48px;
+            background-color: var(--topbar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+            z-index: 100;
+            flex-shrink: 0;
+            padding: 0 10px;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-btn,
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--topbar-text);
+            padding: 0 12px;
+            cursor: pointer;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover,
+        .hamburger-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ocultar hambúrguer no desktop se preferir, ou mantê-lo visível para toggle flexível */
+        .hamburger-btn {
+            display: none;
+        }
+
+        .top-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--topbar-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        /* Mais coisas: Barra de pesquisa e Perfil na barra superior */
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-search {
+            background: #fff;
+            border: 1.5px solid var(--border-color);
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 2px;
+            width: 180px;
+            color: #333;
+            outline: none;
+        }
+
+        .top-profile {
+            background: #444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border: 1.5px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            padding: 15px;
+            gap: 20px;
+            height: calc(100vh - 48px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* BARRA LATERAL (MENU) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+            height: 100%;
+            flex-shrink: 0;
+            z-index: 150;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-criar {
+            background-color: var(--btn-green);
+            color: var(--text-light);
+            border: 2px solid var(--border-color);
+            margin: 12px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.2), inset -1px -1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-criar:hover {
+            background-color: var(--btn-green-hover);
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 12px;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 2px solid transparent;
+            margin: 2px 8px;
+        }
+
+        .menu-item:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-active);
+            border: 2px solid var(--border-color);
+        }
+
+        /* Backdrop para fechar o menu no telemóvel */
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 140;
+            display: none;
+        }
+
+        .sidebar-backdrop.active {
+            display: block;
+        }
+
+        /* ÁREA DE CONTEÚDO */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding-right: 5px;
+            height: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* SCROLLBAR NATIVA */
+        .content-area::-webkit-scrollbar,
+        .modal-body::-webkit-scrollbar,
+        .menu-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track,
+        .modal-body::-webkit-scrollbar-track,
+        .menu-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 1px solid var(--border-color);
+        }
+
+        .content-area::-webkit-scrollbar-thumb,
+        .modal-body::-webkit-scrollbar-thumb,
+        .menu-list::-webkit-scrollbar-thumb {
+            background: #D0D0D0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ABA ADQUIRIDOS */
+        .empty-state-box {
+            background-color: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 30px;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .empty-state-box h2 {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .empty-illustration {
+            width: 120px;
+            height: 70px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-box p {
+            font-size: 12px;
+            color: var(--text-gray);
+            max-width: 420px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-gray {
+            background-color: #E0E0E0;
+            color: #111;
+            border: 2px solid var(--border-color);
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: inset 1px 1px 0 #fff;
+        }
+
+        .btn-gray:hover {
+            background-color: #F0F0F0;
+        }
+
+        /* PAINÉIS E CARDS */
+        .panel-header {
+            background-color: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            padding: 12px 15px;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .panel-header h2 {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 900;
+            margin-bottom: 2px;
+        }
+
+        .panel-header p {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .pass-header {
+            background-color: #222;
+            border: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .pass-logo {
+            color: var(--gold-pass);
+            font-size: 16px;
+            font-weight: 900;
+            line-height: 0.9;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .pass-logo span {
+            display: block;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .pass-trial-text {
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        /* GRID DE CARDS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+            position: relative;
+            transition: transform 0.1s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .card.pass-item {
+            border-color: var(--gold-pass);
+        }
+
+        .card-img {
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .badge-addon {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background-color: #222;
+            color: var(--gold-pass);
+            border: 2px solid var(--gold-pass);
+            font-size: 10px;
+            font-weight: bold;
+            padding: 1px 5px;
+        }
+
+        .card-info {
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 60px;
+        }
+
+        .card-title {
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-author {
+            color: var(--text-gray);
+            font-size: 10px;
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
+
+        .card-rating {
+            color: var(--gold-pass);
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .card-rating span {
+            color: var(--text-gray);
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-container {
+            background-color: var(--panel-bg);
+            border: 3px solid var(--border-color);
+            width: 100%;
+            max-width: 800px;
+            height: 520px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            animation: modalPop 0.2s ease-out;
+        }
+
+        @keyframes modalPop {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background-color: #2b2b2b;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+
+        .modal-close:hover {
+            background-color: #e81123;
+        }
+
+        .modal-body {
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .modal-hero {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--border-color);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+        }
+
+        .modal-hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        .modal-hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .modal-hero-content h2 {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 900;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .modal-hero-content p {
+            font-size: 12px;
+            color: var(--gold-pass);
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .modal-info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-section-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--gold-pass);
+            margin-bottom: 6px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 3px;
+        }
+
+        .modal-desc {
+            font-size: 11px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        .modal-specs {
+            background-color: #2b2b2b;
+            border: 2px solid var(--border-color);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 4px;
+        }
+
+        .spec-label {
+            color: var(--text-gray);
+            font-weight: bold;
+        }
+
+        .spec-value {
+            color: #fff;
+        }
+
+        .modal-footer {
+            background-color: #2b2b2b;
+            border-top: 2px solid var(--border-color);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-modal-action {
+            background-color: var(--btn-green);
+            color: white;
+            border: 2px solid var(--border-color);
+            padding: 8px 20px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-modal-action:hover {
+            background-color: var(--btn-green-hover);
+        }
+
+        /* ==========================================
+           RESPONSIVIDADE E CENTRALIZAÇÃO MOBILE
+           ========================================== */
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-search {
+                display: none;
+            }
+
+            /* Ocultar barra de pesquisa em ecrãs médios se faltar espaço */
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex;
+            }
+
+            /* Ativar botão hambúrguer no telemóvel */
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Sidebar passa a ser um menu lateral flutuante (gaveta) */
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 48px;
+                bottom: 0;
+                width: 260px;
+                transform: translateX(-100%);
+                z-index: 150;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-layout {
+                padding: 10px;
+                justify-content: center;
+                /* Centralizar conteúdo principal */
+            }
+
+            .top-title {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Backdrop escuro para quando o menu mobile estiver aberto -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleMobileMenu()"></div>
+
+    <!-- Barra Superior -->
+    <header class="top-bar">
+        <div class="top-left">
+            <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+            <button class="back-btn">&lt;</button>
+        </div>
+        <h1 class="top-title">Criar de...</h1>
+        <div class="top-right">
+            <input type="text" class="top-search" placeholder="Pesquisar marketplace...">
+            <div class="top-profile" onclick="alert('Perfil: MatheuZera')">Perfil</div>
+        </div>
+    </header>
+
+    <!-- Layout Principal -->
+    <div class="main-layout">
+
+        <!-- Menu Lateral Esquerdo / Gaveta Mobile -->
+        <aside id="sidebarMenu" class="sidebar">
+            <button class="btn-criar" onclick="alert('A criar novo mundo padrão...')">Criar novo mundo</button>
+            <div class="menu-list">
+                <div class="menu-item" onclick="switchTab('pass', this)">Marketplace Pass</div>
+                <div class="menu-item" onclick="switchTab('destaque', this)">Criadores em destaque</div>
+                <div class="menu-item active" onclick="switchTab('adquiridos', this)">Adquiridos por mim (0)</div>
+            </div>
+        </aside>
+
+        <!-- Área de Conteúdo Direita -->
+        <div class="content-area">
+
+            <!-- 1. ABA: MARKETPLACE PASS -->
+            <div id="tab-pass" class="tab-content">
+                <div class="pass-header">
+                    <div class="pass-logo">Marketplace<br><span>Pass</span></div>
+                    <div class="pass-trial-text">Iniciar versão de teste<br>grátis!</div>
+                </div>
+
+                <div class="grid">
+                    <div class="card pass-item" onclick='openModal({
+                        title: "The Bloop Add-On",
+                        author: "por Mythicus",
+                        rating: "★ 4.5 (4.219)",
+                        image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80",
+                        desc: "Mergulhe nas profundezas inexploradas do oceano com o The Bloop Add-On. Descubra novas criaturas colossais, biomas marinhos misteriosos, ferramentas de exploração submarina avançadas e itens exclusivos para sobrevivência aquática.",
+                        version: "1.18.2",
+                        size: "45.2 MB",
+                        type: "Add-On & Mundo"
+                    })'>
+                        <div class="card-img"
+                            style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&auto=format&fit=crop&q=80');">
+                            <div class="badge-addon">Add-On</div>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">The Bloop Add-On</div>
+                            <div class="card-author">por Mythicus</div>
+                            <div class="card-rating">★ 4.5 <span>(4.219)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card pass-item" onclick='openModal({
+                        title: "Cidades de Vila Add-On",
+                        author: "por Float Studios",
+                        rating: "★ 4.2 (2.040)",
+                        image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
+                        desc: "Transforme vilas comuns em metrópoles medievais vibrantes! Este pacote expande a inteligência artificial dos aldeões, adiciona novas construções arquitetónicas grandiosas, muralhas defensivas e sistemas de comércio dinâmicos.",
+                        version: "2.0.1",
+                        size: "78.5 MB",
+                        type: "Add-On Estrutural"
+                    })'>
+                        <div class="card-img"
+                            style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80');">
+                            <div class="badge-addon">Add-On</div>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">Cidades de vila Add-On</div>
+                            <div class="card-author">por Float Studios</div>
+                            <div class="card-rating">★ 4.2 <span>(2.040)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card pass-item" onclick='openModal({
+                        title: "Ações e Coisas",
+                        author: "por Oreville Studios",
+                        rating: "★ 4.9 (157.116)",
+                        image: "https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80",
+                        desc: "O pacote definitivo de animações e interações para o Minecraft Bedrock. Adicione movimentos fluidos, novas físicas de blocos, emotes personalizados e interações imersivas com o ambiente.",
+                        version: "3.4.0",
+                        size: "112.0 MB",
+                        type: "Pacote Completo"
+                    })'>
+                        <div class="card-img"
+                            style="background-image: url('https://images.unsplash.com/photo-1563089145-599997674d42?w=400&auto=format&fit=crop&q=80');">
+                            <div class="badge-addon">Pass</div>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">Ações e Coisas</div>
+                            <div class="card-author">por Oreville Studios</div>
+                            <div class="card-rating">★ 4.9 <span>(157.116)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ABA: CRIADORES EM DESTAQUE -->
+            <div id="tab-destaque" class="tab-content">
+                <div class="panel-header">
+                    <h2>Criadores em Destaque</h2>
+                    <p>Explore os modelos de mundo mais recentes de criadores selecionados do Marketplace.</p>
+                </div>
+
+                <div class="grid">
+                    <div class="card" onclick='openModal({
+                        title: "Lendas do Éter",
+                        author: "por Spark Universe",
+                        rating: "★ 4.3 (1.049)",
+                        image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
+                        desc: "Aventure-se em ilhas flutuantes mágicas repletas de ruínas ancestrais, chefes épicos e tesouros celestes lendários. Uma experiência de sobrevivência nas nuvens totalmente reformulada.",
+                        version: "1.5.0",
+                        size: "150.4 MB",
+                        type: "Mundo de Aventura"
+                    })'>
+                        <div class="card-img"
+                            style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80');">
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">Lendas do Éter</div>
+                            <div class="card-author">por Spark Universe</div>
+                            <div class="card-rating">★ 4.3 <span>(1.049)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card" onclick='openModal({
+                        title: "Coisas Mais Estranhas",
+                        author: "por Minecraft",
+                        rating: "★ 4.3 (5.597)",
+                        image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80",
+                        desc: "Entre no Mundo Invertido! Explore cenários misteriosos inspirados em clássicos dos anos 80, enfrente criaturas aterrorizantes e desvende segredos sombrios escondidos na cidade.",
+                        version: "1.0.2",
+                        size: "95.8 MB",
+                        type: "Mundo Temático"
+                    })'>
+                        <div class="card-img"
+                            style="background-image: url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&auto=format&fit=crop&q=80');">
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">Coisas Mais Estranhas</div>
+                            <div class="card-author">por Minecraft</div>
+                            <div class="card-rating">★ 4.3 <span>(5.597)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card" onclick='openModal({
+                        title: "Casa de Bluey",
+                        author: "por Jigarbov Productions",
+                        rating: "★ 4.6 (6.332)",
+                        image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80",
+                        desc: "Explore a icónica casa da Bluey e sua vizinhança! Divirta-se com mini-jogos interativos, explore cômodos detalhados e jogue com seus personagens favoritos em um mundo alegre e colorido.",
+                        version: "1.1.0",
+                        size: "64.1 MB",
+                        type: "Mapa Interativo"
+                    })'>
+                        <div class="card-img"
+                            style="background-image: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&auto=format&fit=crop&q=80');">
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">Casa de Bluey</div>
+                            <div class="card-author">por Jigarbov Productions</div>
+                            <div class="card-rating">★ 4.6 <span>(6.332)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. ABA: ADQUIRIDOS POR MIM -->
+            <div id="tab-adquiridos" class="tab-content active">
+                <div class="empty-state-box">
+                    <h2>Você não possui nenhum conteúdo... ainda!</h2>
+
+                    <svg class="empty-illustration" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="70" width="160" height="30" fill="#E2C9A1" />
+                        <rect x="140" y="70" width="30" height="20" fill="#3D2015" />
+                        <rect x="85" y="45" width="16" height="25" fill="#4B7B4B" />
+                        <rect x="85" y="25" width="16" height="20" fill="#D2A385" />
+                        <rect x="85" y="25" width="16" height="6" fill="#D36B15" />
+                        <rect x="115" y="50" width="25" height="20" fill="#8C5C38" />
+                        <rect x="115" y="50" width="25" height="4" fill="#333" />
+                        <rect x="126" y="52" width="3" height="4" fill="#A0A0A0" />
+                        <rect x="65" y="50" width="2" height="20" fill="#8C5C38" />
+                        <rect x="61" y="45" width="10" height="10" fill="#A0A0A0" />
+                    </svg>
+
+                    <p>Explore milhares de mundos, modelos e aparências originais no Marketplace - ou importe os seus.
+                    </p>
+
+                    <div class="btn-row">
+                        <button class="btn-gray" onclick="alert('Indo para o Marketplace oficial...')">Ir para o
+                            Marketplace</button>
+                        <button class="btn-gray"
+                            onclick="alert('Abrindo seletor de importação de ficheiros .mcpack / .mcworld...')">Importar
+                            modelo</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DETALHADO -->
+    <div id="itemModal" class="modal-overlay" onclick="outsideClose(event)">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitleBar">Detalhes do Conteúdo</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalHero" class="modal-hero">
+                    <div class="modal-hero-overlay"></div>
+                    <div class="modal-hero-content">
+                        <h2 id="modalTitle">Título do Item</h2>
+                        <p id="modalAuthor">por Criador</p>
+                    </div>
+                </div>
+
+                <div class="modal-info-grid">
+                    <div>
+                        <div class="modal-section-title">Sobre esta experiência</div>
+                        <p id="modalDesc" class="modal-desc">Descrição completa do item carregada dinamicamente...</p>
+                    </div>
+                    <div>
+                        <div class="modal-section-title">Especificações</div>
+                        <div class="modal-specs">
+                            <div class="spec-item"><span class="spec-label">Avaliação:</span><span id="modalRating"
+                                    class="spec-value">★ 4.5</span></div>
+                            <div class="spec-item"><span class="spec-label">Versão:</span><span id="modalVersion"
+                                    class="spec-value">1.18+</span></div>
+                            <div class="spec-item"><span class="spec-label">Tamanho:</span><span id="modalSize"
+                                    class="spec-value">45 MB</span></div>
+                            <div class="spec-item"><span class="spec-label">Tipo:</span><span id="modalType"
+                                    class="spec-value">Add-On</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-gray" onclick="closeModal()">Cancelar</button>
+                <button class="btn-modal-action" onclick="alert('Download e instalação iniciados com sucesso!')">Baixar
+                    / Instalar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de Abas
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+            element.classList.add('active');
+
+            // Fechar menu mobile automaticamente ao trocar de aba (opcional)
+            if (window.innerWidth <= 768) {
+                toggleMobileMenu();
+            }
+        }
+
+        // Toggle do Menu Hambúrguer (Telemóvel)
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('mobile-open');
+            backdrop.classList.toggle('active');
+        }
+
+        // Sistema de Modais Ricos
+        function openModal(data) {
+            document.getElementById('modalTitleBar').innerText = data.title;
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalAuthor').innerText = data.author;
+            document.getElementById('modalDesc').innerText = data.desc;
+            document.getElementById('modalRating').innerText = data.rating;
+            document.getElementById('modalVersion').innerText = data.version;
+            document.getElementById('modalSize').innerText = data.size;
+            document.getElementById('modalType').innerText = data.type;
+            document.getElementById('modalHero').style.backgroundImage = `url('${data.image}')`;
+
+            document.getElementById('itemModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').classList.remove('open');
+        }
+
+        function outsideClose(event) {
+            if (event.target.id === 'itemModal') {
+                closeModal();
+            }
+        }
+
+        // Atalho ESC para fechar modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ty-el's UI Pack - Mini Wikipédia & Notas</title>
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-overlay: rgba(18, 18, 19, 0.95);
+            --panel-bg: #2a2b2c;
+            --panel-dark-bg: #1c1d1e;
+            --card-bg: #353638;
+            --card-hover: #454649;
+            --card-border: #151617;
+            --tab-active: #4a4b4c;
+            --tab-inactive: #242526;
+            --text-main: #ffffff;
+            --text-muted: #bcbcbc;
+            --accent-green: #5ca934;
+            --accent-blue: #3978f6;
+            --pure-white: #ffffff;
+            --ease-bedrock: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+        }
+
+        body {
+            background-color: #121213;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* Janela Principal Estilo Bedrock UI */
+        .window {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-overlay);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Barra Superior */
+        .top-bar {
+            background-color: var(--panel-dark-bg);
+            height: 65px;
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            border-bottom: 4px solid var(--card-border);
+            z-index: 20;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--pure-white);
+            padding: 8px;
+            margin-right: 15px;
+        }
+
+        .top-title-container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .top-logo-box {
+            background-color: var(--pure-white);
+            color: #111;
+            font-weight: 900;
+            font-size: 15px;
+            padding: 8px 12px;
+            border: 2px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-logo-box i {
+            color: #111;
+        }
+
+        .top-bar h1 {
+            color: var(--pure-white);
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+        }
+
+        /* Container Principal */
+        .content-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar Esquerda */
+        .sidebar {
+            width: 380px;
+            background-color: var(--panel-dark-bg);
+            border-right: 4px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            transition: transform 0.3s var(--ease-bedrock);
+            z-index: 15;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--panel-bg);
+            border: 2px solid var(--card-border);
+        }
+
+        .nav-category {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--pure-white);
+            font-weight: 900;
+            padding: 18px 22px 10px 22px;
+            letter-spacing: 1.2px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--card-border);
+        }
+
+        .nav-item {
+            padding: 16px 22px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-left: 6px solid transparent;
+        }
+
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+            color: var(--pure-white); /* Ícones em Branco */
+        }
+
+        .nav-item:hover {
+            background-color: var(--tab-inactive);
+            color: var(--pure-white);
+        }
+
+        .nav-item.active {
+            background-color: var(--tab-active);
+            color: var(--pure-white);
+            font-weight: bold;
+            border-left-color: var(--pure-white);
+        }
+
+        /* Painel de Conteúdo Direita */
+        .main-panel {
+            flex: 1;
+            padding: 45px;
+            overflow-y: auto;
+            background-color: var(--panel-bg);
+            position: relative;
+            font-size: 1.25rem; /* Textos Maiores */
+            line-height: 1.8;
+        }
+
+        .main-panel::-webkit-scrollbar {
+            width: 14px;
+        }
+
+        .main-panel::-webkit-scrollbar-thumb {
+            background: var(--card-bg);
+            border: 3px solid var(--panel-dark-bg);
+        }
+
+        .tab-content {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s var(--ease-bedrock);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos Internos e Tipografia */
+        .pack-header-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 28px;
+            margin-bottom: 35px;
+        }
+
+        .pack-big-logo {
+            background-color: var(--pure-white);
+            color: #111;
+            width: 90px;
+            height: 90px;
+            border: 3px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .pack-big-logo span {
+            font-size: 13px;
+        }
+
+        .pack-title-area h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--pure-white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pack-version {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Cabeçalhos de Seção Estilo Minecraft */
+        .section-title-main {
+            background-color: var(--card-bg);
+            color: var(--pure-white);
+            padding: 14px 20px;
+            font-size: 1.35rem;
+            letter-spacing: 1.5px;
+            margin: 35px 0 18px 0;
+            border: 2px solid var(--card-border);
+            text-transform: uppercase;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .section-title-main i {
+            color: var(--pure-white);
+        }
+
+        p, ul {
+            font-size: 1.2rem;
+            color: var(--text-main); /* Textos em Branco por padrão */
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 5px;
+        }
+
+        ul li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        ul li i {
+            color: var(--accent-green);
+            font-size: 14px;
+        }
+
+        /* Cores em textos <p> restritas a formatações específicas */
+        .highlight-green {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .highlight-red {
+            color: #ff5555;
+            font-weight: bold;
+        }
+
+        .highlight-white {
+            color: var(--pure-white);
+            font-weight: bold;
+        }
+
+        .code-box {
+            background: var(--panel-dark-bg);
+            border: 2px solid var(--card-border);
+            padding: 10px 16px;
+            font-family: monospace;
+            font-size: 1.05rem;
+            color: #ff9999;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
+        /* Thumbs / Banners da Internet com URL direto */
+        .wiki-thumb-container {
+            background-color: var(--panel-dark-bg);
+            border: 3px solid var(--card-border);
+            padding: 22px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+        }
+
+        .wiki-thumb-container img {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border: 2px solid var(--card-border);
+            display: block;
+            margin: 0 auto 15px auto;
+        }
+
+        .wiki-thumb-caption {
+            font-size: 1.05rem;
+            color: var(--pure-white);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Botões Estilizados */
+        .mc-btn {
+            background-color: var(--card-bg);
+            color: var(--pure-white);
+            border: 3px solid var(--card-border);
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 18px;
+            text-decoration: none;
+        }
+
+        .mc-btn:hover {
+            background-color: var(--card-hover);
+        }
+
+        .mc-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ACORDEÕES */
+        .accordion-container {
+            margin-top: 25px;
+        }
+
+        .accordion-header {
+            background-color: var(--card-bg);
+            border: 2px solid var(--card-border);
+            padding: 16px 22px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--pure-white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.15s;
+        }
+
+        .accordion-header:hover {
+            background-color: var(--card-hover);
+        }
+
+        .accordion-content {
+            display: none;
+            background-color: rgba(0,0,0,0.4);
+            border: 2px solid var(--card-border);
+            border-top: none;
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+
+        .accordion-content.open {
+            display: block;
+        }
+
+        /* Media Queries Bem Construídas */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 320px;
+            }
+            .main-panel {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex;
+            }
+            .sidebar {
+                position: absolute;
+                top: 65px;
+                left: 0;
+                bottom: 0;
+                width: 85%;
+                max-width: 320px;
+                transform: translateX(-100%);
+                box-shadow: 12px 0 30px rgba(0,0,0,0.9);
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .main-panel {
+                padding: 20px;
+                font-size: 1.1rem;
+            }
+            .pack-header-box {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-bar {
+                padding: 0 15px;
+                height: 55px;
+            }
+            .top-bar h1 {
+                font-size: 1rem;
+            }
+            .main-panel {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <!-- Barra Superior -->
+        <header class="top-bar">
+            <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Abrir Menu">
+                <i class="fa-solid fa-bars fa-lg"></i>
+            </button>
+            <div class="top-title-container">
+                <div class="top-logo-box">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h1 id="top-title">SOBRE TY-EL UI</h1>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <!-- Sidebar Esquerda -->
+            <aside class="sidebar" id="app-sidebar">
+                <div class="nav-category"><i class="fa-solid fa-circle-info"></i> Notas do Pack</div>
+                <div class="nav-item active" onclick="switchTab('sobre', 'SOBRE TY-EL UI', this)"><i class="fa-solid fa-house"></i> Sobre Ty-el UI</div>
+                <div class="nav-item" onclick="switchTab('recursos', 'RECURSOS', this)"><i class="fa-solid fa-star"></i> Recursos</div>
+                <div class="nav-item" onclick="switchTab('subpacks', 'RECURSOS SUBPACKS', this)"><i class="fa-solid fa-sliders"></i> Recursos Subpacks</div>
+                <div class="nav-item" onclick="switchTab('compat', 'MODO DE COMPATIBILIDADE', this)"><i class="fa-solid fa-puzzle-piece"></i> Compatibilidade</div>
+                <div class="nav-item" onclick="switchTab('creditos', 'CRÉDITOS', this)"><i class="fa-solid fa-users"></i> Créditos</div>
+                <div class="nav-item" onclick="switchTab('termos', 'TERMOS DE USO', this)"><i class="fa-solid fa-file-contract"></i> Termos de Uso</div>
+                
+                <div class="nav-category"><i class="fa-solid fa-graduation-cap"></i> Mini Wikipédia</div>
+                <div class="nav-item" onclick="switchTab('wiki-movimento', 'COMO JOGAR: EM MOVIMENTO', this)"><i class="fa-solid fa-person-walking"></i> Em Movimento</div>
+                <div class="nav-item" onclick="switchTab('wiki-recursos', 'COMO JOGAR: COLETANDO RECURSOS', this)"><i class="fa-solid fa-hand-fist"></i> Coletando Recursos</div>
+                <div class="nav-item" onclick="switchTab('wiki-itens', 'COMO JOGAR: SELECIONANDO ITENS', this)"><i class="fa-solid fa-computer-mouse"></i> Selecionando Itens</div>
+                <div class="nav-item" onclick="switchTab('wiki-inventario', 'COMO JOGAR: INVENTÁRIO', this)"><i class="fa-solid fa-backpack"></i> Inventário</div>
+                <div class="nav-item" onclick="switchTab('wiki-alimento', 'COMO JOGAR: ALIMENTO', this)"><i class="fa-solid fa-utensils"></i> Alimento</div>
+
+                <div class="nav-category"><i class="fa-solid fa-book"></i> Enciclopédia Minecraft</div>
+                <div class="nav-item" onclick="switchTab('wiki-armadura', 'ENCICLOPÉDIA: ARMADURA', this)"><i class="fa-solid fa-shield-halved"></i> Armadura e Defesa</div>
+                <div class="nav-item" onclick="switchTab('wiki-montarias', 'ENCICLOPÉDIA: MONTARIAS', this)"><i class="fa-solid fa-horse"></i> Montarias</div>
+                <div class="nav-item" onclick="switchTab('wiki-complementos', 'ENCICLOPÉDIA: COMPLEMENTOS', this)"><i class="fa-solid fa-cubes"></i> Complementos</div>
+
+                <div class="nav-category"><i class="fa-solid fa-clock-rotate-left"></i> Changelog</div>
+                <div class="nav-item" onclick="switchTab('changelog-125', 'CHANGELOG V1.2.5', this)"><i class="fa-solid fa-code-commit"></i> v1.2.5 & v1.2.5a</div>
+            </aside>
+
+            <!-- Painel de Conteúdo Direita -->
+            <main class="main-panel">
+                
+                <!-- 1. SOBRE -->
+                <div id="sobre" class="tab-content active">
+                    <div class="pack-header-box">
+                        <div class="pack-big-logo">
+                            UI
+                            <span>v1.2</span>
+                        </div>
+                        <div class="pack-title-area">
+                            <h2>THE TY-EL'S UI PACK</h2>
+                            <div class="pack-version">v1.2.5a (119)-2025.8.26-(r1.21.101)</div>
+                        </div>
+                    </div>
+
+                    <p><b class="highlight-white"><i class="fa-solid fa-user-gear"></i> Criador:</b></p>
+                    <ul>
+                        <li><i class="fa-brands fa-x-twitter"></i> X/Twitter: https://x.com/tlgm2308</li>
+                        <li><i class="fa-brands fa-youtube"></i> YouTube: @TLGM2308</li>
+                        <li><i class="fa-brands fa-discord"></i> Discord: tlgm2308 | Servidor: discord.gg/zMA7xrb</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;">
+                        O Pacote Ty-el's UI é um tratamento visual completo para a interface Vanilla do Minecraft Bedrock. Adiciona novos recursos, menus refinados e novos sons de clique personalizados, mantendo a autêntica essência original do jogo.
+                    </p>
+
+                    <div class="wiki-thumb-container">
+                        <!-- Imagem de banner direta da internet -->
+                        <img src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&w=1200&q=80" alt="Banner Minecraft Estilo">
+                        <div class="wiki-thumb-caption">Pré-visualização do Menu Principal Ty-el UI</div>
+                    </div>
+                </div>
+
+                <!-- 2. RECURSOS -->
+                <div id="recursos" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-star"></i> Recursos do Pacote</div>
+                    <p>O Ty-el UI integra melhorias profundas na experiência de navegação:</p>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Novos sons personalizados para cliques e interações de menu.</li>
+                        <li><i class="fa-solid fa-check"></i> Otimização avançada de ecrãs modais e menus de pausa.</li>
+                        <li><i class="fa-solid fa-check"></i> Compatibilidade inteligente com pacotes de texturas externos.</li>
+                    </ul>
+                </div>
+
+                <!-- 3. SUBPACKS -->
+                <div id="subpacks" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-sliders"></i> Recursos Subpacks</div>
+                    <p>Personalize opções visuais diretamente nas configurações antes de entrar no mundo:</p>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Seleção de temas de cores personalizados (Ty-el Themes).</li>
+                        <li><i class="fa-solid fa-check"></i> Ativação/desativação de utilitários rápidos no HUD.</li>
+                    </ul>
+                </div>
+
+                <!-- 4. COMPATIBILIDADE -->
+                <div id="compat" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-puzzle-piece"></i> Modo de Compatibilidade</div>
+                    <p>Permite definir valores na secção <span class="code-box">/ui/_global_variables.json</span> como <span class="highlight-green">true</span>.</p>
+                    
+                    <div class="accordion-container">
+                        <div class="accordion-header" onclick="toggleAccordion('acc-habilitado', this)">
+                            <span><i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i> HABILITADO</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div id="acc-habilitado" class="accordion-content">
+                            <h4 style="font-size: 1.2rem; color: var(--pure-white); margin-bottom: 10px;">CHAINSKETCH - MINIATURAS</h4>
+                            <div class="code-box">"$is_chainsketch_utm"</div>
+                            <p style="margin-top: 10px;">Oculta botões do HUD e utilitários, substituindo a configuração predefinida.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. CRÉDITOS -->
+                <div id="creditos" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-users"></i> Créditos</div>
+                    <p>Desenvolvido por <b class="highlight-white">TLGM2308</b>.</p>
+                    <p>Agradecimentos especiais à comunidade de criadores de UI do Minecraft Bedrock.</p>
+                </div>
+
+                <!-- 6. TERMOS DE USO -->
+                <div id="termos" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-file-contract"></i> Termos de Uso</div>
+                    <p class="highlight-green"><i class="fa-solid fa-thumbs-up"></i> PODE FAZER:</p>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Criar conteúdos sobre o pack indicando os devidos créditos.</li>
+                        <li><i class="fa-solid fa-check"></i> Personalizar e partilhar configurações do <span class="code-box">_global_variables.json</span>.</li>
+                    </ul>
+                    <p class="highlight-red" style="margin-top: 25px;"><i class="fa-solid fa-thumbs-down"></i> NÃO PODE:</p>
+                    <ul>
+                        <li><i class="fa-solid fa-xmark"></i> Reclamar códigos como sendo seus ou redistribuir edições publicamente.</li>
+                    </ul>
+                </div>
+
+                <!-- WIKI: EM MOVIMENTO -->
+                <div id="wiki-movimento" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-person-walking"></i> Como Jogar: Em Movimento</div>
+                    <p>Boas-vindas ao Mundo Superior, um mundo blocado cheio de aventuras e possibilidades[cite: 50]!</p>
+                    <p>Olhe ao redor com o mouse[cite: 50].</p>
+                    <p>Ande pelo mundo usando <span class="highlight-white">W A S D</span>. Pressione <span class="highlight-white">ESPAÇO</span> para saltar[cite: 50].</p>
+                    
+                    <div class="wiki-thumb-container">
+                        <!-- Imagem de banner direta da internet -->
+                        <img src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1200&q=80" alt="Banner Aventura Minecraft">
+                        <div class="wiki-thumb-caption">Ilustração: Controlos Básicos de Movimento</div>
+                    </div>
+                </div>
+
+                <!-- WIKI: COLETANDO RECURSOS -->
+                <div id="wiki-recursos" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-hand-fist"></i> Coletando Recursos</div>
+                    <p>O mundo está cheio de recursos, incluindo <span class="highlight-white">blocos de construção, materiais de fabricação e comida</span>[cite: 49].</p>
+                    <p>Você pode <span class="highlight-white">quebrar blocos</span> com as mãos para coletar recursos como terra e madeira. Mire em um bloco, depois, <span class="highlight-white">clique e segure</span> o botão do mouse até que ele quebre e os recursos caiam[cite: 49].</p>
+                    <p>Pegue qualquer recurso largado andando pelos ícones flutuantes[cite: 49].</p>
+                </div>
+
+                <!-- WIKI: SELECIONANDO ITENS -->
+                <div id="wiki-itens" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-computer-mouse"></i> Selecionando Itens</div>
+                    <p>Os recursos que você coletar irão aparecer em sua <span class="highlight-white">barra de atalho</span>, que você encontra na parte inferior da tela[cite: 48].</p>
+                    <p>Para segurar um item na mão, role a roda do mouse para selecionar o item. Você também pode usar um número atalho: 1 é o primeiro espaço da barra de atalho e 9 é o último[cite: 48].</p>
+                    <h3 class="section-title-main" style="font-size: 1.2rem; margin-top: 25px;">1. Barra Rápida</h3>
+                    <p>Alguns itens, como baldes, varas de pesca e arcos, podem ser usados com um toque no botão construir/usar[cite: 48].</p>
+                </div>
+
+                <!-- WIKI: INVENTÁRIO -->
+                <div id="wiki-inventario" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-backpack"></i> Inventário</div>
+                    <p>Sua barra rápida será preenchida conforme você coletar mais recursos. Pressione <span class="highlight-white">E</span> para acessar seu <span class="highlight-white">inventário</span>, onde você terá mais espaço para tudo o que coletou[cite: 47].</p>
+                    
+                    <h3 class="section-title-main" style="font-size: 1.2rem; margin-top: 25px;">1. Inventário</h3>
+                    <div class="wiki-thumb-container">
+                        <!-- Imagem de banner direta da internet -->
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80" alt="Banner Inventário e UI">
+                        <div class="wiki-thumb-caption">Interface da Tela de Inventário do Jogador</div>
+                    </div>
+                </div>
+
+                <!-- WIKI: ALIMENTO -->
+                <div id="wiki-alimento" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-utensils"></i> Alimento</div>
+                    <p>Você vai ficar com fome lentamente durante suas aventuras. Felizmente, o Mundo Superior está cheio de comida! Você pode coletar maçãs de árvores, carne de animais ou por que não cultivar suas próprias plantações usando uma enxada[cite: 46]?</p>
+                    <p>Para comer, selecione a comida na barra de atalho e clique e segure o botão direito do mouse. Mantenha a <span class="highlight-white">barra de fome</span> cheia para recuperar a vida quando sofrer dano[cite: 46].</p>
+                    <p>Alguns alimentos crus ficam melhores quando cozidos primeiro numa fogueira ou numa fornalha – a sua barriga vai agradecer[cite: 46]!</p>
+                </div>
+
+                <!-- WIKI: ARMADURA -->
+                <div id="wiki-armadura" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-shield-halved"></i> Enciclopédia: Armadura</div>
+                    <p>Ao usar Armadura, você consegue se proteger contra danos infligidos a você. O nível de sua armadura é representado por ícones no HUD. Quanto maior o nível, menos danos você sofrerá[cite: 45].</p>
+                    
+                    <h3 class="section-title-main" style="font-size: 1.2rem; margin-top: 25px;">Fabricação</h3>
+                    <p>A Armadura pode ser feita de Couro, Ferro, Ouro ou Diamante. A Armadura de Cota de Malha pode ser obtida por meio de negociação com aldeões ou ao saquear zumbis e esqueletos[cite: 45].</p>
+                    <p>Equipe a Armadura abrindo seu inventário e movendo as peças da Armadura no espaço apropriado ao lado de sua aparência de jogador[cite: 45].</p>
+
+                    <h3 class="section-title-main" style="font-size: 1.2rem; margin-top: 25px;">Escudo</h3>
+                    <p>O Escudo bloqueia danos recebidos. Ele pode ser equipado no slot para itens que não ficam à vista e na barra rápida[cite: 45].</p>
+                </div>
+
+                <!-- WIKI: MONTARIAS -->
+                <div id="wiki-montarias" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-horse"></i> Enciclopédia: Montarias</div>
+                    <p>Um jogador pode montar qualquer <span class="highlight-white">Cavalo, Burro, Mula, ou Camelo</span>. Apenas Cavalos podem ser equipados com armadura[cite: 44].</p>
+                    <p>As Mulas e os Burros podem ser equipados com alforjes (para transportar itens) ao anexar um Baú. Depois, você poderá ter acesso a esses alforjes enquanto monta ou se agacha[cite: 44].</p>
+                    
+                    <h3 class="section-title-main" style="font-size: 1.2rem; margin-top: 25px;">Domação</h3>
+                    <p>Os Cavalos, Burros e Mulas devem ser <span class="highlight-white">domados</span> antes de serem usados. Um jogador pode domar um Cavalo ao montá-lo e permanecer montado enquanto o Cavalo tenta derrubá-lo[cite: 44].</p>
+                    <p>Quando Corações aparecerem em volta do cavalo, significará que ele foi domado e não tentará mais derrubar o jogador[cite: 44].</p>
+                </div>
+
+                <!-- WIKI: COMPLEMENTOS -->
+                <div id="wiki-complementos" class="tab-content">
+                    <div class="section-title-main"><i class="fa-solid fa-cubes"></i> Enciclopédia: Complementos</div>
+                    <p>Complementos são um tipo de conteúdo disponível no Marketplace do Minecraft que permite que você adicione blocos personalizados, itens, criaturas, receitas e outros conteúdos do jogo ao seu mundo[cite: 51].</p>
+                    <p>Complementos permitem que você modifique seus mundos e Realms existentes através da tela Editar Mundo e na tela Criar Novo Mundo[cite: 51].</p>
+                    
+                    <h3 class="section-title-main" style="font-size: 1.2rem; margin-top: 25px;">Empilhando Complementos</h3>
+                    <p>Empilhar ou adicionar vários Complementos pode aumentar o tempo de carregamento e ocasionar resultados inesperados[cite: 51].</p>
+                    <p>Recomendamos que você salve uma cópia do seu mundo ou Realm antes de adicionar ou remover complementos[cite: 51].</p>
+
+                    <button class="mc-btn" onclick="alert('Abrindo página de perguntas frequentes...')">
+                        <i class="fa-solid fa-circle-question"></i> Perguntas...
+                    </button>
+                </div>
+
+                <!-- CHANGELOG -->
+                <div id="changelog-125" class="tab-content">
+                    <div class="section-title-main" style="color: var(--pure-white);"><i class="fa-solid fa-code-commit"></i> Changelog v1.2.5</div>
+                    <p><b>v1.2.5a (119)-2025.8.26</b></p>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Correção de erros em Server Form screens e ecrãs de blocos de estrutura.</li>
+                    </ul>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId, titleText, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            document.querySelectorAll('.sidebar .nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            document.getElementById('top-title').innerText = titleText;
+
+            if (window.innerWidth <= 768) {
+                toggleMobileSidebar();
+            }
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+
+        function toggleAccordion(contentId, headerElement) {
+            const content = document.getElementById(contentId);
+            const icon = headerElement.querySelector('.fa-chevron-down') || headerElement.querySelector('.fa-chevron-up');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                if(icon) { icon.style.transform = 'rotate(0deg)'; }
+            } else {
+                content.classList.add('open');
+                if(icon) { icon.style.transform = 'rotate(180deg)'; }
+            }
+            if(icon) { icon.style.transition = 'transform 0.2s ease'; }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft - Caixa de Entrada</title>
+    <!-- FontAwesome CDN para ícones fas fa- -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-window: #3c3d3f;
+            --bg-sidebar: #222325;
+            --bg-sidebar-hover: #2c2d30;
+            --bg-topbar: #e5e5e6;
+            --bg-row: #4d4e51;
+            --bg-row-hover: #55565a;
+            --border-dark: #111111;
+            --border-light: #6a6a6a;
+            --text-light: #f5f5f5;
+            --text-dark: #111111;
+            --text-gray: #b0b0b0;
+            --btn-green: #3c8527;
+            --btn-green-hover: #459a2d;
+            --badge-red: #ff5555;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-light);
+            overflow: hidden;
+        }
+
+        /* Janela com tamanho 80% grande */
+        .window {
+            width: 82vw;
+            height: 82vh;
+            min-width: 1050px;
+            min-height: 680px;
+            max-width: 1400px;
+            max-height: 850px;
+            background-color: var(--bg-window);
+            border: 3px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Barra Superior */
+        .top-bar {
+            background-color: var(--bg-topbar);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 3px solid var(--border-dark);
+            z-index: 20;
+        }
+
+        .top-left-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger-btn, .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .hamburger-btn {
+            display: none;
+        }
+
+        .top-bar h1 {
+            color: var(--text-dark);
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+        }
+
+        .top-icon {
+            cursor: pointer;
+            color: var(--text-dark);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Contentor Principal */
+        .content-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Menu Lateral (Sidebar) */
+        .sidebar {
+            width: 310px;
+            background-color: var(--bg-sidebar);
+            border-right: 3px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            gap: 3px;
+            transition: transform 0.3s ease;
+            z-index: 15;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text-gray);
+            font-weight: 500;
+            border-left: 5px solid transparent;
+            transition: background 0.15s, color 0.15s;
+            gap: 8px;
+        }
+
+        .menu-item:hover {
+            background-color: var(--bg-sidebar-hover);
+            color: var(--text-light);
+        }
+
+        .menu-item.active {
+            background-color: #313235;
+            color: #ffffff;
+            font-weight: 600;
+            border-left-color: var(--btn-green);
+        }
+
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-icon {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: currentColor;
+        }
+
+        /* Badge corrigido para evitar compressão */
+        .badge {
+            background-color: var(--badge-red);
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        /* Painel Direito */
+        .main-panel {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-y: auto;
+            background-color: var(--bg-window);
+            position: relative;
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .section-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            background-color: #313234;
+            padding: 7px 14px;
+            border: 2px solid var(--border-dark);
+            color: var(--text-gray);
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Linhas de Mensagens */
+        .message-row {
+            background-color: var(--bg-row);
+            border: 2px solid var(--border-dark);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .message-row:hover {
+            background-color: var(--bg-row-hover);
+        }
+
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--badge-red);
+        }
+
+        .message-texts h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3px;
+            text-align: left;
+        }
+
+        .message-texts span {
+            font-size: 12px;
+            color: var(--text-gray);
+            display: block;
+            text-align: left;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .message-date {
+            font-size: 13px;
+            color: var(--text-gray);
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            gap: 3px;
+        }
+
+        .delete-btn i {
+            font-size: 15px;
+        }
+
+        .delete-btn:hover, .delete-btn:hover i {
+            color: var(--badge-red);
+        }
+
+        /* Estados Vazios e Banners Maiores no Topo */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10px;
+            height: 100%;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .tab-banner {
+            width: 420px;
+            height: 220px;
+            border: 2px solid var(--border-dark);
+            overflow: hidden;
+            background-color: #222;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .tab-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .mc-btn {
+            background-color: var(--btn-green);
+            color: white;
+            border: 2px solid var(--border-dark);
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.2);
+            transition: background 0.2s ease;
+        }
+        
+        .mc-btn:hover {
+            background-color: var(--btn-green-hover);
+        }
+
+        /* Sub-navegação (Comentários) */
+        .comments-top-nav {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        .sub-nav-btn {
+            background: #d4d5d7;
+            border: 2px solid var(--border-dark);
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-nav-btn:hover {
+            background: #ffffff;
+        }
+
+        /* Modal Global de Detalhes */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-window);
+            display: none;
+            flex-direction: column;
+            z-index: 50;
+        }
+
+        .modal-header {
+            background-color: var(--bg-topbar);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 3px solid var(--border-dark);
+        }
+
+        .modal-body {
+            display: flex;
+            flex: 1;
+            padding: 35px;
+            gap: 30px;
+            overflow-y: auto;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .modal-left {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .modal-thumbnail-container {
+            width: 100%;
+            height: 200px;
+            border: 2px solid var(--border-dark);
+            position: relative;
+            overflow: hidden;
+            background-color: #1a1a1a;
+        }
+
+        .modal-thumbnail-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .addon-tag {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #000;
+            border: 2px solid #ffcc00;
+            color: #ffcc00;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .modal-right {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #e0e0e0;
+            text-align: left;
+            background: #343538;
+            border: 2px solid var(--border-dark);
+            padding: 25px;
+            max-height: 100%;
+            overflow-y: auto;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Responsividade para dispositivos móveis melhorada */
+        @media (max-width: 768px) {
+            body { height: 100vh; width: 100vw; }
+            .window { width: 100%; height: 100%; border: none; box-shadow: none; min-width: 0; min-height: 0; }
+            .hamburger-btn { display: flex; }
+            .sidebar {
+                position: absolute;
+                top: 52px; left: 0; bottom: 0;
+                width: 75%; max-width: 280px;
+                transform: translateX(-100%);
+                box-shadow: 5px 0 15px rgba(0,0,0,0.6);
+            }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .modal-body { flex-direction: column; align-items: center; padding: 20px; }
+            .modal-left { width: 100%; }
+            .modal-right { width: 100%; max-height: none; }
+            .tab-banner { width: 100%; max-width: 420px; height: 180px; }
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #222; }
+        ::-webkit-scrollbar-thumb { background: var(--btn-green); border: 2px solid var(--border-dark); }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <!-- Barra Superior -->
+        <header class="top-bar">
+            <div class="top-left-actions">
+                <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Menu de Abas">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <button class="back-btn" aria-label="Voltar">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            <h1>Caixa de Entrada</h1>
+            <div class="top-icon" aria-label="Opções">
+                <i class="fas fa-th-large"></i>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <!-- Sidebar / Categorias com FontAwesome -->
+            <aside class="sidebar" id="appSidebar">
+                <div class="menu-item active" onclick="switchTab('noticias', this)">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <span>Notícias</span>
+                    </div>
+                    <span class="badge" id="noticiasBadge">4</span>
+                </div>
+                
+                <div class="menu-item" onclick="switchTab('realms', this)">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <span>Realms</span>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="switchTab('convites', this)">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <span>Convites</span>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="switchTab('marketplace', this)">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <span>Passe do Marketplace</span>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="switchTab('comentarios', this)">
+                    <div class="menu-left">
+                        <div class="menu-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <span>Comentários</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Painel Principal -->
+            <main class="main-panel">
+                
+                <!-- 1. NOTÍCIAS -->
+                <div id="tab-noticias" class="tab-content active">
+                    <div class="section-header">Recente</div>
+                    
+                    <div class="message-row" onclick="openModal(this, 'Tudo pronto para o Wilderness Bound?', 'Minecraft', '18/09/2026', 'Wilderness Bound chegou! Explore a floresta malhada, descubra acampamentos abandonados e construa com madeira de álamo, escadas e lajes de lã, escadas e lajes de concreto e muito mais. Quando anoitecer, pule a noite com uma cama de palha descartável que não redefine seu ponto de renascimento, ou acomode-se em uma almofada e aproveite a fogueira. A aventura começa onde a trilha termina!', 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="unread-dot"></div>
+                            <div class="message-texts">
+                                <h4>Tudo pronto para o Wilderness Bound?</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">18/09/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="message-row" onclick="openModal(this, 'Autobots e Decepticons em confronto', 'Minecraft', '12/09/2026', 'Autobots, entrem em ação. Decepticons, preparem-se! O universo TRANSFORMERS chegou ao Minecraft com robôs e veículos incríveis.', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="unread-dot"></div>
+                            <div class="message-texts">
+                                <h4>Autobots e Decepticons em confronto</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">12/09/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="message-row" onclick="openModal(this, 'Construa, fortaleça e ataque no GenWars', 'Minecraft', '12/09/2026', 'Teste suas estratégias de defesa e ataque em bases fortificadas com combates dinâmicos e desafiadores.', 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="unread-dot"></div>
+                            <div class="message-texts">
+                                <h4>Construa, fortaleça e ataque no GenWars</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">12/09/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="section-header">Histórico</div>
+
+                    <div class="message-row" onclick="openModal(this, 'Prepare-se para a ação', 'Minecraft', '07/06/2026', 'Aventuras eletrizantes e desafios diários aguardam por você.', 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="message-texts" style="padding-left: 16px;">
+                                <h4>Prepare-se para a ação</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">07/06/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="message-row" onclick="openModal(this, 'Desafio de Construção - Filme Minecraft', 'Minecraft', '07/06/2026', 'Inspirado no visual oficial do filme, crie estruturas incríveis.', 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="message-texts" style="padding-left: 16px;">
+                                <h4>Desafio de Construção - Filme Minecraft</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">07/06/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="message-row" onclick="openModal(this, 'Uaaaaaaaaaaaaaaaaaaaaaaaaaaau', 'Minecraft', '10/01/2026', 'Surpreenda-se com as novidades incríveis trazidas nesta atualização especial.', 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="message-texts" style="padding-left: 16px;">
+                                <h4>Uaaaaaaaaaaaaaaaaaaaaaaaaaaau</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">10/01/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="message-row" onclick="openModal(this, 'Entre no Labirinto das Criaturas', 'Minecraft', '10/01/2026', 'Enfrente labirintos misteriosos e descubra os segredos que aguardam no seu interior.', 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="message-texts" style="padding-left: 16px;">
+                                <h4>Entre no Labirinto das Criaturas</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">10/01/2026</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. REALMS -->
+                <div id="tab-realms" class="tab-content">
+                    <div class="section-header">Histórico</div>
+                    <div class="message-row" onclick="openModal(this, 'Persiga os Céus no Realms Plus', 'Minecraft', '03/07/2025', 'Reúna a galera e embarquem juntos em aventuras nas alturas com o Realms Plus! Corram com seus ghasts cheios de energia por construções gigantes, organizem ataques no Nether ou só relaxem vendo o pôr do sol de Visuais Vibrantes com até 10 amigos no seu próprio servidor online 24 horas por dia.\n\nCom novidades do Marketplace adicionadas ao catálogo (incluso no Realms Plus) no dia de lançamento, você não vai precisar esperar para abastecer a diversão! Assine o Realms Plus hoje mesmo!', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80')">
+                        <div class="message-info">
+                            <div class="message-texts" style="padding-left: 16px;">
+                                <h4>Persiga os Céus no Realms Plus</h4>
+                                <span>Minecraft</span>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-date">03/07/2025</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteRow(this)">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Apagar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CONVITES -->
+                <div id="tab-convites" class="tab-content">
+                    <div class="empty-state">
+                        <div class="tab-banner">
+                            <img src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80" alt="Convites Banner">
+                        </div>
+                        <h4 style="font-size: 18px; font-weight: bold; color: #fff;">Sem novos convites</h4>
+                        <p style="font-size: 14px; color: var(--text-gray); max-width: 500px;">É aqui que seus convites aparecerão quando alguém convidar você para um Reino.</p>
+                    </div>
+                </div>
+
+                <!-- 4. PASSE DO MARKETPLACE -->
+                <div id="tab-marketplace" class="tab-content">
+                    <div class="empty-state">
+                        <div class="tab-banner">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" alt="Marketplace Pass Banner">
+                        </div>
+                        <h4 style="font-size: 18px; font-weight: bold; color: #fff;">Assinatura do Marketplace Pass já está disponível!</h4>
+                        <p style="font-size: 14px; color: var(--text-gray); max-width: 520px;">O Marketplace Pass oferece acesso a conteúdo premium atualizado mensalmente!</p>
+                        <button class="mc-btn" style="max-width: 250px;" onclick="openModal(null, 'Marketplace Pass', 'Minecraft', 'Hoje', 'Tenha acesso imediato a mais de 150 mundos, pacotes de texturas, mash-ups e skins exclusivas no Marketplace do Minecraft!', 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=700&q=80')">Saiba mais</button>
+                    </div>
+                </div>
+
+                <!-- 5. COMENTÁRIOS -->
+                <div id="tab-comentarios" class="tab-content">
+                    <div class="empty-state">
+                        <div class="comments-top-nav">
+                            <button class="sub-nav-btn">
+                                <i class="fas fa-exclamation-circle"></i> Erros
+                            </button>
+                            <button class="sub-nav-btn">
+                                <i class="fas fa-lightbulb"></i> Ideias
+                            </button>
+                        </div>
+                        <div class="tab-banner">
+                            <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80" alt="Comentários Thumbnail">
+                        </div>
+                        <h4 style="font-size: 18px; font-weight: bold; color: #fff;">O Minecraft quer saber a sua opinião!</h4>
+                        <p style="font-size: 14px; color: var(--text-gray); max-width: 500px;">Envie seus comentários e ajude a moldar o futuro do jogo.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modal Global de Detalhes -->
+        <div id="detailModal" class="modal-overlay">
+            <header class="modal-header">
+                <button class="back-btn" onclick="closeModal()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 style="font-size: 16px; margin-left: 18px; text-transform: uppercase; font-weight: 900; color: var(--text-dark);">Detalhes</h1>
+            </header>
+            <div class="modal-body">
+                <div class="modal-left">
+                    <div class="modal-thumbnail-container">
+                        <img id="modalImg" src="" alt="Thumbnail">
+                        <div class="addon-tag">Add-On</div>
+                    </div>
+                    <div>
+                        <h4 id="modalTitle" style="font-size: 15px; font-weight: bold; margin-bottom: 4px;">Título</h4>
+                        <p id="modalAuthor" style="font-size: 12px; color: var(--text-gray);">De Minecraft</p>
+                        <p id="modalDate" style="font-size: 12px; color: var(--text-gray); margin-bottom: 18px;">09/12/26</p>
+                    </div>
+                    <button class="mc-btn">Jogar agora</button>
+                </div>
+                <div class="modal-right">
+                    <p id="modalDescription" style="white-space: pre-line;">Descrição detalhada...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            element.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (window.innerWidth <= 768) {
+                toggleMobileSidebar();
+            }
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('appSidebar').classList.toggle('mobile-open');
+        }
+
+        let unreadCount = 4;
+
+        function openModal(rowElement, title, author, date, description, imageUrl) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalAuthor').innerText = 'De ' + author;
+            document.getElementById('modalDate').innerText = date;
+            document.getElementById('modalDescription').innerText = description;
+            document.getElementById('modalImg').src = imageUrl;
+            document.getElementById('detailModal').style.display = 'flex';
+
+            if (rowElement) {
+                const dot = rowElement.querySelector('.unread-dot');
+                if (dot) {
+                    dot.remove();
+                    unreadCount = Math.max(0, unreadCount - 1);
+                    updateBadge();
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function deleteRow(button) {
+            const row = button.closest('.message-row');
+            const hasDot = row.querySelector('.unread-dot');
+            if (hasDot) {
+                unreadCount = Math.max(0, unreadCount - 1);
+                updateBadge();
+            }
+            row.remove();
+        }
+
+        function updateBadge() {
+            const badge = document.getElementById('noticiasBadge');
+            if (unreadCount > 0) {
+                badge.innerText = unreadCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

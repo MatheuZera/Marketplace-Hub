@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Personagem - Minecraft Bedrock</title>
+    <!-- Three.js para o Renderizador 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- JSZip para compactação de Skin Packs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bedrock-bg: #2b2c2f;
+            --bedrock-sidebar: #222325;
+            --bedrock-topbar: #d5d6d8;
+            --bedrock-panel: #28292c;
+            --bedrock-border: #141414;
+            --bedrock-gold: #f3c731;
+            --bedrock-green: #3c8527;
+            --bedrock-text: #ffffff;
+            --bedrock-text-dark: #1b1b1b;
+            --bedrock-text-gray: #a0a0a0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b0b0b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--bedrock-text);
+        }
+
+        .mc-window {
+            width: 1100px;
+            height: 620px;
+            background-color: var(--bedrock-bg);
+            border: 3px solid var(--bedrock-border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            position: relative;
+        }
+
+        .mc-topbar {
+            background-color: var(--bedrock-topbar);
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            border-bottom: 3px solid var(--bedrock-border);
+            z-index: 20;
+        }
+
+        .mc-top-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mc-back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--bedrock-text-dark);
+            cursor: pointer;
+        }
+
+        .mc-top-title {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--bedrock-text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mc-top-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mc-btn {
+            background-color: var(--bedrock-green);
+            border: 2px solid var(--bedrock-border);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 6px 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .mc-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        .mc-btn-gold {
+            background-color: #d49b13;
+        }
+
+        .mc-main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mc-sidebar {
+            width: 55px;
+            background-color: var(--bedrock-sidebar);
+            border-right: 3px solid var(--bedrock-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .mc-side-icon {
+            width: 42px;
+            height: 42px;
+            background-color: #313235;
+            border: 2px solid var(--bedrock-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.1s;
+        }
+
+        .mc-side-icon:hover {
+            background-color: #414245;
+        }
+
+        .mc-side-icon.active {
+            border-left: 5px solid var(--bedrock-green);
+            background-color: var(--bedrock-panel);
+        }
+
+        .mc-left-panel {
+            width: 480px;
+            background-color: var(--bedrock-panel);
+            border-right: 3px solid var(--bedrock-border);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+            gap: 12px;
+        }
+
+        .panel-view {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel-view.active {
+            display: flex;
+        }
+
+        .search-box {
+            width: 100%;
+            background: #1a1b1e;
+            border: 2px solid var(--bedrock-border);
+            padding: 8px 10px;
+            color: white;
+            font-size: 12px;
+            outline: none;
+            margin-bottom: 4px;
+        }
+
+        .search-box:focus {
+            border-color: var(--bedrock-gold);
+        }
+
+        .mc-section-title {
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--bedrock-text);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .skin-item-card {
+            background-color: #1e1e20;
+            border: 2px solid var(--bedrock-border);
+            padding: 10px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .skin-item-card:hover {
+            border-color: var(--bedrock-green);
+            background-color: #26272a;
+        }
+
+        .skin-item-card img {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+        }
+
+        .skin-item-card span {
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            color: #d0d0d0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .packs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pack-card {
+            background: linear-gradient(135deg, #1c1d20 0%, #242528 100%);
+            border: 2px solid var(--bedrock-border);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+
+        .pack-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--bedrock-gold);
+        }
+
+        .pack-card:hover {
+            border-color: var(--bedrock-gold);
+            transform: translateX(2px);
+            background: linear-gradient(135deg, #25262a 0%, #2d2e33 100%);
+        }
+
+        .pack-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 6px;
+        }
+
+        .pack-card h4 {
+            font-size: 12px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .pack-badge {
+            background-color: rgba(243, 199, 49, 0.15);
+            border: 1px solid var(--bedrock-gold);
+            color: var(--bedrock-gold);
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            text-transform: uppercase;
+        }
+
+        .pack-preview-cluster {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 44px;
+            background: #131315;
+            border: 1px solid #28282c;
+            border-radius: 4px;
+            padding: 0 10px;
+            margin-left: 6px;
+        }
+
+        .pack-preview-cluster img {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+            border: 2px solid #1a1a1c;
+            margin-left: -10px;
+            background: #2b2c2f;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .pack-preview-cluster img:first-child {
+            margin-left: 0;
+        }
+
+        .back-to-packs {
+            background: none;
+            border: none;
+            color: var(--bedrock-gold);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 4px;
+        }
+
+        .upload-dropzone {
+            border: 2px dashed #44454a;
+            padding: 20px;
+            text-align: center;
+            background: #191a1d;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-dropzone:hover {
+            border-color: var(--bedrock-green);
+            background: #202226;
+        }
+
+        .upload-dropzone p {
+            font-size: 11px;
+            color: var(--bedrock-text-gray);
+            margin-top: 6px;
+        }
+
+        /* Viewport 3D */
+        .mc-right-viewport {
+            flex: 1;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('https://i.imgur.com/8ZX637s.png') center/cover;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #mc-canvas-container {
+            flex: 1;
+            position: relative;
+            cursor: grab;
+            overflow: hidden;
+        }
+
+        #mc-canvas-container:active {
+            cursor: grabbing;
+        }
+
+        .mc-intro-box {
+            background-color: rgba(20, 20, 22, 0.95);
+            border-top: 3px solid var(--bedrock-border);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mc-intro-box h3 {
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--bedrock-text);
+        }
+
+        .mc-intro-box p {
+            font-size: 11px;
+            color: var(--bedrock-text-gray);
+        }
+
+        .active-skin-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(20, 20, 22, 0.9);
+            border: 2px solid var(--bedrock-border);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--bedrock-gold);
+            z-index: 10;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444548; border: 1px solid var(--bedrock-border); }
+    </style>
+</head>
+<body>
+
+    <div class="mc-window">
+        <!-- Barra Superior -->
+        <header class="mc-topbar">
+            <div class="mc-top-left">
+                <button class="mc-back-btn">&lt;</button>
+                <h1 class="mc-top-title">Criador de Personagem</h1>
+            </div>
+            <div class="mc-top-actions">
+                <button class="mc-btn" onclick="downloadCurrentSkin()">Baixar Skin (.png)</button>
+            </div>
+        </header>
+
+        <!-- Container Principal -->
+        <div class="mc-main-container">
+            
+            <!-- Barra Lateral -->
+            <aside class="mc-sidebar">
+                <div class="mc-side-icon active" title="Skins Individuais" onclick="switchTab('skins')">👕</div>
+                <div class="mc-side-icon" title="Skins Packs" onclick="switchTab('packs')">📦</div>
+                <div class="mc-side-icon" title="Buscar por Nick (Web)" onclick="switchTab('websearch')">🔍</div>
+                <div class="mc-side-icon" title="Enviar Skin (.png)" onclick="switchTab('upload')">📤</div>
+            </aside>
+
+            <!-- Painel Esquerdo Dinâmico -->
+            <div class="mc-left-panel">
+                
+                <!-- 1. Categoria SKINS & BUSCA LOCAL -->
+                <div id="view-skins" class="panel-view active">
+                    <input type="text" id="skin-search-input" class="search-box" placeholder="Pesquisar skins salvas..." oninput="filterSkins(this.value)">
+                    <div class="mc-section-title">Skins Individuais</div>
+                    <div class="skins-grid" id="skins-grid-container"></div>
+                </div>
+
+                <!-- 2. Categoria SKINS PACKS -->
+                <div id="view-packs" class="panel-view">
+                    <input type="text" id="pack-search-input" class="search-box" placeholder="Pesquisar packs..." oninput="filterPacks(this.value)">
+                    <div class="mc-section-title">Pacotes de Skins (Skins Packs)</div>
+                    <div class="packs-list" id="packs-container"></div>
+                </div>
+
+                <!-- 3. Tela Detalhada do Skin Pack Selecionado -->
+                <div id="view-pack-detail" class="panel-view">
+                    <button class="back-to-packs" onclick="backToPacksList()">&lt; Voltar para Packs</button>
+                    <div class="mc-section-title" id="detail-pack-title">Nome do Pack</div>
+                    <p style="font-size: 11px; color: #a0a0a0;" id="detail-pack-desc">Descrição...</p>
+                    <button class="mc-btn mc-btn-gold" style="margin-top: 6px; width: 100%; text-align: center;" onclick="downloadCurrentPackZip()">Baixar Pack Completo (.zip)</button>
+                    <div class="skins-grid" id="detail-skins-grid" style="margin-top: 8px;"></div>
+                </div>
+
+                <!-- 4. Pesquisador de Skins da Web por Nick -->
+                <div id="view-websearch" class="panel-view">
+                    <div class="mc-section-title">Carregar Skin da Web (Por Nick)</div>
+                    <p style="font-size: 11px; color: var(--bedrock-text-gray);">Digite o nome de usuário exato de qualquer conta do Minecraft para buscar e carregar a skin diretamente dos servidores globais.</p>
+                    <input type="text" id="web-nick-input" class="search-box" placeholder="Ex: Notch, Dream, Technoblade..." onkeydown="if(event.key === 'Enter') loadSkinFromWebInput()">
+                    <button class="mc-btn" style="margin-top: 4px; width: 100%; text-align: center;" onclick="loadSkinFromWebInput()">Carregar Skin da Web</button>
+                </div>
+
+                <!-- 5. Aba de Upload de Assets Customizados -->
+                <div id="view-upload" class="panel-view">
+                    <div class="mc-section-title">Enviar Skin Personalizada</div>
+                    <div class="upload-dropzone" onclick="document.getElementById('skin-file-input').click()">
+                        <span style="font-size: 24px;">📁</span>
+                        <p>Clique aqui para selecionar uma skin (.png)</p>
+                        <input type="file" id="skin-file-input" accept="image/png" style="display: none;" onchange="handleCustomSkinUpload(event)">
+                    </div>
+                    <p style="font-size: 11px; color: var(--bedrock-text-gray);">Compatível com arquivos padrão do Minecraft em 64x64 ou 64x32 pixels.</p>
+                </div>
+
+            </div>
+
+            <!-- Painel Direito (Viewport 3D com Renderização Blindada) -->
+            <div class="mc-right-viewport">
+                <div class="active-skin-badge" id="current-skin-label">Skin: Notch</div>
+                <div id="mc-canvas-container"></div>
+                <div class="mc-intro-box">
+                    <h3>Visualizador 3D Avançado</h3>
+                    <p>Suporte completo a pesquisa global por nick, múltiplas camadas e exportação limpa em ZIP/PNG.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const skinPacksData = [
+            {
+                id: 'youtubers',
+                title: 'Lendas do YouTube',
+                description: 'Pacote com os criadores de conteúdo mais famosos.',
+                skins: [
+                    { name: 'Authentic', nick: 'AuthenticGames' },
+                    { name: 'Viniccius13', nick: 'Viniccius13' },
+                    { name: 'Rezende', nick: 'Rezende' },
+                    { name: 'Mike', nick: 'Mike' },
+                    { name: 'Jnx', nick: 'Jnx_Cl' }
+                ]
+            },
+            {
+                id: 'heroes',
+                title: 'Heróis e Lendas',
+                description: 'Personagens clássicos e misteriosos do universo do jogo.',
+                skins: [
+                    { name: 'Notch', nick: 'Notch' },
+                    { name: 'Herobrine', nick: 'Herobrine' },
+                    { name: 'Steve', nick: 'Steve' },
+                    { name: 'Alex', nick: 'Alex' }
+                ]
+            }
+        ];
+
+        let allIndividualSkins = [
+            { name: 'Notch', nick: 'Notch' },
+            { name: 'Steve', nick: 'Steve' },
+            { name: 'Alex', nick: 'Alex' },
+            { name: 'Dream', nick: 'Dream' },
+            { name: 'Technoblade', nick: 'Technoblade' },
+            { name: 'Herobrine', nick: 'Herobrine' }
+        ];
+
+        let scene, camera, renderer, playerGroup;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let currentLoadedImage = null;
+        let activePackId = null;
+
+        function initViewer() {
+            const container = document.getElementById('mc-canvas-container');
+            
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 35);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.domElement.style.width = '100%';
+            renderer.domElement.style.height = '100%';
+            container.appendChild(renderer.domElement);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            dirLight.position.set(10, 20, 15);
+            scene.add(dirLight);
+
+            playerGroup = new THREE.Group();
+            playerGroup.position.set(0, -1, 0); 
+            scene.add(playerGroup);
+
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                playerGroup.rotation.y += deltaX * 0.01;
+                playerGroup.rotation.x += deltaY * 0.01;
+                playerGroup.rotation.x = Math.max(-0.8, Math.min(0.8, playerGroup.rotation.x));
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            renderSkinsGrid(allIndividualSkins);
+            renderPacksList(skinPacksData);
+            loadSkinByNick('Notch', 'Notch');
+            animate();
+        }
+
+        // Construtor baseado em 6 Planos com fatiamento exato de canvas (elimina falhas de UV em cubos)
+        function createTexturedBox(w, h, d, uvs, img, isOuter = false, inflate = 0) {
+            const group = new THREE.Group();
+            const ww = w + inflate, hh = h + inflate, dd = d + inflate;
+
+            const faces = [
+                { name: 'right', pos: [-ww/2, 0, 0], rot: [0, -Math.PI/2, 0], size: [d, h], uv: uvs.right },
+                { name: 'left', pos: [ww/2, 0, 0], rot: [0, Math.PI/2, 0], size: [d, h], uv: uvs.left },
+                { name: 'top', pos: [0, hh/2, 0], rot: [-Math.PI/2, 0, 0], size: [w, d], uv: uvs.top },
+                { name: 'bottom', pos: [0, -hh/2, 0], rot: [Math.PI/2, 0, 0], size: [w, d], uv: uvs.bottom },
+                { name: 'front', pos: [0, 0, dd/2], rot: [0, 0, 0], size: [w, h], uv: uvs.front },
+                { name: 'back', pos: [0, 0, -dd/2], rot: [0, Math.PI, 0], size: [w, h], uv: uvs.back, flip: true }
+            ];
+
+            faces.forEach(f => {
+                if (!f.uv) return;
+                const [x, y, sw, sh] = f.uv;
+                const mat = createFaceMaterial(img, x, y, sw, sh, f.flip, isOuter);
+                const geom = new THREE.PlaneGeometry(f.size[0], f.size[1]);
+                const mesh = new THREE.Mesh(geom, mat);
+                mesh.position.set(...f.pos);
+                mesh.rotation.set(...f.rot);
+                group.add(mesh);
+            });
+
+            return group;
+        }
+
+        function createFaceMaterial(img, x, y, w, h, flipX, isTransparent) {
+            const canvas = document.createElement('canvas');
+            canvas.width = w * 16;
+            canvas.height = h * 16;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+
+            if (flipX) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+
+            if (img && y + h <= img.height && x + w <= img.width && x >= 0 && y >= 0) {
+                ctx.drawImage(img, x, y, w, h, 0, 0, canvas.width, canvas.height);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.magFilter = THREE.NearestFilter;
+            texture.minFilter = THREE.NearestFilter;
+
+            return new THREE.MeshLambertMaterial({
+                map: texture,
+                transparent: true,
+                alphaTest: 0.1,
+                side: THREE.DoubleSide
+            });
+        }
+
+        function buildPlayerModel(img) {
+            while(playerGroup.children.length > 0){ 
+                playerGroup.remove(playerGroup.children[0]); 
+            }
+
+            const isLegacy = (img.height === 32);
+
+            const headUVs = { right: [0, 8, 8, 8], left: [16, 8, 8, 8], top: [8, 0, 8, 8], bottom: [16, 0, 8, 8], front: [8, 8, 8, 8], back: [24, 8, 8, 8] };
+            const headOuterUVs = { right: [32, 8, 8, 8], left: [48, 8, 8, 8], top: [40, 0, 8, 8], bottom: [48, 0, 8, 8], front: [40, 8, 8, 8], back: [56, 8, 8, 8] };
+            
+            const bodyUVs = { right: [16, 20, 4, 12], left: [28, 20, 4, 12], top: [20, 16, 8, 4], bottom: [28, 16, 8, 4], front: [20, 20, 8, 12], back: [32, 20, 8, 12] };
+            
+            const rArmUVs = { right: [40, 20, 4, 12], left: [48, 20, 4, 12], top: [44, 16, 4, 4], bottom: [48, 16, 4, 4], front: [44, 20, 4, 12], back: [52, 20, 4, 12] };
+            const lArmUVs = isLegacy ? rArmUVs : { right: [32, 52, 4, 12], left: [40, 52, 4, 12], top: [36, 48, 4, 4], bottom: [40, 48, 4, 4], front: [36, 52, 4, 12], back: [44, 52, 4, 12] };
+
+            const rLegUVs = { right: [0, 20, 4, 12], left: [8, 20, 4, 12], top: [4, 16, 4, 4], bottom: [8, 16, 4, 4], front: [4, 20, 4, 12], back: [12, 20, 4, 12] };
+            const lLegUVs = isLegacy ? rLegUVs : { right: [16, 52, 4, 12], left: [24, 52, 4, 12], top: [20, 48, 4, 4], bottom: [24, 48, 4, 4], front: [20, 52, 4, 12], back: [28, 52, 4, 12] };
+
+            const head = createTexturedBox(4, 4, 4, headUVs, img, false);
+            head.position.set(0, 5, 0);
+            playerGroup.add(head);
+
+            const headOuter = createTexturedBox(4.2, 4.2, 4.2, headOuterUVs, img, true, 0.2);
+            headOuter.position.set(0, 5, 0);
+            playerGroup.add(headOuter);
+
+            const body = createTexturedBox(4, 6, 2, bodyUVs, img, false);
+            body.position.set(0, 0, 0);
+            playerGroup.add(body);
+
+            if (!isLegacy) {
+                const bodyOuterUVs = { right: [16, 32, 4, 12], left: [28, 32, 4, 12], top: [20, 28, 8, 4], bottom: [28, 28, 8, 4], front: [20, 32, 8, 12], back: [32, 32, 8, 12] };
+                const bodyOuter = createTexturedBox(4.2, 6.2, 2.2, bodyOuterUVs, img, true, 0.2);
+                bodyOuter.position.set(0, 0, 0);
+                playerGroup.add(bodyOuter);
+            }
+
+            const rightArm = createTexturedBox(2, 6, 2, rArmUVs, img, false);
+            rightArm.position.set(-3, 0, 0);
+            playerGroup.add(rightArm);
+
+            const leftArm = createTexturedBox(2, 6, 2, lArmUVs, img, false);
+            leftArm.position.set(3, 0, 0);
+            playerGroup.add(leftArm);
+
+            const rightLeg = createTexturedBox(2, 6, 2, rLegUVs, img, false);
+            rightLeg.position.set(-1, -6, 0);
+            playerGroup.add(rightLeg);
+
+            const leftLeg = createTexturedBox(2, 6, 2, lLegUVs, img, false);
+            leftLeg.position.set(1, -6, 0);
+            playerGroup.add(leftLeg);
+        }
+
+        function loadSkinByNick(name, nick) {
+            document.getElementById('current-skin-label').innerText = `Skin: ${name}`;
+            const skinUrl = `https://crafthead.net/skin/${nick}`;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                currentLoadedImage = img;
+                buildPlayerModel(img);
+            };
+            img.onerror = function() {
+                alert(`Não foi possível carregar a skin para o nick "${nick}". Verifique se o nome está correto.`);
+            };
+            img.src = skinUrl;
+        }
+
+        function loadSkinFromWebInput() {
+            const nick = document.getElementById('web-nick-input').value.trim();
+            if (!nick) {
+                alert('Por favor, digite um nick válido do Minecraft!');
+                return;
+            }
+            loadSkinByNick(nick, nick);
+            
+            // Adiciona automaticamente à grade de skins individuais se já não estiver lá
+            if (!allIndividualSkins.some(s => s.nick.toLowerCase() === nick.toLowerCase())) {
+                allIndividualSkins.unshift({ name: nick, nick: nick });
+                renderSkinsGrid(allIndividualSkins);
+            }
+            switchTab('skins');
+        }
+
+        function handleCustomSkinUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    currentLoadedImage = img;
+                    buildPlayerModel(img);
+                    document.getElementById('current-skin-label').innerText = `Skin: ${file.name.replace('.png', '')}`;
+                    switchTab('skins');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function downloadCurrentSkin() {
+            if (!currentLoadedImage) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = currentLoadedImage.width;
+            canvas.height = currentLoadedImage.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(currentLoadedImage, 0, 0);
+            
+            const link = document.createElement('a');
+            link.download = 'skin_minecraft.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        async function downloadCurrentPackZip() {
+            if (!activePackId) return;
+            const pack = skinPacksData.find(p => p.id === activePackId);
+            if (!pack) return;
+
+            const zip = new JSZip();
+            const folder = zip.folder(pack.title.replace(/[^a-zA-Z0-9]/g, '_'));
+
+            for (const skin of pack.skins) {
+                try {
+                    const response = await fetch(`https://crafthead.net/skin/${skin.nick}`);
+                    const blob = await response.blob();
+                    folder.file(`${skin.name}.png`, blob);
+                } catch (e) {
+                    console.error(`Erro ao baixar skin ${skin.name}`, e);
+                }
+            }
+
+            const content = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = `${pack.title}.zip`;
+            link.click();
+        }
+
+        function filterSkins(query) {
+            const filtered = allIndividualSkins.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+            renderSkinsGrid(filtered);
+        }
+
+        function filterPacks(query) {
+            const filtered = skinPacksData.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || p.description.toLowerCase().includes(query.toLowerCase()));
+            renderPacksList(filtered);
+        }
+
+        function renderSkinsGrid(skins) {
+            const grid = document.getElementById('skins-grid-container');
+            grid.innerHTML = '';
+            skins.forEach(skin => {
+                const card = document.createElement('div');
+                card.className = 'skin-item-card';
+                card.innerHTML = `
+                    <img src="https://crafthead.net/avatar/${skin.nick}/32" alt="${skin.name}">
+                    <span>${skin.name}</span>
+                `;
+                card.onclick = () => loadSkinByNick(skin.name, skin.nick);
+                grid.appendChild(card);
+            });
+        }
+
+        function renderPacksList(packs) {
+            const container = document.getElementById('packs-container');
+            container.innerHTML = '';
+            packs.forEach((pack, index) => {
+                let headsHtml = '';
+                pack.skins.forEach(skin => {
+                    headsHtml += `<img src="https://crafthead.net/avatar/${skin.nick}/32" alt="${skin.name}">`;
+                });
+
+                const card = document.createElement('div');
+                card.className = 'pack-card';
+                card.innerHTML = `
+                    <div class="pack-card-header">
+                        <h4>PACK ${index + 1}: ${pack.title}</h4>
+                        <span class="pack-badge">${pack.skins.length} SKINS</span>
+                    </div>
+                    <div class="pack-preview-cluster">${headsHtml}</div>
+                `;
+                card.onclick = () => openPackDetail(pack.id);
+                container.appendChild(card);
+            });
+        }
+
+        function openPackDetail(packId) {
+            activePackId = packId;
+            const pack = skinPacksData.find(p => p.id === packId);
+            if (!pack) return;
+
+            document.getElementById('detail-pack-title').innerText = pack.title;
+            document.getElementById('detail-pack-desc').innerText = pack.description;
+
+            const grid = document.getElementById('detail-skins-grid');
+            grid.innerHTML = '';
+            pack.skins.forEach(skin => {
+                const skinCard = document.createElement('div');
+                skinCard.className = 'skin-item-card';
+                skinCard.innerHTML = `
+                    <img src="https://crafthead.net/avatar/${skin.nick}/32" alt="${skin.name}">
+                    <span>${skin.name}</span>
+                `;
+                skinCard.onclick = () => loadSkinByNick(skin.name, skin.nick);
+                grid.appendChild(skinCard);
+            });
+
+            document.getElementById('view-packs').classList.remove('active');
+            document.getElementById('view-pack-detail').classList.add('active');
+        }
+
+        function backToPacksList() {
+            activePackId = null;
+            document.getElementById('view-pack-detail').classList.remove('active');
+            document.getElementById('view-packs').classList.add('active');
+        }
+
+        function switchTab(tabName) {
+            const icons = document.querySelectorAll('.mc-side-icon');
+            icons.forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            document.getElementById('view-skins').classList.remove('active');
+            document.getElementById('view-packs').classList.remove('active');
+            document.getElementById('view-pack-detail').classList.remove('active');
+            document.getElementById('view-websearch').classList.remove('active');
+            document.getElementById('view-upload').classList.remove('active');
+
+            if (tabName === 'skins') {
+                document.getElementById('view-skins').classList.add('active');
+            } else if (tabName === 'packs') {
+                document.getElementById('view-packs').classList.add('active');
+            } else if (tabName === 'websearch') {
+                document.getElementById('view-websearch').classList.add('active');
+            } else if (tabName === 'upload') {
+                document.getElementById('view-upload').classList.add('active');
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        window.onload = initViewer;
+    </script>
+</body>
+</html>

@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minecraft Bedrock - Perfil, Social & Conquistas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-overlay: rgba(18, 18, 19, 0.92);
+      --panel-bg: #313233;
+      --panel-dark-bg: #212223;
+      --card-bg: #3c3d3e;
+      --card-hover: #4e4f52;
+      --card-border: #1e1f20;
+      --tab-active: #4a4b4c;
+      --tab-inactive: #2b2c2d;
+      --text-main: #ffffff;
+      --text-muted: #a0a0a0;
+      --accent-green: #5ca934;
+      --accent-green-hover: #6bc23d;
+      --accent-blue: #3978f6;
+      --gold-border: #f1c40f;
+      --bedrock-outline: #ffffff;
+      --ease-bedrock: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    body {
+      background: #121212 url('https://picsum.photos/id/1015/1920/1080') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* BARRA SUPERIOR */
+    header {
+      height: 58px;
+      background: var(--bg-overlay);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 2px solid var(--card-border);
+      z-index: 30;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .header-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .btn-hamburger {
+      display: none;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-hamburger:hover {
+      border-color: var(--bedrock-outline);
+      background: var(--card-hover);
+    }
+
+    .btn-header-back {
+      background: transparent;
+      border: 2px solid transparent;
+      color: var(--text-main);
+      font-size: 18px;
+      cursor: pointer;
+      width: 38px;
+      height: 38px;
+      border-radius: 2px;
+      transition: all 0.2s var(--ease-bedrock);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-header-back:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--bedrock-outline);
+    }
+
+    .header-title {
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 18px;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0px #000;
+      pointer-events: auto;
+      text-align: center;
+    }
+
+    .btn-social-trigger {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      transition: all 0.2s var(--ease-bedrock);
+      z-index: 31;
+    }
+
+    .btn-social-trigger:hover {
+      background: var(--card-hover);
+      border-color: var(--bedrock-outline);
+    }
+
+    /* DRAWER NAVEGAÇÃO MOBILE COM TRANSIÇÃO SUAVE */
+    .left-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 300px;
+      height: 100vh;
+      background: var(--panel-dark-bg);
+      border-right: 2px solid var(--card-border);
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 8px 0 24px rgba(0, 0, 0, 0.8);
+      transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.35s var(--ease-bedrock), visibility 0.35s;
+    }
+
+    .left-drawer.hidden {
+      transform: translateX(-100%);
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .drawer-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel-bg);
+      border-bottom: 2px solid var(--card-border);
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .mobile-nav-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 14px;
+      font-weight: bold;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .mobile-nav-btn:hover {
+      background: var(--card-hover);
+      border-color: #fff;
+    }
+
+    /* LAYOUT PRINCIPAL */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+    }
+
+    .screen {
+      display: flex;
+      width: 100%;
+      max-width: 1100px;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* CARTÃO DO USUÁRIO COMPACTO (FIXO) */
+    .user-card {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--panel-bg);
+      border: 2px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      height: fit-content;
+    }
+
+    .banner-container {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+    }
+
+    .banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-edit-banner {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #666;
+      color: #fff;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .user-info-section {
+      padding: 16px;
+      background: var(--panel-bg);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .user-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-box {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border: 2px solid var(--card-border);
+      flex-shrink: 0;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .status-dot {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 12px;
+      height: 12px;
+      background: #2ecc71;
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+
+    .status-dot.offline {
+      background: #7f8c8d;
+    }
+
+    .user-names h3 {
+      font-size: 16px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .user-names p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-vestuario {
+      flex: 1;
+      background: #4a4b4c;
+      border: 2px solid var(--card-border);
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s var(--ease-bedrock);
+    }
+
+    .btn-vestuario:hover {
+      background: #5d5e60;
+      border-color: var(--bedrock-outline);
+    }
+
+    .btn-more {
+      width: 40px;
+      background: #4a4b4c;
+      border: 2px solid var(--card-border);
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn-more:hover {
+      background: #5d5e60;
+      border-color: var(--bedrock-outline);
+    }
+
+    /* PAINEL CONTEÚDO */
+    .content-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--panel-dark-bg);
+      padding: 4px;
+      border: 2px solid var(--card-border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: var(--tab-inactive);
+      border: 2px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.2s var(--ease-bedrock);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: #38393a;
+    }
+
+    .tab-btn.active {
+      background: var(--tab-active);
+      color: var(--text-main);
+      border-color: var(--bedrock-outline);
+    }
+
+    .tab-content {
+      background: var(--panel-bg);
+      border: 2px solid var(--card-border);
+      padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    /* CARDS E LISTAS INTERATIVAS */
+    .list-item-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-bedrock);
+    }
+
+    .list-item-card:hover {
+      background: var(--card-hover);
+      border-color: var(--bedrock-outline);
+      transform: translateX(2px);
+    }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-tag {
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      margin-top: 8px;
+      margin-bottom: 2px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .tag-blue {
+      background: var(--accent-blue);
+    }
+
+    .tag-green {
+      background: var(--accent-green);
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: #1e1f20;
+      margin-top: 6px;
+      overflow: hidden;
+      border: 1px solid #101011;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-blue);
+      transition: width 0.5s var(--ease-bedrock);
+    }
+
+    /* TELA DE CONQUISTAS */
+    .achievements-sidebar {
+      width: 280px;
+      background: var(--panel-bg);
+      border: 2px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 14px;
+      height: fit-content;
+    }
+
+    .achievements-progress-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ach-icon-box {
+      font-size: 36px;
+      color: #e67e22;
+    }
+
+    .ach-percent-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .ach-stats-box {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      flex: 1;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .ach-stat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ach-stat-item i {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .ach-stat-info div {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .ach-stat-info strong {
+      font-size: 14px;
+    }
+
+    .achievements-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ach-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--panel-dark-bg);
+      padding: 8px 12px;
+      border: 2px solid var(--card-border);
+    }
+
+    /* GALERIA DE CAPTURAS */
+    .gallery-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .gallery-toolbar {
+      width: 100%;
+      background: var(--panel-dark-bg);
+      border: 2px solid var(--card-border);
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      width: 100%;
+    }
+
+    .gallery-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+      overflow: hidden;
+    }
+
+    .gallery-card:hover {
+      border-color: var(--bedrock-outline);
+      transform: scale(1.02);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-tag {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: var(--accent-green);
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+    }
+
+    .select-filter {
+      background: var(--card-bg);
+      color: #fff;
+      border: 2px solid var(--card-border);
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* PAINEL SOCIAL LATERAL (DIREITA) COM TRANSIÇÃO SUAVE */
+    .social-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 380px;
+      height: 100vh;
+      background: var(--panel-dark-bg);
+      border-left: 2px solid var(--card-border);
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.8);
+      transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.35s var(--ease-bedrock), visibility 0.35s;
+    }
+
+    .social-drawer.hidden {
+      transform: translateX(100%);
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .social-header {
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      background: var(--panel-bg);
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .search-input {
+      flex: 1;
+      background: #181819;
+      border: 2px solid var(--card-border);
+      padding: 8px 12px;
+      color: #fff;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .btn-close-drawer {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      color: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .social-tabs {
+      display: flex;
+      background: #181819;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .social-tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .social-tab-btn.active {
+      color: var(--text-main);
+      border-bottom: 3px solid var(--accent-green);
+      background: var(--panel-bg);
+    }
+
+    .social-list {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* CARD MEU PERFIL DENTRO DO SOCIAL */
+    .my-social-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-bedrock);
+      margin-bottom: 4px;
+    }
+
+    .my-social-card:hover {
+      background: var(--card-hover);
+      border-color: var(--bedrock-outline);
+    }
+
+    /* SEÇÕES E CARDS DO PAINEL SOCIAL */
+    .social-section-header {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      margin: 6px 0 2px 0;
+      border-left: 4px solid transparent;
+    }
+
+    .social-section-header.green-header {
+      background: rgba(92, 169, 52, 0.2);
+      border-left-color: var(--accent-green);
+      color: #72d63e;
+    }
+
+    .social-section-header.gray-header {
+      background: rgba(160, 160, 160, 0.15);
+      border-left-color: #888;
+      color: #ccc;
+    }
+
+    .user-social-card,
+    .club-social-card {
+      background: var(--panel-bg);
+      border: 2px solid var(--card-border);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s var(--ease-bedrock);
+    }
+
+    .user-social-card:hover,
+    .club-social-card:hover {
+      border-color: var(--bedrock-outline);
+      background: var(--card-bg);
+    }
+
+    .social-item-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .social-item-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .social-avatar-wrapper {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+
+    .social-avatar-wrapper img {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #555;
+      object-fit: cover;
+    }
+
+    .club-icon-wrapper {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #555;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .btn-dots {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-size: 18px;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .btn-dots:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .social-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+      border-top: 1px solid #3a3b3c;
+      padding-top: 6px;
+    }
+
+    .btn-social-action {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid #555;
+      color: #fff;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-social-action:hover {
+      background: var(--accent-green);
+      border-color: var(--bedrock-outline);
+    }
+
+    .btn-join-club {
+      background: var(--accent-green);
+      border-color: var(--accent-green-hover);
+    }
+
+    .btn-join-club:hover {
+      background: var(--accent-green-hover);
+    }
+
+    /* MODAIS GERAIS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-box {
+      width: 480px;
+      background: var(--panel-bg);
+      border: 2px solid var(--bedrock-outline);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+      animation: popIn 0.2s var(--ease-bedrock);
+      overflow: hidden;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.92);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-top-bar {
+      padding: 10px 16px;
+      font-weight: bold;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+    }
+
+    .modal-top-bar.green {
+      background: var(--accent-green);
+      color: #fff;
+    }
+
+    .modal-top-bar.dark {
+      background: #1a1a1a;
+      color: #aaa;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    /* DESIGN BEDROCK DOS MODAIS DE CONQUISTAS */
+    .ach-modal-content {
+      background: #48494a;
+      border: 2px solid #1e1f20;
+      padding: 24px 20px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .ach-modal-icon-frame {
+      width: 86px;
+      height: 86px;
+      border: 3px solid #f1c40f;
+      background: #2b2c2d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .ach-modal-icon-frame.locked {
+      border-color: #888;
+    }
+
+    .ach-modal-icon-frame img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+    }
+
+    .ach-modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .ach-modal-desc {
+      font-size: 13px;
+      color: #d0d0d0;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      max-width: 90%;
+    }
+
+    .btn-ach-action {
+      width: 100%;
+      background: #e0e0e0;
+      color: #111;
+      border: 2px solid #fff;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+
+    .btn-ach-action:hover {
+      background: #fff;
+      transform: scale(1.01);
+    }
+
+    .ach-modal-footer {
+      width: 100%;
+      background: #313233;
+      border-top: 2px solid #212223;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    .ach-modal-footer-val {
+      font-weight: bold;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ach-modal-progress-container {
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .ach-modal-progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #181819;
+      border: 1px solid #101011;
+      overflow: hidden;
+    }
+
+    .ach-modal-progress-fill {
+      height: 100%;
+      background: #3978f6;
+    }
+
+    .btn-modal-action-option {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      color: #fff;
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s var(--ease-bedrock);
+    }
+
+    .btn-modal-action-option:hover {
+      background: var(--card-hover);
+      border-color: var(--bedrock-outline);
+    }
+
+    .profile-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--panel-dark-bg);
+      padding: 14px;
+      border: 2px solid var(--card-border);
+      margin-bottom: 14px;
+    }
+
+    .profile-modal-avatar {
+      width: 64px;
+      height: 64px;
+      border: 2px solid var(--card-border);
+    }
+
+    .profile-modal-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-modal-close {
+      border: 2px solid var(--card-border);
+      color: #fff;
+      padding: 8px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      background: var(--card-bg);
+    }
+
+    .btn-modal-close:hover {
+      background: var(--card-hover);
+      border-color: #fff;
+    }
+
+    .zoom-modal-box {
+      max-width: 90vw;
+      max-height: 90vh;
+      position: relative;
+    }
+
+    .zoom-modal-box img {
+      max-width: 100%;
+      max-height: 80vh;
+      border: 2px solid var(--bedrock-outline);
+    }
+
+    .zoom-close-btn {
+      position: absolute;
+      top: -36px;
+      right: 0;
+      background: var(--card-bg);
+      border: 2px solid #fff;
+      color: #fff;
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 992px) {
+      .screen {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .user-card,
+      .achievements-sidebar {
+        width: 100%;
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background-attachment: scroll;
+      }
+
+      header {
+        padding: 0 10px;
+        height: 52px;
+      }
+
+      .btn-hamburger {
+        display: flex;
+      }
+
+      .header-title {
+        font-size: 15px;
+      }
+
+      .btn-social-trigger span {
+        display: none;
+      }
+
+      main {
+        padding: 12px;
+      }
+
+      .screen {
+        gap: 12px;
+      }
+
+      .user-card {
+        width: 100%;
+      }
+
+      .banner-container {
+        height: 120px;
+      }
+
+      .user-info-section {
+        padding: 12px;
+        gap: 12px;
+      }
+
+      .nav-tabs {
+        flex-direction: row;
+      }
+
+      .tab-btn {
+        padding: 8px;
+        font-size: 12px;
+      }
+
+      .tab-content {
+        padding: 12px;
+      }
+
+      .social-drawer {
+        width: 100%;
+      }
+
+      .left-drawer {
+        width: 80%;
+      }
+
+      .modal-box {
+        width: 94vw;
+      }
+
+      .achievements-sidebar {
+        width: 100%;
+      }
+
+      .ach-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+      }
+
+      .gallery-card img {
+        height: 110px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BARRA SUPERIOR DA INTERFACE -->
+  <header>
+    <div class="header-left">
+      <button class="btn-hamburger" id="btnHamburger" onclick="toggleMobileMenu()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <button class="btn-header-back" id="btnBack" onclick="goHome()">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+    </div>
+
+    <div class="header-center">
+      <div class="header-title" id="pageTitle">SEU PERFIL</div>
+    </div>
+
+    <button class="btn-social-trigger" onclick="toggleSocial()">
+      <i class="fa-solid fa-user-group"></i> <span>Social (<span id="socialCount">4</span>)</span>
+    </button>
+  </header>
+
+  <!-- GAVETA NAVEGAÇÃO MOBILE (ESQUERDA) -->
+  <div id="mobileNavMenu" class="left-drawer hidden">
+    <div class="drawer-header">
+      <span>Navegação</span>
+      <button class="btn-close-drawer" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="social-list">
+      <button class="mobile-nav-btn" onclick="goHome(); toggleMobileMenu();"><i class="fa-solid fa-user"></i> Ver Perfil
+        Principal</button>
+      <button class="mobile-nav-btn" onclick="openFriendsScreen('Seus Amigos'); toggleMobileMenu();"><i
+          class="fa-solid fa-user-group"></i> Ver Amigos</button>
+      <button class="mobile-nav-btn" onclick="openAchievementsScreen(); toggleMobileMenu();"><i
+          class="fa-solid fa-trophy"></i> Ver Conquistas</button>
+      <button class="mobile-nav-btn" onclick="openGallery(); toggleMobileMenu();"><i class="fa-solid fa-images"></i>
+        Galeria de Capturas</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- 1. TELA BASE DO PERFIL (COMPACTA) -->
+    <div id="screenBase" class="screen">
+      <aside class="user-card">
+        <div class="banner-container">
+          <img src="https://picsum.photos/id/1043/400/200" class="banner-img" alt="Banner" />
+          <button class="btn-edit-banner"><i class="fa-solid fa-image"></i></button>
+        </div>
+        <div class="user-info-section">
+          <div class="user-profile-row">
+            <div class="avatar-box">
+              <img src="https://picsum.photos/id/64/100/100" class="avatar-img" id="userNameAvatar" alt="Avatar" />
+              <div class="status-dot"></div>
+            </div>
+            <div class="user-names">
+              <h3 id="userName">Voidzin88</h3>
+              <p id="userStatus">Nos Menus do Minecraft</p>
+            </div>
+          </div>
+          <div class="user-actions">
+            <button class="btn-vestuario"><i class="fa-solid fa-shirt"></i> Vestuário</button>
+            <button class="btn-more"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="content-panel">
+        <nav class="nav-tabs">
+          <button class="tab-btn active" id="tabBtnVisaoGeral" onclick="switchTab('visaoGeral')">Visão Geral</button>
+          <button class="tab-btn" id="tabBtnEstatisticas" onclick="switchTab('estatisticas')">Estatísticas</button>
+        </nav>
+
+        <!-- ABA 1: VISÃO GERAL -->
+        <div id="tabVisaoGeral" class="tab-content">
+          <div class="list-item-card" onclick="openFriendsScreen('Seus Amigos')">
+            <div class="item-left">
+              <i class="fa-solid fa-user-group" style="color: #2ecc71; font-size: 18px;"></i>
+              <div>
+                <div style="font-weight: bold;">Amigos</div>
+                <small style="color: var(--text-muted)">4 amigos</small>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: #666;"></i>
+          </div>
+
+          <div class="list-item-card" onclick="openGallery()">
+            <div class="item-left">
+              <i class="fa-solid fa-image" style="color: #3978f6; font-size: 18px;"></i>
+              <div>
+                <div style="font-weight: bold;">Galeria de captura de tela</div>
+                <small style="color: var(--text-muted)">3/100</small>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: #666;"></i>
+          </div>
+
+          <div class="list-item-card" onclick="openAchievementsScreen()">
+            <div class="item-left">
+              <i class="fa-solid fa-book" style="color: #e67e22; font-size: 18px;"></i>
+              <div>
+                <div style="font-weight: bold;">Conquistas</div>
+                <small style="color: var(--text-muted)">33/133</small>
+              </div>
+            </div>
+            <div style="font-weight: bold;">G 610/2980 <i class="fa-solid fa-chevron-right"
+                style="color: #666; margin-left: 6px;"></i></div>
+          </div>
+
+          <div class="section-tag tag-blue">Sugestão para próximas conquistas</div>
+
+          <div class="list-item-card"
+            onclick="showNormalAchievementModal('Energia Renovável', 'Funda troncos de madeira usando o carvão, para fazer mais carvão.', 10, false, null, 'https://picsum.photos/id/1040/100/100')">
+            <div style="width: 100%;">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>Energia Renovável</strong>
+                <span style="font-weight: bold;">G 10</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Funda troncos de madeira usando o
+                carvão, para fazer mais carvão.</p>
+            </div>
+          </div>
+
+          <div class="list-item-card"
+            onclick="showProgressAchievementModal('MAIS Ferramentas', 'Faça uma ferramenta de cada tipo.', 15, 3, 4, true, 'https://picsum.photos/id/1025/100/100')">
+            <div style="width: 100%;">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>MAIS Ferramentas</strong>
+                <span style="font-weight: bold;">G 15</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Faça uma ferramenta de cada tipo.
+              </p>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: 75%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-tag tag-green">Conquistas concluídas recentemente</div>
+
+          <div class="list-item-card" style="border: 2px solid var(--gold-border);"
+            onclick="showNormalAchievementModal('Desencantado', 'Use um Rebolo para ganhar experiência de um item encantado.', 20, true, '12/07/25', 'https://picsum.photos/id/1018/100/100')">
+            <div>
+              <strong>Desencantado</strong>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Use um Rebolo para ganhar
+                experiência de um item encantado.</p>
+            </div>
+            <div style="font-weight: bold;">G 20</div>
+          </div>
+        </div>
+
+        <!-- ABA 2: ESTATÍSTICAS -->
+        <div id="tabEstatisticas" class="tab-content hidden">
+          <div class="list-item-card" style="cursor: default;">
+            <div class="item-left">
+              <i class="fa-regular fa-clock" style="font-size: 20px; color: var(--accent-blue);"></i>
+              <div>
+                <div style="font-size: 12px; color: var(--text-muted);">Tempo de jogo total</div>
+                <strong>183 horas (7 d 15h 25m)</strong>
+              </div>
+            </div>
+          </div>
+          <div class="list-item-card" style="cursor: default;">
+            <div class="item-left">
+              <i class="fa-solid fa-cube" style="font-size: 20px; color: var(--accent-green);"></i>
+              <div>
+                <div style="font-size: 13px; color: var(--text-muted);">Blocos quebrados</div>
+                <strong>24,106</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 2. TELA DE AMIGOS -->
+    <div id="screenFriends" class="screen hidden">
+      <section class="content-panel" style="width: 100%;">
+        <div class="tab-content">
+          <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px;" id="friendsScreenTitle">SEUS AMIGOS</div>
+
+          <div class="list-item-card"
+            onclick="openOtherUserProfile('ZeroMoney521342', 'Offline', 'https://picsum.photos/id/1012/100/100')">
+            <div class="item-left">
+              <img src="https://picsum.photos/id/1012/40/40" style="border: 1px solid #555;" alt="User" />
+              <div>
+                <strong style="font-size: 14px;">ZeroMoney521342</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Offline</div>
+              </div>
+            </div>
+            <button class="btn-social-action" style="max-width: 120px;"
+              onclick="event.stopPropagation(); alert('Pedido de amizade enviado!')"><i
+                class="fa-solid fa-user-plus"></i> Adicionar</button>
+          </div>
+
+          <div class="list-item-card"
+            onclick="openOtherUserProfile('Calixto Br1442', 'Offline', 'https://picsum.photos/id/1025/100/100')">
+            <div class="item-left">
+              <img src="https://picsum.photos/id/1025/40/40" style="border: 1px solid #555;" alt="User" />
+              <div>
+                <strong style="font-size: 14px;">Calixto Br1442</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">Offline</div>
+              </div>
+            </div>
+            <button class="btn-social-action" style="max-width: 120px;"
+              onclick="event.stopPropagation(); alert('Pedido de amizade enviado!')"><i
+                class="fa-solid fa-user-plus"></i> Adicionar</button>
+          </div>
+
+          <div class="list-item-card"
+            onclick="openOtherUserProfile('Nemurx07', 'No Nether', 'https://picsum.photos/id/1005/100/100')">
+            <div class="item-left">
+              <img src="https://picsum.photos/id/1005/40/40" style="border: 1px solid #555;" alt="User" />
+              <div>
+                <strong style="font-size: 14px;">Nemurx07</strong>
+                <div style="font-size: 12px; color: var(--accent-green);">No Nether</div>
+              </div>
+            </div>
+            <button class="btn-social-action" style="max-width: 120px;"
+              onclick="event.stopPropagation(); alert('Pedido de amizade enviado!')"><i
+                class="fa-solid fa-user-plus"></i> Adicionar</button>
+          </div>
+
+          <div class="list-item-card" onclick="goHome()">
+            <div class="item-left">
+              <img src="https://picsum.photos/id/64/40/40" style="border: 1px solid #555;" alt="User" />
+              <div>
+                <strong style="font-size: 14px;">Voidzin88 (Você)</strong>
+                <div style="font-size: 12px; color: var(--accent-green);">Nos Menus do Minecraft</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 3. TELA DE PERFIL DE OUTRO USUÁRIO -->
+    <div id="screenOtherProfile" class="screen hidden">
+      <aside class="user-card">
+        <div class="banner-container">
+          <img src="https://picsum.photos/id/1018/400/200" id="otherUserBanner" class="banner-img" alt="Banner" />
+        </div>
+        <div class="user-info-section">
+          <div class="user-profile-row">
+            <div class="avatar-box">
+              <img src="https://picsum.photos/id/1025/100/100" class="avatar-img" id="otherUserAvatar" alt="Avatar" />
+              <div class="status-dot offline" id="otherUserDot"></div>
+            </div>
+            <div class="user-names">
+              <h3 id="otherUserName">Danilo1785</h3>
+              <p id="otherUserStatus">Offline</p>
+            </div>
+          </div>
+          <div class="user-actions">
+            <button class="btn-vestuario" onclick="alert('Pedido de amizade/mensagem enviado!')"><i
+                class="fa-solid fa-user-group"></i> Amigos</button>
+            <button class="btn-more" onclick="openModal('modalUserOptions')"><i
+                class="fa-solid fa-ellipsis-vertical"></i></button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="content-panel">
+        <nav class="nav-tabs">
+          <button class="tab-btn active" id="otherTabBtnVisaoGeral" onclick="switchOtherTab('visaoGeral')">Visão
+            Geral</button>
+          <button class="tab-btn" id="otherTabBtnEstatisticas"
+            onclick="switchOtherTab('estatisticas')">Estatísticas</button>
+        </nav>
+
+        <!-- ABA VISÃO GERAL DE OUTRO USUÁRIO -->
+        <div id="otherTabVisaoGeral" class="tab-content">
+          <div class="list-item-card"
+            onclick="openFriendsScreen('Amigos de ' + document.getElementById('otherUserName').innerText)">
+            <div class="item-left">
+              <i class="fa-solid fa-user-group" style="color: #2ecc71; font-size: 18px;"></i>
+              <div>
+                <div style="font-weight: bold;" id="otherUserFriendsTitle">Amigos de Danilo1785</div>
+                <small style="color: var(--text-muted)" id="otherUserFriendsCount">5 amigos</small>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: #666;"></i>
+          </div>
+
+          <div class="list-item-card" onclick="openGallery()">
+            <div class="item-left">
+              <i class="fa-solid fa-image" style="color: #3978f6; font-size: 18px;"></i>
+              <div>
+                <div style="font-weight: bold;">Galeria de exibição</div>
+                <small style="color: var(--text-muted)" id="otherUserGalleryCount">12 capturas</small>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: #666;"></i>
+          </div>
+
+          <div class="list-item-card" onclick="openAchievementsScreen()">
+            <div class="item-left">
+              <i class="fa-solid fa-book" style="color: #e67e22; font-size: 18px;"></i>
+              <div>
+                <div style="font-weight: bold;">Conquistas</div>
+                <small style="color: var(--text-muted)" id="otherUserAchCount">45/133</small>
+              </div>
+            </div>
+            <div style="font-weight: bold;" id="otherUserGscore">G 890/2980 <i class="fa-solid fa-chevron-right"
+                style="color: #666; margin-left: 6px;"></i></div>
+          </div>
+
+          <div class="section-tag tag-blue">Sugestão para próximas conquistas</div>
+
+          <div class="list-item-card"
+            onclick="showNormalAchievementModal('Apanhando Madeira', 'Soque uma árvore até que saia um bloco de madeira.', 10, false, null, 'https://picsum.photos/id/1011/100/100')">
+            <div style="width: 100%;">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>Apanhando Madeira</strong>
+                <span style="font-weight: bold;">G 10</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Soque uma árvore até que saia um
+                bloco de madeira.</p>
+            </div>
+          </div>
+
+          <div class="list-item-card"
+            onclick="showProgressAchievementModal('Líder da Matilha', 'Torne-se amigo de cinco lobos.', 20, 2, 5, true, 'https://picsum.photos/id/1025/100/100')">
+            <div style="width: 100%;">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>Líder da Matilha</strong>
+                <span style="font-weight: bold;">G 20</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Torne-se amigo de cinco lobos.</p>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: 40%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA ESTATÍSTICAS DE OUTRO USUÁRIO -->
+        <div id="otherTabEstatisticas" class="tab-content hidden">
+          <div class="list-item-card" style="cursor: default;">
+            <div class="item-left">
+              <i class="fa-regular fa-clock" style="font-size: 20px; color: var(--accent-blue);"></i>
+              <div>
+                <div style="font-size: 12px; color: var(--text-muted);">Tempo de jogo total</div>
+                <strong id="otherStatTime">342 horas (14 d 06h 10m)</strong>
+              </div>
+            </div>
+          </div>
+          <div class="list-item-card" style="cursor: default;">
+            <div class="item-left">
+              <i class="fa-solid fa-cube" style="font-size: 20px; color: var(--accent-green);"></i>
+              <div>
+                <div style="font-size: 13px; color: var(--text-muted);">Blocos quebrados</div>
+                <strong id="otherStatBlocks">82,450</strong>
+              </div>
+            </div>
+          </div>
+          <div class="list-item-card" style="cursor: default;">
+            <div class="item-left">
+              <i class="fa-solid fa-skull" style="font-size: 20px; color: #e74c3c;"></i>
+              <div>
+                <div style="font-size: 13px; color: var(--text-muted);">Monstros derrotados</div>
+                <strong id="otherStatMobs">1,420</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 4. TELA DE CONQUISTAS -->
+    <div id="screenAchievements" class="screen hidden">
+      <aside class="achievements-sidebar">
+        <div class="achievements-progress-card">
+          <div class="ach-icon-box"><i class="fa-solid fa-book"></i></div>
+          <div>
+            <div class="ach-percent-title">25%</div>
+            <div style="font-size: 12px; color: var(--text-muted);">33 de 133 concluído</div>
+          </div>
+        </div>
+
+        <div class="ach-stats-box">
+          <div class="ach-stat-item">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <div class="ach-stat-info">
+              <div>Em andamento</div>
+              <strong>6</strong>
+            </div>
+          </div>
+          <div class="ach-stat-item">
+            <i class="fa-solid fa-gem"></i>
+            <div class="ach-stat-info">
+              <div>Pontuação do jogador</div>
+              <strong>610/2980</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="achievements-main">
+        <div class="ach-toolbar">
+          <div style="display: flex; gap: 8px;">
+            <button class="tab-btn active" style="padding: 6px 12px;">Em andamento</button>
+            <button class="tab-btn" style="padding: 6px 12px;">Todas</button>
+          </div>
+        </div>
+
+        <div class="tab-content" style="gap: 10px;">
+          <div class="list-item-card"
+            onclick="showProgressAchievementModal('MAIS Ferramentas', 'Faça uma ferramenta de cada tipo.', 15, 3, 4, true, 'https://picsum.photos/id/1025/100/100')">
+            <div style="display: flex; gap: 12px; align-items: center; width: 100%;">
+              <img src="https://picsum.photos/id/1025/44/44" style="border: 1px solid #555;" alt="icon" />
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between;">
+                  <strong>MAIS Ferramentas</strong>
+                  <span style="font-weight: bold;">G 15</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">Faça uma ferramenta de cada tipo.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="list-item-card"
+            onclick="showNormalAchievementModal('Desencantado', 'Use um Rebolo para ganhar experiência de um item encantado.', 20, true, '12/07/25', 'https://picsum.photos/id/1018/100/100')">
+            <div style="display: flex; gap: 12px; align-items: center; width: 100%;">
+              <img src="https://picsum.photos/id/1018/44/44" style="border: 1px solid #f1c40f;" alt="icon" />
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between;">
+                  <strong>Desencantado</strong>
+                  <span style="font-weight: bold;">G 20</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">Use um Rebolo para ganhar experiência de um item
+                  encantado.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 5. GALERIA DE CAPTURAS DE TELA -->
+    <div id="screenGallery" class="screen hidden">
+      <div class="gallery-container">
+        <div class="gallery-toolbar">
+          <select class="select-filter">
+            <option>Mostrar todas (3)</option>
+          </select>
+        </div>
+
+        <div class="gallery-grid">
+          <div class="gallery-card" onclick="zoomImage('https://picsum.photos/id/1018/1200/800')">
+            <span class="gallery-tag">Destaques</span>
+            <img src="https://picsum.photos/id/1018/600/400" alt="Capture 1" />
+          </div>
+          <div class="gallery-card" onclick="zoomImage('https://picsum.photos/id/1015/1200/800')">
+            <img src="https://picsum.photos/id/1015/600/400" alt="Capture 2" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. PAINEL SOCIAL LATERAL (DIREITA) -->
+    <div id="socialDrawer" class="social-drawer hidden">
+      <div class="social-header">
+        <input type="text" class="search-input" placeholder="Buscar por pessoas..." />
+        <button class="btn-close-drawer" onclick="toggleSocial()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="social-tabs">
+        <button class="social-tab-btn active" id="btnSocPessoas" onclick="switchSocialTab('pessoas')">
+          <i class="fa-solid fa-user"></i> Pessoas
+        </button>
+        <button class="social-tab-btn" id="btnSocGrupo" onclick="switchSocialTab('grupo')">
+          <i class="fa-solid fa-users"></i> Clubes
+        </button>
+      </div>
+
+      <!-- SEÇÃO AMIGOS (PESSOAS) -->
+      <div id="socialTabPessoas" class="social-list">
+        <div
+          style="font-size: 13px; font-weight: bold; text-align: center; letter-spacing: 1px; padding: 2px 0; color: #fff; text-transform: uppercase;">
+          PESSOAS</div>
+
+        <!-- MEU PERFIL PRINCIPAL -->
+        <div class="my-social-card" onclick="goHome(); toggleSocial();">
+          <div class="social-item-info">
+            <div class="social-avatar-wrapper">
+              <img src="https://picsum.photos/id/64/100/100" alt="Voidzin88" />
+              <div class="status-dot"></div>
+            </div>
+            <div>
+              <strong style="font-size: 14px;">Voidzin88 (Você)</strong>
+              <div style="font-size: 12px; color: #bbb;">Nos Menus do Minecraft</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEÇÃO ONLINE -->
+        <div class="social-section-header green-header">
+          <span>Online (1)</span>
+        </div>
+
+        <div class="user-social-card">
+          <div class="social-item-main">
+            <div class="social-item-info"
+              onclick="openOtherUserProfile('StevePro99', 'No Overworld (Survival)', 'https://picsum.photos/id/1005/100/100')"
+              style="cursor: pointer;">
+              <div class="social-avatar-wrapper">
+                <img src="https://picsum.photos/id/1005/44/44" alt="user" />
+                <div class="status-dot"></div>
+              </div>
+              <div>
+                <strong style="font-size: 14px;">StevePro99</strong>
+                <div style="font-size: 12px; color: var(--accent-green);">No Overworld (Survival)</div>
+              </div>
+            </div>
+            <button class="btn-dots"
+              onclick="openFriendMenu(event, 'StevePro99', 'Online', 'https://picsum.photos/id/1005/100/100', 'No Overworld (Survival)')">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- SEÇÃO OFFLINE -->
+        <div class="social-section-header gray-header">
+          <span>Offline (3)</span>
+        </div>
+
+        <div class="user-social-card">
+          <div class="social-item-main">
+            <div class="social-item-info"
+              onclick="openOtherUserProfile('Danilo1785', 'Offline', 'https://picsum.photos/id/1025/44/44')"
+              style="cursor: pointer;">
+              <div class="social-avatar-wrapper">
+                <img src="https://picsum.photos/id/1025/44/44" alt="user" />
+                <div class="status-dot offline"></div>
+              </div>
+              <div>
+                <strong style="font-size: 14px;">Danilo1785</strong>
+                <div style="font-size: 12px; color: #888;">Offline</div>
+              </div>
+            </div>
+            <button class="btn-dots"
+              onclick="openFriendMenu(event, 'Danilo1785', 'Offline', 'https://picsum.photos/id/1025/44/44', 'Há 2 horas atrás')">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="user-social-card">
+          <div class="social-item-main">
+            <div class="social-item-info"
+              onclick="openOtherUserProfile('Arthurozrany', 'Offline', 'https://picsum.photos/id/1012/44/44')"
+              style="cursor: pointer;">
+              <div class="social-avatar-wrapper">
+                <img src="https://picsum.photos/id/1012/44/44" alt="user" />
+                <div class="status-dot offline"></div>
+              </div>
+              <div>
+                <strong style="font-size: 14px;">Arthurozrany</strong>
+                <div style="font-size: 12px; color: #888;">Offline</div>
+              </div>
+            </div>
+            <button class="btn-dots"
+              onclick="openFriendMenu(event, 'Arthurozrany', 'Offline', 'https://picsum.photos/id/1012/44/44', 'Desconectado')">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="user-social-card">
+          <div class="social-item-main">
+            <div class="social-item-info"
+              onclick="openOtherUserProfile('AlikeZero287313', 'Offline', 'https://picsum.photos/id/1020/44/44')"
+              style="cursor: pointer;">
+              <div class="social-avatar-wrapper">
+                <img src="https://picsum.photos/id/1020/44/44" alt="user" />
+                <div class="status-dot offline"></div>
+              </div>
+              <div>
+                <strong style="font-size: 14px;">AlikeZero287313</strong>
+                <div style="font-size: 12px; color: #888;">Offline</div>
+              </div>
+            </div>
+            <button class="btn-dots"
+              onclick="openFriendMenu(event, 'AlikeZero287313', 'Offline', 'https://picsum.photos/id/1020/44/44', 'Desconectado')">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO CLUBES (GRUPOS) -->
+      <div id="socialTabGrupo" class="social-list hidden">
+        <div
+          style="font-size: 13px; font-weight: bold; text-align: center; letter-spacing: 1px; padding: 2px 0; color: #fff; text-transform: uppercase;">
+          CLUBES DE JOGADORES</div>
+
+        <div class="club-social-card">
+          <div class="social-item-main">
+            <div class="social-item-info">
+              <img src="https://picsum.photos/id/1062/40/40" class="club-icon-wrapper" alt="Clube" />
+              <div>
+                <strong style="font-size: 14px;">Construção & Redstone BR</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">1,240 Membros</div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size: 12px; color: #bbb; margin-top: 4px;">Comunidade para construtores de Redstone.</p>
+          <div class="social-actions" style="margin-top: 8px;">
+            <button class="btn-social-action"
+              onclick="openClubModal('Construção & Redstone BR', '1,240', 'Comunidade para construtores de Redstone.')"><i
+                class="fa-solid fa-circle-info"></i> Detalhes</button>
+            <button class="btn-social-action btn-join-club" onclick="alert('Você entrou no clube!')"><i
+                class="fa-solid fa-right-to-bracket"></i> Entrar no Clube</button>
+          </div>
+        </div>
+
+        <div class="club-social-card">
+          <div class="social-item-main">
+            <div class="social-item-info">
+              <img src="https://picsum.photos/id/1074/40/40" class="club-icon-wrapper" alt="Clube" />
+              <div>
+                <strong style="font-size: 14px;">Bedwars Brasil Official</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">850 Membros</div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size: 12px; color: #bbb; margin-top: 4px;">Comunidade de PvP e Bedwars no Brasil.</p>
+          <div class="social-actions" style="margin-top: 8px;">
+            <button class="btn-social-action"
+              onclick="openClubModal('Bedwars Brasil Official', '850', 'Comunidade de PvP e Bedwars no Brasil.')"><i
+                class="fa-solid fa-circle-info"></i> Detalhes</button>
+            <button class="btn-social-action btn-join-club" onclick="alert('Você entrou no clube!')"><i
+                class="fa-solid fa-right-to-bracket"></i> Entrar no Clube</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAIS DE INTERAÇÃO -->
+
+  <!-- MODAL 1: CONQUISTA NORMAL -->
+  <div id="modalConquistaNormal" class="modal-overlay hidden" onclick="closeModal('modalConquistaNormal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div id="normAchTopBar" class="modal-top-bar green">
+        <span id="normAchTopText">✓ Concluída</span>
+        <span id="normAchDate">12/07/25</span>
+      </div>
+      <div class="ach-modal-content">
+        <div class="ach-modal-icon-frame" id="normAchFrame">
+          <img id="normAchIcon" src="https://picsum.photos/id/1018/100/100" alt="Icone Conquista" />
+        </div>
+        <h2 class="ach-modal-title" id="normAchTitle">Desencantado</h2>
+        <p class="ach-modal-desc" id="normAchDesc">Use um Rebolo para ganhar experiência de um item encantado.</p>
+      </div>
+      <div class="ach-modal-footer">
+        <span>Pontuação do jogador</span>
+        <div class="ach-modal-footer-val"><i class="fa-solid fa-gem" style="color: #e67e22;"></i> G <span
+            id="normAchPoints">20</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CONQUISTA DE BARRA DE PROGRESSO -->
+  <div id="modalConquistaProgresso" class="modal-overlay hidden" onclick="closeModal('modalConquistaProgresso')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div id="progAchTopBar" class="modal-top-bar dark">
+        <span id="progAchTopText"><i class="fa-solid fa-lock"></i> Bloqueada</span>
+      </div>
+      <div class="ach-modal-content">
+        <div class="ach-modal-icon-frame locked" id="progAchFrame">
+          <img id="progAchIcon" src="https://picsum.photos/id/1025/100/100" alt="Icone Conquista" />
+        </div>
+        <h2 class="ach-modal-title" id="progAchTitle">MAIS Ferramentas</h2>
+        <p class="ach-modal-desc" id="progAchDesc">Faça uma ferramenta de cada tipo.</p>
+
+        <button class="btn-ach-action" id="btnToggleTracking" onclick="toggleAchievementTracking()">Remover de em
+          andamento</button>
+      </div>
+      <div class="ach-modal-footer" style="flex-direction: column; gap: 8px; align-items: stretch;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Pontuação do jogador</span>
+          <div class="ach-modal-footer-val"><i class="fa-solid fa-gem" style="color: #e67e22;"></i> G <span
+              id="progAchPoints">15</span></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+          <span>Progresso</span>
+          <strong id="progAchRatio" style="color: #fff;">3/4</strong>
+        </div>
+        <div class="ach-modal-progress-container">
+          <div class="ach-modal-progress-bar">
+            <div class="ach-modal-progress-fill" id="progAchBarFill" style="width: 75%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL OPÇÕES DOS TRÊS PONTINHOS DO AMIGO -->
+  <div id="modalFriendOptions" class="modal-overlay hidden" onclick="closeModal('modalFriendOptions')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top-bar dark">
+        <span id="friendOptionsTitle">OPÇÕES DO USUÁRIO</span>
+        <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="closeModal('modalFriendOptions')"></i>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn-modal-action-option" onclick="triggerInfoOption()">
+          <i class="fa-solid fa-circle-info" style="color: var(--accent-blue);"></i> Informações
+        </button>
+        <button class="btn-modal-action-option" onclick="triggerProfileOption()">
+          <i class="fa-solid fa-user" style="color: var(--accent-green);"></i> Ver perfil
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalImageZoom" class="modal-overlay hidden" onclick="closeModal('modalImageZoom')">
+    <div class="zoom-modal-box" onclick="event.stopPropagation()">
+      <button class="zoom-close-btn" onclick="closeModal('modalImageZoom')"><i class="fa-solid fa-xmark"></i></button>
+      <img id="zoomModalImg" src="" alt="Captura Ampliada" />
+    </div>
+  </div>
+
+  <div id="modalUserProfile" class="modal-overlay hidden" onclick="closeModal('modalUserProfile')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top-bar dark">
+        <span>INFORMAÇÕES DO JOGADOR</span>
+        <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="closeModal('modalUserProfile')"></i>
+      </div>
+      <div class="modal-body">
+        <div class="profile-modal-header">
+          <div class="profile-modal-avatar">
+            <img id="userModalImg" src="https://picsum.photos/id/1005/100/100" alt="Avatar" />
+          </div>
+          <div>
+            <h2 id="userModalName" style="font-size: 18px;">StevePro99</h2>
+            <p id="userModalStatus" style="font-size: 12px; color: var(--accent-green);">No Overworld (Survival)</p>
+          </div>
+        </div>
+        <button class="btn-modal-close" style="width: 100%;" onclick="closeModal('modalUserProfile')">FECHAR</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalUserOptions" class="modal-overlay hidden" onclick="closeModal('modalUserOptions')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top-bar dark">
+        <span>OPÇÕES</span>
+        <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="closeModal('modalUserOptions')"></i>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 8px;">
+        <button class="btn-modal-close">Adicionar aos favoritos</button>
+        <button class="btn-modal-close">Silenciar</button>
+        <button class="btn-modal-close">Bloquear</button>
+        <button class="btn-modal-close" style="color: #e74c3c;">Remover amigo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALHES DO CLUBE -->
+  <div id="modalClubDetails" class="modal-overlay hidden" onclick="closeModal('modalClubDetails')">
+    <div class="modal-box" onclick="event.stopPropagation()"
+      style="background: #2b2c2d; border: 1px solid #444; max-width: 440px;">
+      <div class="modal-top-bar"
+        style="background: #52a529; color: #fff; padding: 8px 14px; font-weight: bold; font-size: 14px;">
+        <span>DETALHES DO CLUBE</span>
+        <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 16px;"
+          onclick="closeModal('modalClubDetails')"></i>
+      </div>
+      <div class="modal-body" style="padding: 20px; text-align: left; background: #2b2c2d;">
+        <h2 id="clubModalTitle" style="font-size: 22px; font-weight: bold; color: #fff; margin-bottom: 4px;">Construção
+          & Redstone BR</h2>
+        <p id="clubModalMembers" style="font-size: 13px; color: #52a529; font-weight: bold; margin-bottom: 12px;">1,240
+          Membros</p>
+        <p id="clubModalDesc" style="font-size: 13px; color: #ccc; margin-bottom: 20px; line-height: 1.4;">Comunidade
+          para construtores de Redstone.</p>
+        <button class="btn-modal-close"
+          style="width: 100%; background: #3a3b3c; border: 1px solid #1e1f20; color: #fff; padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer;"
+          onclick="closeModal('modalClubDetails')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeFriendData = null;
+    let isTrackingCurrentAch = true;
+
+    const usersDatabase = {
+      'Danilo1785': {
+        name: 'Danilo1785',
+        status: 'Offline',
+        avatar: 'https://picsum.photos/id/1025/100/100',
+        banner: 'https://picsum.photos/id/1018/400/200',
+        friendsCount: '5 amigos',
+        galleryCount: '12 capturas',
+        achievementsCount: '45/133',
+        gScore: 'G 890/2980',
+        playTime: '342 horas (14 d 06h 10m)',
+        blocksBroken: '82,450',
+        mobsKilled: '1,420'
+      },
+      'StevePro99': {
+        name: 'StevePro99',
+        status: 'No Overworld (Survival)',
+        avatar: 'https://picsum.photos/id/1005/100/100',
+        banner: 'https://picsum.photos/id/1015/400/200',
+        friendsCount: '18 amigos',
+        galleryCount: '48 capturas',
+        achievementsCount: '98/133',
+        gScore: 'G 2,150/2980',
+        playTime: '820 horas (34 d 04h 12m)',
+        blocksBroken: '310,920',
+        mobsKilled: '8,950'
+      },
+      'Arthurozrany': {
+        name: 'Arthurozrany',
+        status: 'Offline',
+        avatar: 'https://picsum.photos/id/1012/100/100',
+        banner: 'https://picsum.photos/id/1043/400/200',
+        friendsCount: '2 amigos',
+        galleryCount: '1 captura',
+        achievementsCount: '12/133',
+        gScore: 'G 180/2980',
+        playTime: '42 horas (1 d 18h 00m)',
+        blocksBroken: '8,410',
+        mobsKilled: '120'
+      },
+      'AlikeZero287313': {
+        name: 'AlikeZero287313',
+        status: 'Offline',
+        avatar: 'https://picsum.photos/id/1020/100/100',
+        banner: 'https://picsum.photos/id/1011/400/200',
+        friendsCount: '9 amigos',
+        galleryCount: '6 capturas',
+        achievementsCount: '30/133',
+        gScore: 'G 510/2980',
+        playTime: '120 horas (5 d 00h 00m)',
+        blocksBroken: '19,200',
+        mobsKilled: '410'
+      }
+    };
+
+    function switchTab(tab) {
+      document.getElementById('tabBtnVisaoGeral').classList.toggle('active', tab === 'visaoGeral');
+      document.getElementById('tabBtnEstatisticas').classList.toggle('active', tab === 'estatisticas');
+      document.getElementById('tabVisaoGeral').classList.toggle('hidden', tab !== 'visaoGeral');
+      document.getElementById('tabEstatisticas').classList.toggle('hidden', tab !== 'estatisticas');
+    }
+
+    function switchOtherTab(tab) {
+      document.getElementById('otherTabBtnVisaoGeral').classList.toggle('active', tab === 'visaoGeral');
+      document.getElementById('otherTabBtnEstatisticas').classList.toggle('active', tab === 'estatisticas');
+      document.getElementById('otherTabVisaoGeral').classList.toggle('hidden', tab !== 'visaoGeral');
+      document.getElementById('otherTabEstatisticas').classList.toggle('hidden', tab !== 'estatisticas');
+    }
+
+    function toggleSocial() {
+      document.getElementById('socialDrawer').classList.toggle('hidden');
+    }
+
+    function switchSocialTab(tab) {
+      const btnPessoas = document.getElementById('btnSocPessoas');
+      const btnGrupo = document.getElementById('btnSocGrupo');
+      const tabPessoas = document.getElementById('socialTabPessoas');
+      const tabGrupo = document.getElementById('socialTabGrupo');
+
+      if (tab === 'pessoas') {
+        btnPessoas.classList.add('active');
+        btnGrupo.classList.remove('active');
+        tabPessoas.classList.remove('hidden');
+        tabGrupo.classList.add('hidden');
+      } else {
+        btnGrupo.classList.add('active');
+        btnPessoas.classList.remove('active');
+        tabGrupo.classList.remove('hidden');
+        tabPessoas.classList.add('hidden');
+      }
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobileNavMenu').classList.toggle('hidden');
+    }
+
+    function openFriendsScreen(title) {
+      hideAllScreens();
+      document.getElementById('friendsScreenTitle').innerText = title.toUpperCase();
+      document.getElementById('screenFriends').classList.remove('hidden');
+      document.getElementById('pageTitle').innerText = 'AMIGOS';
+    }
+
+    function openFriendMenu(event, name, status, imgUrl, desc) {
+      event.stopPropagation();
+      activeFriendData = { name, status, imgUrl, desc };
+      document.getElementById('friendOptionsTitle').innerText = 'OPÇÕES PARA ' + name.toUpperCase();
+      openModal('modalFriendOptions');
+    }
+
+    function triggerInfoOption() {
+      closeModal('modalFriendOptions');
+      if (activeFriendData) {
+        openUserProfileModal(activeFriendData.name, activeFriendData.status, activeFriendData.imgUrl);
+      }
+    }
+
+    function triggerProfileOption() {
+      closeModal('modalFriendOptions');
+      if (activeFriendData) {
+        openOtherUserProfile(activeFriendData.name, activeFriendData.status, activeFriendData.imgUrl);
+      }
+    }
+
+    function openOtherUserProfile(name, status, imgUrl) {
+      hideAllScreens();
+
+      const userData = usersDatabase[name] || {
+        name: name,
+        status: status,
+        avatar: imgUrl,
+        banner: 'https://picsum.photos/id/1018/400/200',
+        friendsCount: '4 amigos',
+        galleryCount: '0/5 capturas',
+        achievementsCount: '15/133',
+        gScore: 'G 310/2980',
+        playTime: '90 horas (3 d 18h 00m)',
+        blocksBroken: '12,300',
+        mobsKilled: '320'
+      };
+
+      document.getElementById('otherUserName').innerText = userData.name;
+      document.getElementById('otherUserStatus').innerText = userData.status;
+      document.getElementById('otherUserAvatar').src = userData.avatar;
+      document.getElementById('otherUserBanner').src = userData.banner;
+      document.getElementById('otherUserFriendsTitle').innerText = 'Amigos de ' + userData.name;
+      document.getElementById('otherUserFriendsCount').innerText = userData.friendsCount;
+      document.getElementById('otherUserGalleryCount').innerText = userData.galleryCount;
+      document.getElementById('otherUserAchCount').innerText = userData.achievementsCount;
+      document.getElementById('otherUserGscore').innerHTML = userData.gScore + ' <i class="fa-solid fa-chevron-right" style="color: #666; margin-left: 6px;"></i>';
+
+      document.getElementById('otherStatTime').innerText = userData.playTime;
+      document.getElementById('otherStatBlocks').innerText = userData.blocksBroken;
+      document.getElementById('otherStatMobs').innerText = userData.mobsKilled;
+
+      const dot = document.getElementById('otherUserDot');
+      if (userData.status.toLowerCase().includes('offline')) {
+        dot.classList.add('offline');
+      } else {
+        dot.classList.remove('offline');
+      }
+
+      switchOtherTab('visaoGeral');
+      document.getElementById('screenOtherProfile').classList.remove('hidden');
+      document.getElementById('pageTitle').innerText = 'PERFIL DE ' + userData.name.toUpperCase();
+      document.getElementById('socialDrawer').classList.add('hidden');
+    }
+
+    function openAchievementsScreen() {
+      hideAllScreens();
+      document.getElementById('screenAchievements').classList.remove('hidden');
+      document.getElementById('pageTitle').innerText = 'CONQUISTAS';
+    }
+
+    function openGallery() {
+      hideAllScreens();
+      document.getElementById('screenGallery').classList.remove('hidden');
+      document.getElementById('pageTitle').innerText = 'GALERIA';
+    }
+
+    function goHome() {
+      hideAllScreens();
+      document.getElementById('screenBase').classList.remove('hidden');
+      document.getElementById('pageTitle').innerText = 'SEU PERFIL';
+    }
+
+    function hideAllScreens() {
+      document.getElementById('screenBase').classList.add('hidden');
+      document.getElementById('screenFriends').classList.add('hidden');
+      document.getElementById('screenOtherProfile').classList.add('hidden');
+      document.getElementById('screenAchievements').classList.add('hidden');
+      document.getElementById('screenGallery').classList.add('hidden');
+    }
+
+    function showNormalAchievementModal(title, desc, points, isUnlocked, dateStr, iconUrl) {
+      const topBar = document.getElementById('normAchTopBar');
+      const topText = document.getElementById('normAchTopText');
+      const dateEl = document.getElementById('normAchDate');
+      const frame = document.getElementById('normAchFrame');
+
+      document.getElementById('normAchTitle').innerText = title;
+      document.getElementById('normAchDesc').innerText = desc;
+      document.getElementById('normAchPoints').innerText = points;
+      document.getElementById('normAchIcon').src = iconUrl || 'https://picsum.photos/id/1018/100/100';
+
+      if (isUnlocked) {
+        topBar.className = 'modal-top-bar green';
+        topText.innerHTML = '✓ Concluída';
+        dateEl.innerText = dateStr || '12/07/25';
+        dateEl.style.display = 'inline';
+        frame.classList.remove('locked');
+      } else {
+        topBar.className = 'modal-top-bar dark';
+        topText.innerHTML = '<i class="fa-solid fa-lock"></i> Bloqueada';
+        dateEl.style.display = 'none';
+        frame.classList.add('locked');
+      }
+
+      openModal('modalConquistaNormal');
+    }
+
+    function showProgressAchievementModal(title, desc, points, currentVal, maxVal, isTracking, iconUrl) {
+      document.getElementById('progAchTitle').innerText = title;
+      document.getElementById('progAchDesc').innerText = desc;
+      document.getElementById('progAchPoints').innerText = points;
+      document.getElementById('progAchRatio').innerText = `${currentVal}/${maxVal}`;
+      document.getElementById('progAchIcon').src = iconUrl || 'https://picsum.photos/id/1025/100/100';
+
+      const pct = Math.min(100, Math.round((currentVal / maxVal) * 100));
+      document.getElementById('progAchBarFill').style.width = `${pct}%`;
+
+      isTrackingCurrentAch = isTracking;
+      updateTrackingButtonUI();
+
+      openModal('modalConquistaProgresso');
+    }
+
+    function toggleAchievementTracking() {
+      isTrackingCurrentAch = !isTrackingCurrentAch;
+      updateTrackingButtonUI();
+    }
+
+    function updateTrackingButtonUI() {
+      const btn = document.getElementById('btnToggleTracking');
+      if (isTrackingCurrentAch) {
+        btn.innerText = 'Remover de em andamento';
+      } else {
+        btn.innerText = 'Adicionar a em andamento';
+      }
+    }
+
+    function zoomImage(src) {
+      document.getElementById('zoomModalImg').src = src;
+      document.getElementById('modalImageZoom').classList.remove('hidden');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function openUserProfileModal(name, status, imgUrl) {
+      document.getElementById('userModalName').innerText = name;
+      document.getElementById('userModalStatus').innerText = status;
+      document.getElementById('userModalImg').src = imgUrl;
+      document.getElementById('modalUserProfile').classList.remove('hidden');
+    }
+
+    function openClubModal(title, members, desc) {
+      document.getElementById('clubModalTitle').innerText = title;
+      document.getElementById('clubModalMembers').innerText = members + ' Membros';
+      document.getElementById('clubModalDesc').innerText = desc;
+      document.getElementById('modalClubDetails').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+  </script>
+</body>
+
+</html>

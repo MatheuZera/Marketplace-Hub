@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock - JOGAR</title>
+    <style>
+        :root {
+            --bg-dark-overlay: #18191c;
+            --bg-main: #2b2c2f;
+            --bg-darker: #1e1f22;
+            --bg-sidebar: #242528;
+            --bg-topbar: #d0d1d4;
+            --bg-card: #38393c;
+            --bg-card-hover: #48494e;
+            --bg-card-active: #52545a;
+            --border-dark: #111213;
+            --text-light: #ffffff;
+            --text-gray: #b0b3ba;
+            --text-dark: #111111;
+            --btn-green: #388728;
+            --btn-green-hover: #44a030;
+            --btn-gray: #4e4f54;
+            --btn-gray-hover: #5e6066;
+            --purple-header: #7b42bc;
+            --red-expired: #e74c3c;
+            --green-active: #2ecc71;
+            --orange-maint: #e67e22;
+            --blue-highlight: #2980b9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-main);
+            overflow: hidden;
+            display: flex;
+            color: var(--text-light);
+        }
+
+        .window {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .svg-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* Barra Superior */
+        .top-bar {
+            background-color: var(--bg-topbar);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: relative;
+            border-bottom: 3px solid var(--border-dark);
+            flex-shrink: 0;
+            z-index: 30;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .top-bar h1 {
+            color: var(--text-dark);
+            font-size: 18px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .top-right-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .top-btn {
+            background-color: #38393a;
+            color: white;
+            border: 2px solid var(--border-dark);
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 2px;
+        }
+
+        .top-btn:hover {
+            background-color: #4b4c4e;
+        }
+
+        .right-hamburger-btn {
+            background-color: #2b2c2f;
+            color: white;
+            border: 2px solid var(--border-dark);
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 2px;
+        }
+
+        .right-hamburger-btn:hover {
+            background-color: #3f4045;
+        }
+
+        /* Abas Principais (Desktop) */
+        .main-tabs-bar {
+            display: flex;
+            background-color: var(--bg-darker);
+            padding: 8px 16px 0 16px;
+            gap: 8px;
+            border-bottom: 3px solid var(--border-dark);
+            flex-shrink: 0;
+        }
+
+        .main-tab {
+            flex: 1;
+            background-color: #333437;
+            border: 3px solid var(--border-dark);
+            border-bottom: none;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text-gray);
+            position: relative;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .main-tab:hover {
+            color: #fff;
+            background-color: #3b3c3f;
+        }
+
+        .main-tab.active {
+            background-color: var(--bg-main);
+            color: white;
+            border-color: var(--border-dark);
+        }
+
+        .main-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #ffffff;
+        }
+
+        /* Menu Lateral Suspenso (Drawer) */
+        .right-nav-drawer {
+            position: absolute;
+            top: 52px;
+            right: 0;
+            width: 260px;
+            background-color: var(--bg-darker);
+            border-left: 3px solid var(--border-dark);
+            border-bottom: 3px solid var(--border-dark);
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+            box-shadow: -10px 10px 25px rgba(0, 0, 0, 0.7);
+        }
+
+        .right-nav-drawer.open {
+            display: flex;
+        }
+
+        .drawer-header {
+            padding: 10px 14px;
+            background: #151618;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .drawer-item {
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-dark);
+            background: var(--bg-card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drawer-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Container de visualização */
+        .view-container {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .view-container.active {
+            display: flex;
+        }
+
+        .square-img {
+            width: 80px;
+            height: 80px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            image-rendering: pixelated;
+            border: 2px solid var(--border-dark);
+            flex-shrink: 0;
+            border-radius: 4px;
+        }
+
+        .square-avatar {
+            width: 40px;
+            height: 40px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border: 2px solid var(--border-dark);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+        }
+
+        /* Layouts das Abas */
+        .realms-layout,
+        .servers-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .realms-sidebar,
+        .servers-sidebar {
+            width: 320px;
+            background-color: var(--bg-sidebar);
+            border-right: 3px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            gap: 8px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            transition: transform 0.25s ease;
+            z-index: 20;
+        }
+
+        .category-header {
+            font-size: 11px;
+            color: var(--text-gray);
+            font-weight: bold;
+            padding: 8px 2px 4px 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .realm-nav-item,
+        .server-item {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .realm-nav-item:hover,
+        .server-item:hover {
+            background-color: var(--bg-card-hover);
+        }
+
+        .realm-nav-item.active,
+        .server-item.active {
+            background-color: var(--bg-card-active);
+            border-left: 6px solid #ffffff;
+        }
+
+        .badge-status {
+            font-size: 10px;
+            padding: 3px 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            border-radius: 2px;
+        }
+
+        .badge-status.expired {
+            background-color: var(--red-expired);
+            color: white;
+        }
+
+        .badge-status.active {
+            background-color: var(--green-active);
+            color: black;
+        }
+
+        .badge-status.maint {
+            background-color: var(--orange-maint);
+            color: white;
+        }
+
+        .badge-tag {
+            background-color: var(--blue-highlight);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background-color: #4e4f54;
+            border: 2px solid var(--border-dark);
+            padding: 12px;
+            font-weight: bold;
+            font-size: 13px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 6px;
+            border-radius: 3px;
+        }
+
+        .add-btn:hover {
+            background-color: #5d5f66;
+        }
+
+        .realms-main-panel,
+        .servers-main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background-color: var(--bg-main);
+        }
+
+        .servers-main-panel {
+            padding: 18px;
+            gap: 14px;
+        }
+
+        .realm-status-banner {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 8px;
+            border-bottom: 3px solid var(--border-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .realm-banner-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 3px solid var(--border-dark);
+        }
+
+        .realm-control-row {
+            padding: 14px 20px;
+            display: flex;
+            gap: 12px;
+            background-color: var(--bg-darker);
+            border-bottom: 3px solid var(--border-dark);
+            flex-wrap: wrap;
+        }
+
+        .realm-btn-hub {
+            flex: 1;
+            min-width: 140px;
+            background: #dcdcdc;
+            color: var(--text-dark);
+            border: 2px solid var(--border-dark);
+            padding: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .realm-btn-play,
+        .server-play-green {
+            flex: 1;
+            min-width: 140px;
+            border: 2px solid var(--border-dark);
+            padding: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .realm-btn-play.green,
+        .server-play-green {
+            background: var(--btn-green);
+            color: white;
+        }
+
+        .realm-btn-play.green:hover,
+        .server-play-green:hover {
+            background: var(--btn-green-hover);
+        }
+
+        .realm-btn-play.disabled {
+            background: #6b6c70;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .realm-subtabs-bar {
+            display: flex;
+            background: var(--bg-darker);
+            border-bottom: 3px solid var(--border-dark);
+            padding: 0 16px;
+            gap: 6px;
+            overflow-x: auto;
+        }
+
+        .realm-subtab {
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-gray);
+            background: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            border-bottom: none;
+            cursor: pointer;
+            margin-top: 6px;
+            white-space: nowrap;
+        }
+
+        .realm-subtab.active {
+            background: var(--purple-header);
+            color: #fff;
+        }
+
+        .realm-tab-content {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-activity-square {
+            display: flex;
+            gap: 14px;
+            background: var(--bg-card);
+            padding: 12px;
+            border: 2px solid var(--border-dark);
+            align-items: flex-start;
+            border-radius: 4px;
+        }
+
+        .member-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            padding: 10px 14px;
+            border: 2px solid var(--border-dark);
+            border-radius: 4px;
+        }
+
+        .server-banner-preview {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--border-dark);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 14px;
+            flex-shrink: 0;
+            border-radius: 4px;
+        }
+
+        .server-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: var(--bg-darker);
+            padding: 14px 18px;
+            border: 3px solid var(--border-dark);
+            border-radius: 4px;
+            flex-wrap: wrap;
+        }
+
+        .server-desc-box {
+            background: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            padding: 14px;
+            font-size: 13px;
+            color: #d8d9de;
+            line-height: 1.5;
+            border-radius: 4px;
+        }
+
+        .custom-server-details {
+            background: var(--bg-darker);
+            border: 3px solid var(--border-dark);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-radius: 4px;
+        }
+
+        .field-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-bottom: 1px solid #3d3e42;
+            padding-bottom: 8px;
+        }
+
+        .field-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .field-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .field-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* Mundos Grid Layout */
+        .worlds-container-padding {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .worlds-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-world-action {
+            padding: 10px 18px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border: 2px solid var(--border-dark);
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .worlds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .world-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .world-card:hover {
+            transform: translateY(-2px);
+            background: var(--bg-card-hover);
+        }
+
+        .world-card-img {
+            width: 100%;
+            height: 125px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--border-dark);
+        }
+
+        .world-card-body {
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-box {
+            background-color: var(--bg-main);
+            border: 4px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 4px;
+        }
+
+        .modal-header {
+            background-color: var(--bg-sidebar);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--border-dark);
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            background: #1e1f22;
+            border: 2px solid var(--border-dark);
+            padding: 10px 12px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            border-radius: 2px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid var(--border-dark);
+            text-transform: uppercase;
+        }
+
+        /* Overlay Escuro para Mobile Sidebar */
+        .sidebar-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 15;
+            display: none;
+        }
+
+        .sidebar-backdrop.active {
+            display: block;
+        }
+
+        /* Mobile Bottom Nav */
+        .mobile-bottom-nav {
+            display: none;
+            background-color: var(--bg-darker);
+            border-top: 3px solid var(--border-dark);
+            height: 56px;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .mobile-nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            color: var(--text-gray);
+            font-size: 11px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mobile-nav-btn.active {
+            color: #ffffff;
+            background: var(--bg-card);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1c1d1f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4a4b4f;
+        }
+
+        /* RESPONSIVIDADE MOBILE (@media) */
+        @media (max-width: 860px) {
+            .main-tabs-bar {
+                display: none;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
+
+            .realms-sidebar,
+            .servers-sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 280px;
+                box-shadow: 10px 0 20px rgba(0, 0, 0, 0.8);
+                transform: translateX(0);
+            }
+
+            .realms-sidebar.closed,
+            .servers-sidebar.closed {
+                transform: translateX(-100%);
+            }
+
+            .servers-main-panel {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .server-banner-preview {
+                height: 150px;
+            }
+
+            .card-activity-square {
+                flex-direction: column;
+            }
+
+            .square-img {
+                width: 100%;
+                height: 110px;
+            }
+
+            .worlds-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-bar h1 {
+                font-size: 15px;
+            }
+
+            .top-btn span {
+                display: none;
+            }
+
+            .worlds-header-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-world-action {
+                justify-content: center;
+            }
+
+            .realm-control-row {
+                flex-direction: column;
+            }
+
+            .server-header-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .server-play-green {
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="window">
+        <!-- Barra Superior -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="back-btn" onclick="playClickSound()" title="Voltar">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </button>
+                <h1>JOGAR</h1>
+            </div>
+
+            <div class="top-right-actions">
+                <button class="top-btn" onclick="playClickSound(); toggleSidebar();" title="Lista de Servidores/Realms">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                    </svg>
+                    <span>Lista</span>
+                </button>
+
+                <button class="top-btn" onclick="playClickSound(); openModal('social-modal')">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                    </svg>
+                    <span>Amigos (3)</span>
+                </button>
+
+                <button class="right-hamburger-btn" onclick="playClickSound(); toggleRightDrawer()">
+                    <span>☰ Menu</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Menu Drawer -->
+        <nav class="right-nav-drawer" id="rightNavDrawer">
+            <div class="drawer-header">Navegação Rápida</div>
+            <div class="drawer-item" onclick="playClickSound(); switchTabDirect('mundos')">
+                <span>🌍 Mundos</span>
+            </div>
+            <div class="drawer-item" onclick="playClickSound(); switchTabDirect('realms')">
+                <span>👑 Realms</span>
+            </div>
+            <div class="drawer-item" onclick="playClickSound(); switchTabDirect('servidores')">
+                <span>🖥️ Servidores</span>
+            </div>
+            <div class="drawer-header">Painéis e Filtros</div>
+            <div class="drawer-item" onclick="playClickSound(); toggleSidebar()">
+                <span>↔ Mostrar/Ocultar Lateral</span>
+            </div>
+        </nav>
+
+        <!-- Abas Principais (Desktop) -->
+        <div class="main-tabs-bar">
+            <div class="main-tab" id="tab-btn-mundos" onclick="playClickSound(); switchTabDirect('mundos')">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                </svg>
+                <span id="label-count-mundos">Mundos (4)</span>
+            </div>
+            <div class="main-tab" id="tab-btn-realms" onclick="playClickSound(); switchTabDirect('realms')">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H5V8h14v10z" />
+                </svg>
+                <span id="label-count-realms">Realms (3)</span>
+            </div>
+            <div class="main-tab active" id="tab-btn-servidores"
+                onclick="playClickSound(); switchTabDirect('servidores')">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M4 6h16v4H4zm0 7h16v4H4zm0 7h16v4H4z" />
+                </svg>
+                <span>Servidores</span>
+            </div>
+        </div>
+
+        <!-- ABA MUNDOS -->
+        <div id="tab-mundos" class="view-container">
+            <div class="worlds-container-padding">
+                <div class="worlds-header-actions">
+                    <div style="font-weight: bold; font-size: 15px; color: var(--text-gray);">Seus Mundos Locais</div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-world-action" style="background:var(--btn-green); color:white;"
+                            onclick="playClickSound(); alert('Criando novo mundo...')">➕ Criar Novo</button>
+                        <button class="btn-world-action" style="background:var(--btn-gray); color:white;"
+                            onclick="playClickSound(); alert('Selecione o arquivo .mcworld')">📥 Importar</button>
+                    </div>
+                </div>
+
+                <div class="worlds-grid" id="worldsGridContainer"></div>
+            </div>
+        </div>
+
+        <!-- ABA REALMS -->
+        <div id="tab-realms" class="view-container">
+            <div class="realms-layout">
+                <div class="sidebar-backdrop" id="realmsBackdrop" onclick="toggleSidebar()"></div>
+                <div class="realms-sidebar" id="realmsSidebar">
+                    <div class="category-header" id="realmCountHeader">Seus Realms (0)</div>
+                    <div id="realmsListContainer" style="display:flex; flex-direction:column; gap:6px;"></div>
+                    <button class="add-btn" onclick="playClickSound(); openModal('realm-modal')">+ Adicionar
+                        Realm</button>
+                </div>
+                <div class="realms-main-panel" id="realmsMainPanel"></div>
+            </div>
+        </div>
+
+        <!-- ABA SERVIDORES -->
+        <div id="tab-servidores" class="view-container active">
+            <div class="servers-layout">
+                <div class="sidebar-backdrop" id="serversBackdrop" onclick="toggleSidebar()"></div>
+                <div class="servers-sidebar" id="serversSidebarContainer"></div>
+                <div class="servers-main-panel" id="serversMainPanelContainer"></div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="mobile-bottom-nav">
+            <button class="mobile-nav-btn" id="mob-tab-mundos" onclick="playClickSound(); switchTabDirect('mundos')">
+                <span>🌍</span>
+                <span>Mundos</span>
+            </button>
+            <button class="mobile-nav-btn" id="mob-tab-realms" onclick="playClickSound(); switchTabDirect('realms')">
+                <span>👑</span>
+                <span>Realms</span>
+            </button>
+            <button class="mobile-nav-btn active" id="mob-tab-servidores"
+                onclick="playClickSound(); switchTabDirect('servidores')">
+                <span>🖥️</span>
+                <span>Servidores</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modais -->
+    <div class="modal-overlay" id="add-server-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>Adicionar Servidor Personalizado</span>
+                <button class="modal-close" onclick="closeModal('add-server-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nome do Servidor</label>
+                    <input type="text" id="newServerName" placeholder="Ex: Pixel Legends Bedrock">
+                </div>
+                <div class="form-group">
+                    <label>Endereço IP ou Domínio</label>
+                    <input type="text" id="newServerIp" placeholder="play.seuservidor.com">
+                </div>
+                <div class="form-group">
+                    <label>Porta (Padrão Bedrock: 19132)</label>
+                    <input type="text" id="newServerPort" value="19132">
+                </div>
+                <div class="form-actions">
+                    <button style="background:#555; color:white;"
+                        onclick="closeModal('add-server-modal')">Cancelar</button>
+                    <button style="background:var(--btn-green); color:white;" onclick="saveNewServer()">Salvar
+                        Servidor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="realm-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>Entrar em um Realm</span>
+                <button class="modal-close" onclick="closeModal('realm-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Código de Convite do Realm</label>
+                    <input type="text" placeholder="Ex: aB1cD2eF3gH">
+                </div>
+                <div class="form-actions">
+                    <button style="background:#555; color:white;" onclick="closeModal('realm-modal')">Cancelar</button>
+                    <button style="background:var(--btn-green); color:white;"
+                        onclick="alert('Entrando no Realm...'); closeModal('realm-modal')">Entrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="social-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>Amigos Online (3)</span>
+                <button class="modal-close" onclick="closeModal('social-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="member-row">
+                    <div class="square-avatar" style="background:#3498db; color:white;">🧑‍💻</div>
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; font-size:13px;">CraftMaster99</div>
+                        <div style="font-size:11px; color:var(--text-gray);">Jogando em CubeCraft</div>
+                    </div>
+                </div>
+                <div class="member-row">
+                    <div class="square-avatar" style="background:#e74c3c; color:white;">🎮</div>
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; font-size:13px;">Alex_Survival</div>
+                        <div style="font-size:11px; color:var(--text-gray);">No menu principal</div>
+                    </div>
+                </div>
+                <div class="member-row">
+                    <div class="square-avatar" style="background:#2ecc71; color:white;">🛡️</div>
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; font-size:13px;">MatheuZera_Dev</div>
+                        <div style="font-size:11px; color:var(--text-gray);">Em ResistênciaCraft</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function playClickSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.04);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.04);
+            } catch (e) { }
+        }
+
+        // DADOS DOS MUNDOS (EXPANDIDOS)
+        const worldsData = [
+            {
+                id: 'w1',
+                name: 'Sobrevivência Principal',
+                mode: 'Sobrevivência',
+                date: '18/09/2026',
+                size: '42.8 MB',
+                thumb: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=400&auto=format&fit=crop'
+            },
+            {
+                id: 'w2',
+                name: 'Laboratório de Redstone',
+                mode: 'Criativo',
+                date: '15/09/2026',
+                size: '18.4 MB',
+                thumb: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop'
+            },
+            {
+                id: 'w3',
+                name: 'Mundo Hardcore RPG',
+                mode: 'Hardcore',
+                date: '10/09/2026',
+                size: '105.2 MB',
+                thumb: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400&auto=format&fit=crop'
+            },
+            {
+                id: 'w4',
+                name: 'Cidade Voxel Creative',
+                mode: 'Criativo',
+                date: '02/09/2026',
+                size: '88.1 MB',
+                thumb: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400&auto=format&fit=crop'
+            }
+        ];
+
+        // DADOS DOS REALMS (EXPANDIDOS)
+        const realmsData = [
+            {
+                id: 'realm_1',
+                name: 'ResistênciaCraft - Oficial',
+                owner: 'MatheuZera',
+                status: 'active',
+                statusText: 'Ativo • 8/10 Online',
+                avatarBg: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=100&auto=format&fit=crop',
+                banner: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop',
+                about: 'Realm de sobrevivência comunitário com economia ativa, lojas de jogadores e eventos semanais de PvP e construção.',
+                lastPlayed: 'Hoje às 14:20',
+                feed: [
+                    { author: 'MatheuZera', text: '🏆 Evento de construção de castelos neste sábado! Prêmios em Netherita!', date: 'Há 2 horas' },
+                    { author: 'StaffPartner', text: '🔧 Reinicialização programada concluída com sucesso.', date: 'Ontem' }
+                ],
+                members: ['MatheuZera (Dono)', 'StaffPartner', 'Alex_Survival', 'CraftMaster99', 'GamerBR_99']
+            },
+            {
+                id: 'realm_2',
+                name: 'Dragon SMP Survival',
+                owner: 'DeveloperRES',
+                status: 'expired',
+                statusText: 'Expirado',
+                avatarBg: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=100&auto=format&fit=crop',
+                banner: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1000&auto=format&fit=crop',
+                about: 'A assinatura deste Realm expirou. O proprietário precisa renovar no Marketplace.',
+                lastPlayed: '28/08/2026',
+                feed: [],
+                members: ['DeveloperRES (Dono)', 'MatheuZera']
+            },
+            {
+                id: 'realm_3',
+                name: 'Redstone Builders Club',
+                owner: 'LogicGate_MC',
+                status: 'maint',
+                statusText: 'Em Manutenção',
+                avatarBg: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=100&auto=format&fit=crop',
+                banner: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1000&auto=format&fit=crop',
+                about: 'Realm focado na criação de fazendas de redstone, mecanismos complexos e computadores em Minecraft.',
+                lastPlayed: '12/09/2026',
+                feed: [{ author: 'LogicGate_MC', text: 'Atualizando mapas de comandos...', date: 'Há 3 dias' }],
+                members: ['LogicGate_MC (Dono)', 'RedstonePro', 'MatheuZera']
+            }
+        ];
+
+        // SERVIDORES EM DESTAQUE (COM CARDS RICOS)
+        const featuredServers = [
+            {
+                id: 'cubecraft',
+                name: 'CubeCraft Games',
+                subtitle: 'BEDWARS SEASON 5 & SKYBLOCK',
+                icon: '📦',
+                color: '#0070e0',
+                ping: '42 ms',
+                onlinePlayers: '12,840',
+                banner: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1000&auto=format&fit=crop',
+                description: 'Um dos maiores servidores oficiais da comunidade Bedrock! Jogue minigames populares como BedWars, Skyblock, Lucky Islands e Blockwars com amigos.',
+                activities: [
+                    { title: 'BedWars 2.0', subtitle: 'Solo, Duplas e Quadras', desc: 'Proteja sua cama, compre itens táticos e destrua a base inimiga para vencer!', thumb: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=200&auto=format&fit=crop' },
+                    { title: 'Skyblock Co-op', subtitle: 'Sobrevivência em Ilhas', desc: 'Construa seu império flutuante, complete missões diárias e negocie na economia dos jogadores!', thumb: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=200&auto=format&fit=crop' },
+                    { title: 'Lucky Islands', subtitle: 'Ação caótica', desc: 'Quebre blocos da sorte e receba armas lendárias ou surpresas perigosas!', thumb: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=200&auto=format&fit=crop' }
+                ],
+                news: '🔥 ATUALIZAÇÃO BEDWARS:\n- 4 novos mapas épicos adicionados\n- Sistema de Matchmaking aprimorado\n- Novos cosméticos e efeitos de vitória no Marketplace'
+            },
+            {
+                id: 'thehive',
+                name: 'The Hive',
+                subtitle: 'WILD WEST BEDWARS & HIDE AND SEEK',
+                icon: '🐝',
+                color: '#f1c40f',
+                ping: '28 ms',
+                onlinePlayers: '18,420',
+                banner: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop',
+                description: 'Experiência oficial com cosméticos 3D incríveis, servidores de alto desempenho e modos de jogo super populares.',
+                activities: [
+                    { title: 'Treasure Wars', subtitle: 'Proteja seu Tesouro', desc: 'Enfrente equipes rivais, colete ouro e conquiste o arquipélago!', thumb: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=200&auto=format&fit=crop' },
+                    { title: 'Hide and Seek', subtitle: 'Esconde-Esconde Clássico', desc: 'Transforme-se em um bloco do cenário e evite ser encontrado pelos caçadores!', thumb: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=200&auto=format&fit=crop' }
+                ],
+                news: '🤠 TEMPORADA OESTE SELVAGEM NOP AR!\nSuba no Passe de Batalha para desbloquear montarias e skins exclusivas.'
+            },
+            {
+                id: 'oneblock',
+                name: 'OneBlock Online',
+                subtitle: 'NOVA TEMPORADA DISPONÍVEL',
+                icon: '1️⃣',
+                color: '#2bb34b',
+                ping: '55 ms',
+                onlinePlayers: '8,410',
+                banner: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=1000&auto=format&fit=crop',
+                description: 'Quebre um único bloco infinito para avançar por diferentes fases bioma e expandir sua ilha!',
+                activities: [
+                    { title: 'Fase Nether e End', subtitle: 'Níveis Avançados', desc: 'Desbloqueie blocos de minérios raros e monstros chefe para obter recompensas supremas.', thumb: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=200&auto=format&fit=crop' }
+                ],
+                news: '🎉 Bônus de XP em dobro durante todo o final de semana!'
+            }
+        ];
+
+        // SERVIDORES DE CRIADORES
+        const creatorServers = [
+            {
+                id: 'megasmp',
+                name: 'MegaSMP Survival',
+                subtitle: '► MAIOR SMP DA COMUNIDADE',
+                icon: 'M',
+                color: '#e74c3c',
+                ping: '65 ms',
+                onlinePlayers: '4,172',
+                banner: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1000&auto=format&fit=crop',
+                description: 'Um mundo de sobrevivência gigantesco compartilhado com milhares de jogadores simultâneos. Proteção de terrenos, mercado livre e combates PvP.',
+                activities: [
+                    { title: 'Mercado de Jogadores', desc: 'Compre e venda itens com facilidade usando comandos simples de loja.', thumb: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=200&auto=format&fit=crop' },
+                    { title: 'Proteção de Terreno', desc: 'Proteja suas construções contra invasões de outros jogadores.', thumb: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=200&auto=format&fit=crop' }
+                ],
+                news: 'Junte-se ao servidor e ganhe um Kit Inicial VIP gratuito!'
+            },
+            {
+                id: 'lifeboat',
+                name: 'Lifeboat Network',
+                subtitle: 'PRISON & CITYBUILD',
+                icon: '❤️',
+                color: '#2980b9',
+                ping: '38 ms',
+                onlinePlayers: '9,100',
+                banner: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1000&auto=format&fit=crop',
+                description: 'Servidor clássico com minigames variados, Survival Games, Modo Prisão e simuladores de cidade.',
+                activities: [],
+                news: 'Novos minérios no modo Prisão!'
+            }
+        ];
+
+        // SERVIDORES PERSONALIZADOS DO USUÁRIO
+        const customServers = [
+            {
+                id: 'pixel_legends',
+                name: 'Pixel Legends (Aternos)',
+                subtitle: 'MCPixelLegends.aternos.me',
+                ip: 'MCPixelLegends.aternos.me',
+                port: '19132',
+                status: 'Online',
+                ping: '48 ms',
+                onlinePlayers: '5/20'
+            }
+        ];
+
+        let selectedRealmId = 'realm_1';
+        let currentRealmSubTab = 'sobre';
+        let selectedServerId = 'pixel_legends';
+        let currentActiveTab = 'servidores';
+
+        // RENDERIZAR ABA MUNDOS
+        function renderWorldsUI() {
+            const container = document.getElementById('worldsGridContainer');
+            document.getElementById('label-count-mundos').innerText = `Mundos (${worldsData.length})`;
+
+            let html = '';
+            worldsData.forEach(w => {
+                html += `
+                    <div class="world-card" onclick="playClickSound(); alert('Carregando o mundo: ${w.name}...')">
+                        <img src="${w.thumb}" class="world-card-img" />
+                        <div class="world-card-body">
+                            <div>
+                                <div style="font-weight:bold; font-size:14px; color:#fff;">${w.name}</div>
+                                <div style="font-size:11px; color:var(--text-gray); margin-top:2px;">
+                                    <span class="badge-tag">${w.mode}</span> • ${w.size}
+                                </div>
+                                <div style="font-size:10px; color:var(--text-gray); margin-top:4px;">Último acesso: ${w.date}</div>
+                            </div>
+                            <button class="top-btn" style="padding:6px 10px;" onclick="event.stopPropagation(); alert('Editando ${w.name}')">✏️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // RENDERIZAR ABA REALMS
+        function renderRealmsUI() {
+            const listContainer = document.getElementById('realmsListContainer');
+            const mainPanel = document.getElementById('realmsMainPanel');
+
+            document.getElementById('label-count-realms').innerText = `Realms (${realmsData.length})`;
+            document.getElementById('realmCountHeader').innerText = `Seus Realms (${realmsData.length})`;
+
+            let listHTML = '';
+            realmsData.forEach(r => {
+                const isActive = r.id === selectedRealmId ? 'active' : '';
+                listHTML += `
+                    <div class="realm-nav-item ${isActive}" onclick="selectRealm('${r.id}')">
+                        <div class="square-avatar" style="background-image: url('${r.avatarBg}');"></div>
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="color:#fff; font-weight:bold; font-size:13px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${r.name}</div>
+                            <div style="color: var(--text-gray); font-size:11px;">${r.owner}</div>
+                        </div>
+                        <span class="badge-status ${r.status}">${r.status === 'active' ? 'Ativo' : (r.status === 'expired' ? 'Expirado' : 'Manut.')}</span>
+                    </div>
+                `;
+            });
+            listContainer.innerHTML = listHTML;
+
+            const realm = realmsData.find(r => r.id === selectedRealmId) || realmsData[0];
+
+            let playButtonHTML = realm.status === 'active'
+                ? `<button class="realm-btn-play green" onclick="playClickSound(); alert('Entrando no Realm ${realm.name}...')">JOGAR</button>`
+                : `<button class="realm-btn-play disabled">INDISPONÍVEL</button>`;
+
+            let subTabContentHTML = '';
+            if (currentRealmSubTab === 'sobre') {
+                subTabContentHTML = `
+                    <div class="server-desc-box">
+                        <h5 style="color:var(--text-gray); font-size:11px; margin-bottom:4px; text-transform:uppercase;">Descrição do Proprietário</h5>
+                        <p>${realm.about}</p>
+                    </div>
+                    <div class="server-desc-box">
+                        <p style="color:var(--text-gray); font-size:12px;">🕒 Última sessão jogada: <strong>${realm.lastPlayed}</strong></p>
+                    </div>
+                `;
+            } else if (currentRealmSubTab === 'feed') {
+                if (realm.feed && realm.feed.length > 0) {
+                    realm.feed.forEach(f => {
+                        subTabContentHTML += `
+                            <div class="card-activity-square">
+                                <div class="square-avatar" style="background:var(--purple-header);">💬</div>
+                                <div style="flex:1;">
+                                    <div style="display:flex; justify-space-between; font-size:12px; font-weight:bold; color:#fff;">
+                                        <span>${f.author}</span>
+                                        <span style="color:var(--text-gray); font-size:10px;">${f.date}</span>
+                                    </div>
+                                    <p style="font-size:13px; color:#dcdcdc; margin-top:4px;">${f.text}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    subTabContentHTML = `<p style="color:var(--text-gray); font-size:13px;">Nenhuma publicação recente no feed deste Realm.</p>`;
+                }
+            } else if (currentRealmSubTab === 'membros') {
+                realm.members.forEach(m => {
+                    subTabContentHTML += `
+                        <div class="member-row">
+                            <div class="square-avatar" style="background:#555; color:white; width:32px; height:32px; font-size:12px;">👤</div>
+                            <span style="font-size:13px; font-weight:bold; color:#fff;">${m}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            mainPanel.innerHTML = `
+                <div class="realm-status-banner" style="background:${realm.status === 'expired' ? 'var(--red-expired)' : (realm.status === 'maint' ? 'var(--orange-maint)' : 'var(--green-active)')}; color:${realm.status === 'active' ? 'black' : 'white'};">
+                    STATUS: ${realm.statusText}
+                </div>
+                <img src="${realm.banner}" class="realm-banner-img" />
+                <div style="padding: 14px 20px 0 20px; font-size:18px; font-weight:900;">${realm.name}</div>
+                <div style="padding: 4px 20px 10px 20px;">
+                    <span class="badge-tag">Realm Bedrock</span>
+                </div>
+                <div class="realm-control-row">
+                    <button class="realm-btn-hub" onclick="playClickSound(); alert('Abrindo Realm Hub...')">
+                        📑 Realm Hub
+                    </button>
+                    ${playButtonHTML}
+                </div>
+                <div class="realm-subtabs-bar">
+                    <div class="realm-subtab ${currentRealmSubTab === 'sobre' ? 'active' : ''}" onclick="switchRealmSubTab('sobre')">Sobre esse Realm</div>
+                    <div class="realm-subtab ${currentRealmSubTab === 'feed' ? 'active' : ''}" onclick="switchRealmSubTab('feed')">Feed de Notícias</div>
+                    <div class="realm-subtab ${currentRealmSubTab === 'membros' ? 'active' : ''}" onclick="switchRealmSubTab('membros')">Membros (${realm.members.length})</div>
+                </div>
+                <div class="realm-tab-content">${subTabContentHTML}</div>
+            `;
+        }
+
+        function selectRealm(id) {
+            playClickSound();
+            selectedRealmId = id;
+            renderRealmsUI();
+            if (window.innerWidth <= 860) toggleSidebar();
+        }
+
+        function switchRealmSubTab(subTab) {
+            playClickSound();
+            currentRealmSubTab = subTab;
+            renderRealmsUI();
+        }
+
+        // RENDERIZAR ABA SERVIDORES
+        function renderServersUI() {
+            const sidebar = document.getElementById('serversSidebarContainer');
+            const mainPanel = document.getElementById('serversMainPanelContainer');
+
+            let sidebarHTML = `<button class="add-btn" onclick="openModal('add-server-modal')">➕ Adicionar Servidor</button>`;
+
+            sidebarHTML += `<div class="category-header">Experiências em Destaque (${featuredServers.length})</div>`;
+            featuredServers.forEach(s => {
+                sidebarHTML += `
+                    <div class="server-item ${selectedServerId === s.id ? 'active' : ''}" onclick="selectServer('${s.id}')">
+                        <div class="square-avatar" style="background: ${s.color}; color: white;">${s.icon}</div>
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="color:#fff; font-weight:bold; font-size:13px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${s.name}</div>
+                            ${s.subtitle ? `<div style="color:var(--text-gray); font-size:10px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${s.subtitle}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            sidebarHTML += `<div class="category-header" style="margin-top:10px;">Comunidade & Criadores (${creatorServers.length})</div>`;
+            creatorServers.forEach(s => {
+                sidebarHTML += `
+                    <div class="server-item ${selectedServerId === s.id ? 'active' : ''}" onclick="selectServer('${s.id}')">
+                        <div class="square-avatar" style="background: ${s.color}; color: white;">${s.icon}</div>
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="color:#fff; font-weight:bold; font-size:13px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${s.name}</div>
+                            ${s.subtitle ? `<div style="color:var(--text-gray); font-size:10px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${s.subtitle}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            sidebarHTML += `<div class="category-header" style="margin-top:10px;">Outros Servidores (${customServers.length})</div>`;
+            customServers.forEach(s => {
+                sidebarHTML += `
+                    <div class="server-item ${selectedServerId === s.id ? 'active' : ''}" onclick="selectServer('${s.id}')">
+                        <div class="square-avatar" style="background:var(--btn-gray);">🖥️</div>
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="color:#fff; font-weight:bold; font-size:13px;">${s.name}</div>
+                            <div style="color:var(--text-gray); font-size:11px;">${s.status} • ${s.onlinePlayers}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            sidebar.innerHTML = sidebarHTML;
+
+            // Render do painel principal
+            const customSrv = customServers.find(s => s.id === selectedServerId);
+            if (customSrv) {
+                mainPanel.innerHTML = `
+                    <div class="server-header-container">
+                        <div>
+                            <h3 style="font-size:18px;">${customSrv.name}</h3>
+                            <span style="font-size:12px; color:var(--green-active); font-weight:bold;">📶 ${customSrv.ping} &nbsp;•&nbsp; 👤 ${customSrv.onlinePlayers} Jogadores</span>
+                        </div>
+                        <button class="server-play-green" style="max-width:180px;" onclick="alert('Conectando a ${customSrv.name}...')">ENTRAR</button>
+                    </div>
+                    <div class="custom-server-details">
+                        <div class="field-row">
+                            <div class="field-label">Nome Amigável</div>
+                            <div class="field-value">${customSrv.name}</div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-row-header">
+                                <div>
+                                    <div class="field-label">Endereço IP / Domínio</div>
+                                    <div class="field-value">${customSrv.ip}</div>
+                                </div>
+                                <button class="top-btn" style="padding:4px 12px;" onclick="navigator.clipboard.writeText('${customSrv.ip}'); alert('Endereço copiado!')">Copiar IP</button>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-label">Porta de Conexão</div>
+                            <div class="field-value">${customSrv.port}</div>
+                        </div>
+                        <button class="top-btn" style="justify-content:center; padding:12px; margin-top:8px;" onclick="openModal('add-server-modal')">⚙️ Editar Configurações</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const allStandard = [...featuredServers, ...creatorServers];
+            const srv = allStandard.find(s => s.id === selectedServerId) || featuredServers[0];
+
+            let activitiesHTML = '';
+            if (srv.activities && srv.activities.length > 0) {
+                srv.activities.forEach(act => {
+                    activitiesHTML += `
+                        <div class="card-activity-square">
+                            ${act.thumb ? `<img src="${act.thumb}" class="square-img" />` : ''}
+                            <div style="flex:1;">
+                                <h4 style="font-size:15px; color:#fff;">${act.title}</h4>
+                                ${act.subtitle ? `<div style="font-size:11px; color:var(--blue-highlight); font-weight:bold; margin-bottom:4px;">${act.subtitle}</div>` : ''}
+                                <p style="font-size:12px; color:#c0c2c8; line-height:1.4;">${act.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            mainPanel.innerHTML = `
+                ${srv.banner ? `
+                    <div class="server-banner-preview" style="background-image: linear-gradient(to top, rgba(0,0,0,0.85), transparent), url('${srv.banner}');">
+                        <div>
+                            <span class="badge-tag">SERVIDORES OFICIAIS</span>
+                        </div>
+                        <span style="font-size:13px; font-weight:bold;">📶 ${srv.ping} &nbsp;&nbsp; 👥 ${srv.onlinePlayers} Jogadores Online</span>
+                    </div>
+                ` : ''}
+                <div class="server-header-container">
+                    <div>
+                        <h3 style="font-size:18px;">${srv.name}</h3>
+                        <p style="font-size:11px; color:var(--text-gray);">${srv.subtitle || 'Servidor Oficial Parceiro'}</p>
+                    </div>
+                    <button class="server-play-green" style="max-width:180px;" onclick="alert('Conectando ao servidor ${srv.name}...')">JOGAR</button>
+                </div>
+                <div class="server-desc-box">
+                    <h5 style="color:var(--text-gray); font-size:11px; margin-bottom:4px; text-transform:uppercase;">Sobre este Servidor</h5>
+                    <p>${srv.description}</p>
+                </div>
+                ${activitiesHTML ? `
+                    <div style="font-size:12px; font-weight:bold; color:var(--text-gray); text-transform:uppercase; margin-top:4px;">Modos e Atividades em Destaque</div>
+                    <div style="display:flex; flex-direction:column; gap:10px;">${activitiesHTML}</div>
+                ` : ''}
+                ${srv.news ? `
+                    <div class="server-desc-box" style="margin-top:6px; border-left: 4px solid var(--purple-header);">
+                        <h5 style="color:var(--purple-header); font-size:11px; margin-bottom:4px; text-transform:uppercase; font-weight:bold;">📢 Notícias & Eventos</h5>
+                        <p style="white-space: pre-line;">${srv.news}</p>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function selectServer(id) {
+            playClickSound();
+            selectedServerId = id;
+            renderServersUI();
+            if (window.innerWidth <= 860) toggleSidebar();
+        }
+
+        function switchTabDirect(tabName) {
+            currentActiveTab = tabName;
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-btn').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-container').forEach(c => c.classList.remove('active'));
+
+            const activeBtn = document.getElementById('tab-btn-' + tabName);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const activeMobBtn = document.getElementById('mob-tab-' + tabName);
+            if (activeMobBtn) activeMobBtn.classList.add('active');
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            const rightNav = document.getElementById('rightNavDrawer');
+            if (rightNav) rightNav.classList.remove('open');
+        }
+
+        function toggleRightDrawer() {
+            document.getElementById('rightNavDrawer').classList.toggle('open');
+        }
+
+        function toggleSidebar() {
+            if (currentActiveTab === 'realms') {
+                const sb = document.getElementById('realmsSidebar');
+                const bd = document.getElementById('realmsBackdrop');
+                sb.classList.toggle('closed');
+                bd.classList.toggle('active');
+            } else if (currentActiveTab === 'servidores') {
+                const sb = document.getElementById('serversSidebarContainer');
+                const bd = document.getElementById('serversBackdrop');
+                sb.classList.toggle('closed');
+                bd.classList.toggle('active');
+            }
+        }
+
+        function saveNewServer() {
+            const name = document.getElementById('newServerName').value.trim();
+            const ip = document.getElementById('newServerIp').value.trim();
+            const port = document.getElementById('newServerPort').value.trim();
+
+            if (!name || !ip) {
+                alert('Por favor, preencha o Nome e o Endereço IP do servidor.');
+                return;
+            }
+
+            const newId = 'custom_' + Date.now();
+            customServers.push({
+                id: newId,
+                name: name,
+                subtitle: ip,
+                ip: ip,
+                port: port || '19132',
+                status: 'Online',
+                ping: '-- ms',
+                onlinePlayers: '0/20'
+            });
+
+            selectedServerId = newId;
+            closeModal('add-server-modal');
+            renderServersUI();
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        window.onload = function () {
+            renderWorldsUI();
+            renderRealmsUI();
+            renderServersUI();
+
+            // Oculta sidebars por padrão no mobile no carregamento inicial
+            if (window.innerWidth <= 860) {
+                document.getElementById('realmsSidebar').classList.add('closed');
+                document.getElementById('serversSidebarContainer').classList.add('closed');
+            }
+        };
+    </script>
+</body>
+
+</html>
